@@ -25,7 +25,7 @@
 \usepackage{url}
 \usepackage{multicol}
 \usepackage{array}
-\usepackage[style=list,toc=true]{glossary}
+\usepackage[style=list,toc=true]{glossaries}
 \usepackage{graphicx} %For å kunne inkludere grafikk
 \usepackage{hiafrontpage} % For UoA Style frontpage.
 \usepackage{rotating}
@@ -69,10 +69,10 @@
 \titlelogo{images/uia_logo_large} %Path to UoA logo.
 \title{Title of your project goes here}
 
-\draftversion{3.6}
-%\date{January 9, 2007} %specify own date
+\draftversion{0.1}
+\date{\today} %specify own date
 
-\makeglossary
+\makeglossaries
 
 %for draft work, select the chapters to include in the pdf but still keep all cross-references intact.
 %\includeonly{introduction}
@@ -107,7 +107,7 @@
         \bibliography{bib/web}
     \end{singlespace}
 
-    \printglossary   
+    \printglossary
 
 \end{document}
 
