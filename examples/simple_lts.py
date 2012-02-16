@@ -82,7 +82,7 @@ for t in range(T):
     
 
 print( "Done with the simulation." )
-print( "C.Reward: {:.2f} after {} rounds using ob:{}".format(cumulative_reward, T, observation_noise))
+print( "Cumulative reward: {:.2f} after {} rounds using ob: {}".format(cumulative_reward, T, observation_noise))
     
     
     
