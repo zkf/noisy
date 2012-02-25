@@ -1,0 +1,113 @@
+% Thesis template by Aleksander M. Stensby
+% aleksander.stensby@gmail.com
+
+\documentclass[12pt,letterpaper,final]{report}
+%\documentclass[12pt,a4paper,final]{report}
+\usepackage{makeidx}
+\usepackage{varioref}
+\usepackage{setspace}
+\usepackage{times} % Use this package for times-font. %%not found
+\usepackage{fancyvrb}
+\usepackage{moreverb}
+\usepackage{fancyhdr}
+\usepackage{epsfig}
+\usepackage{eucal}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{floatflt}
+\usepackage{tocbibind}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amsthm}
+\usepackage{subfigure}
+\usepackage{longtable}
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage[style=list,toc=true]{glossaries}
+\usepackage{graphicx} %For å kunne inkludere grafikk
+\usepackage{hiafrontpage} % For UoA Style frontpage.
+\usepackage{rotating}
+
+\input{colordefinitions}
+
+%%%% Fancy
+% 11pt font
+%\headheight=13.6 pt
+
+% 12pt font
+\headheight=14.5 pt
+
+\pagestyle{fancy} 
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{}
+%lowercase
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+
+%Fit more figures on a page
+\renewcommand{\topfraction}{.99}
+\renewcommand{\bottomfraction}{.99}
+\renewcommand{\textfraction}{.01}
+\renewcommand{\floatpagefraction}{.99}
+
+% spacing:
+%\singlespacing
+\onehalfspacing
+%\doublespacing
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\hyphenation{theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\oddsidemargin=0.5in \evensidemargin=0.3in
+\parskip=0.0 true in
+
+\author{Your name here}
+\titlelogo{images/uia_logo_large} %Path to UoA logo.
+\title{Title of your project goes here}
+
+\draftversion{0.1}
+\date{\today} %specify own date
+
+\makeglossaries
+
+%for draft work, select the chapters to include in the pdf but still keep all cross-references intact.
+%\includeonly{introduction}
+
+\begin{document}
+
+    \maketitle
+
+    \newpage    
+    \include{abstract}
+    \include{preface}
+
+    \tableofcontents
+    \listoffigures
+    \listoftables
+
+    \parskip=0.1 true in
+
+    \newpage
+
+		% General structure, normally (background, and solution chapter may be split into several different chapters!
+    \include{introduction}    
+    \include{background}            
+    \include{solution}
+    \include{testing}
+    \include{conclusion}
+
+    \begin{singlespace}
+        \bibliographystyle{IEEEtranS}
+        %\bibliographystyle{plain}
+				%\bibliographystyle{apalike}
+        \bibliography{bib/web}
+    \end{singlespace}
+
+    \printglossary
+
+\end{document}
+

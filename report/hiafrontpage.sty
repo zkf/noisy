@@ -1,0 +1,98 @@
+%%
+%% Style for redefining the \maketitle command to fit the official
+%% template for a Master Thesis report at Agder University College.
+%%
+%%  Copyright 2003 Bent André Solheim
+%%	Modified 2006 Aleksander M. Stensby
+%%
+%%  This program is provided under the terms of the
+%%  LaTeX Project Public License distributed from CTAN
+%%  archives in directory macros/latex/base/lppl.txt.
+%%
+%% Author: Aleksander Mølsæther Stensby
+%%         at: aleksander.stensby@integrasco.no
+%%
+%% It it possible to put a logo at the top of the page.
+%% In your .tex-file, use \titlelogo{path/to/logo}. If this macro is not
+%% used, no logo will be used.
+%%
+%% Institution, location and thesis type are also possible to define
+%% using the \institution{xxx}, \location{xxx}, thesisin{xxx} macros.
+%% They default to The University of Agder, Grimstad, and Information
+%% and Communication Technology.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{hiafrontpage}[]
+
+
+\newif\iflogopathdefined
+\logopathdefinedfalse
+\providecommand{\titlelogo}[1]{}
+\renewcommand{\titlelogo}[1]{
+    \def\@logopath{#1}
+    \logopathdefinedtrue
+}
+
+\providecommand{\institution}[1]{}
+\renewcommand{\institution}[1]{\def\@institution{#1}}
+\def\@institution{The University of Agder}
+
+\providecommand{\location}[1]{}
+\renewcommand{\location}[1]{\def\@location{#1}}
+\def\@location{Grimstad}
+%\def\@location{Ottawa, Canada}
+
+\providecommand{\thesisin}[1]{}
+\renewcommand{\thesisin}[1]{\def\@thesisin{#1}}
+\def\@thesisin{Information and Communication Technology}
+\def\@prelim{Preliminary Project Report}
+
+\providecommand{\draftversion}[1]{}
+\renewcommand{\draftversion}[1]{\def\@draftversion{#1}}
+\def\@draftversion{1.0}
+
+\renewcommand{\and}{\hspace{0.3in}}
+
+\providecommand{\maketitle}{}
+\renewcommand{\maketitle}{
+    \begin{titlepage}
+    \begin{center}
+
+    \iflogopathdefined
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.00\textwidth]%
+            %\includegraphics[width=0.35\textwidth]%            
+                {\@logopath}
+        \end{figure}
+    \fi
+
+		\vspace{0.2in}
+		
+    \Large
+    \emph{\textbf{\@title}}
+    \vspace{0.3in}
+
+    \large
+    by\\
+    \vspace{0.2in}
+    \emph{\@author}
+
+		\normalsize
+    \vspace{0.5in}                                  %%enable these when main report is written
+    Master Thesis in\\
+    \textbf{\@thesisin}
+
+    \vspace{0.2in}
+    %\textbf{\@prelim}
+    DRAFT VERSION \@draftversion
+
+    \vspace{0.5in}
+    \@institution
+    
+    \vspace{0.4in}
+
+    \@location, \@date
+    \end{center}
+    \end{titlepage}
+}
