@@ -33,7 +33,7 @@ double cumulativeReward = 0.0;
 
 int main(int argc, char* argv[])
 {
-    Lts bandit( 2, initMean, initSd, observationNoise );
+    Lts bandit( 3, initMean, initSd, observationNoise );
     std::cout << "Starting simulation" << "\n";
 
     for(int i = 0; i <= T; ++i)
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
         std::cout << "Selected arm " << selectedArm << "\n";
         double reward = rndFromNormalDist(arms[selectedArm]);
         cumulativeReward += reward;
-        bandit.update(reward);
+        bandit.update(reward, selectedArm);
     }
     
     std::cout << "Done with the simulation.\n";

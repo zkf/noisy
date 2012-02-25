@@ -2,32 +2,36 @@
 
 #include <boost/math/distributions/normal.hpp>
 #include <valarray>
+#include <iostream>
 
 Lts::Lts(int numArms, double initMean, double initSd,
         double observationNoise)
-: observationNoise(observationNoise)
+: _observationNoise(observationNoise)
+, _numArms(numArms)
 {
-    for(int i = 0; i <= numArms; ++i)
+    std::cout << _numArms << std::endl;
+    //_numArms = 2;
+    for(int i = 0; i < numArms; ++i)
     {
         arms[i] = boost::make_tuple(initMean, initSd);
     }
-    
-    lastArm = -1;
 }
 
 int Lts::selectArm()
 {
-    std::valarray<double> results(numArms);
-    for(size_t i = 0; i <= numArms; ++i)
+//    std::cout << "_ob: " << _observationNoise << "\n";
+//    std::cout << "_numArms: " << _numArms << "\n";
+    std::valarray<double> results(_numArms);
+    for(size_t i = 0; i < _numArms; ++i)
     {
         results[i] = rndFromNormalDist(arms[i]);
+        std::cout << "got rnd: " << results[i] << std::endl;
     }
-    lastArm = results.max();
-    return lastArm;
+    return results.max();
     
 }
 
-void Lts::update(double reward)
+void Lts::update(double reward, int armIndex)
 {
     
 }

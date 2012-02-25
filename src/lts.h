@@ -18,7 +18,7 @@ class Lts
         /*
          * update - update distribution estimates for arm based on @reward.
          */
-        void update(double reward);
+        void update(double reward, int armIndex);
         
     private:
         typedef boost::tuple<double, double> normalDist;
@@ -26,12 +26,9 @@ class Lts
         // an arm is (mean, variance).
         normalDist arms[];
 
-        double observationNoise;
+        double& _observationNoise;
         
-        int numArms;
-        
-        // index of last selected arm.
-        unsigned int lastArm;
+        int& _numArms;
         
         double rndFromNormalDist(normalDist& nd);
     
