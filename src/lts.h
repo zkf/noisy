@@ -1,3 +1,6 @@
+#ifndef __lts_h__
+#define __lts_h__
+
 #include <boost/tuple/tuple.hpp>
 #include <boost/random.hpp>
 
@@ -33,3 +36,5 @@ class Lts
         double rndFromNormalDist(normalDist& nd);
     
 };
+
+#endif // __lts_h__
