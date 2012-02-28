@@ -1,9 +1,13 @@
+#ifndef __lts_h__
+#define __lts_h__
+
 #include <boost/tuple/tuple.hpp>
+#include <boost/random.hpp>
 
 class Lts 
 {
     public:
-        Lts(int numArms, double initMean, double initVariance,
+        Lts(int numArms, double initMean, double initSd,
                 double observationNoise);
         /*
          * selectArm - randomly select an arm.
@@ -14,16 +18,20 @@ class Lts
         /*
          * update - update distribution estimates for arm based on @reward.
          */
-        void update(reward);
+        void update(double reward, int armIndex);
         
     private:
+        typedef boost::tuple<double, double> normalDist;
         
         // an arm is (mean, variance).
-        boost::tuple<double, double> arms[];
+        normalDist arms[];
 
-        double observationNoise;
+        double& _observationNoise;
         
-        // index of last selected arm.
-        unsigned int lastArm;
+        int& _numArms;
+        
+        double rndFromNormalDist(normalDist& nd);
     
-}
+};
+
+#endif // __lts_h__

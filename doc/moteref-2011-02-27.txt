@@ -1,0 +1,75 @@
+MØTEREFERAT 2011.02.27
+
+Til stede: Sondre, Daniel og Bjørnar
+Ikke til stede: Håkon
+
+obn. = observation noise
+conjugate prior betyr at prioren og posterior er av samme type fordeling. Det
+gjør ting enklere.
+
+=== Banditt-variasjoner ===
+
+* antall armer
+* like armer
+* nesten like armer
+* forskjellige armer
+* Stor / liten varians
+* Trenger µ-verdien egentlig å varieres? Bestemmer den kanskje størrelsesorden
+  på belønningen, eller har den ingenting å si for sluttresultatene?
+
+=== Data ===
+
+ Vi er egentlig bare interessert i den beste obn. i hver situasjon. Så
+vi lagrer den beste obn. sammen med alle relevante parametere som ble brukt.
+(Tanken er her at vi skal kunne bruke dataene til å besvare spørsmål som "hvis
+parameter X varierer, hva er den beste obn. å bruke for hver mulige verdi av
+X"?)
+
+Å lagre unna data under simuleringen er lurt, for da kan vi se "hva er beste
+obn. etter T steps", og vi kan se hvor raskt ting konvergerer. Er det lurt å
+bruke en slags logaritmisk skala, fex. lagre etter 10, 20, 40, 80, 160, 320,
+640... steps?
+
+
+En fin måte å finne beste obn. på kan være å bruke en banditt, istedet for å
+prøve "alle" mulige obn. fra 0.001 og oppover.
+
+Hovedfokus er på obn. Vi må også se litt på hva som er bra å starte med som
+sannsynlighetsfordeling på armene (prior). Det er gitt ved N(mu, sigma).
+
+
+=== Cumulative reward vs. regret ===
+
+Forskjellige mål på hvor bra resultatet er, begge er like gyldige. Fra et
+matematisk ståsted er det enklere å jobbe med regret da den nærmer seg 0, i
+motsetning til cumulative reward. Det finnes forskjellige definisjoner av
+regret, men kan for eksempel være 
+
+    mean + (3 * standard deviation) - reward 
+
+Implementasjonsmessig og for å få en intuitiv forståelse er det nok enklere å
+jobbe med cumulative reward.
+
+Er det viktig å bruke gjennomsnittsverdier (for å minske variansen)? Altså
+kjøre ethvert scenarie N antall ganger og ta gjennomsnittlig beste resultat?
+
+
+=== Prosjektinndeling ===
+
+X) Undersøke 1 banditt med 2..n antall armer
+X) Undersøke Goore game med x antall spillere
+        - Hvordan funker det når G-funksjonen og antall spillere ikke "går
+          opp"? fex. G=1/3 og det er 5 spillere.
+        - Finne sammenheng mellom x antall spillere i G.G. og n antall armer
+          på 1 banditt
+X) Gaussisk prosess. Denne er uklar for meg enda, men det er kanskje ikke noe
+   vi behøver å tenke på enda (andre ting må gjøres først)?
+X) Rapport. 
+        - Lurt å begynne på rapporten tidlig. Det tar mye tid å skrive, og
+          prosessen med å skrive ned og forklare ting nøye hjelper oss til å
+          forstå dem.
+        - I rapporten vil vi finne og vise sammenhenger. Fex. demonstrere at
+          intuitive antagelser om hva som er bra obn. stemmer i simulering.
+
+
+
