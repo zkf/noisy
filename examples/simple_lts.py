@@ -57,9 +57,13 @@ Simple simulation
 # environment setup
 arm1 = (5.0, 2.0)   # ~N(5.0,2.0;x)  the best arm
 arm2 = (2.0, 2.0)   # ~N(2.0,2.0;x)  the worst arm
-arms = [arm1, arm2]
-
-T = 10
+arm3 = (2.0, 2.0) 
+arms = [arm1, arm2, arm3]
+filename = "testdata.txt"
+datalist = []
+FILE = open(filename, "w")
+saveNumber = 0
+T = 100
 cumulative_reward = 0.0
 
 # bandits setup
@@ -72,7 +76,15 @@ bandit = LTS( len(arms), init_mean_for_bandits, init_sd_for_bandits, observation
 print( "Starting simulation." )
 for t in range(T):
     selected_arm = bandit.select()
-    print( "Selected arm {}".format(selected_arm)) 
+    print( "Selected arm {}".format(selected_arm))
+    datalist.append("Selected arm {}".format(selected_arm)+"\n")
+    saveNumber = saveNumber + 1
+    if (saveNumber > 50):
+        datalist.append("Save done. \n")
+        FILE.writelines(datalist)
+        del datalist[:]
+        saveNumber = 0
+    
     # response from env
     reward = random.gauss( *arms[selected_arm] )
     cumulative_reward += reward
@@ -83,7 +95,12 @@ for t in range(T):
 
 print( "Done with the simulation." )
 print( "Cumulative reward: {:.2f} after {} rounds using ob: {}".format(cumulative_reward, T, observation_noise))
-    
+datalist.append("Done with the simulation.\n")
+datalist.append("Cumulative reward: {:.2f} after {} rounds using ob: {}".format(cumulative_reward, T, observation_noise)+"\n")
+datalist.append("Save done.\n")
+FILE.writelines(datalist)
+del datalist[:]
+FILE.close()
     
     
 
