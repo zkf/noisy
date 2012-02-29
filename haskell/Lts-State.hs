@@ -1,9 +1,9 @@
-module Lts.State  where 
+-- module Lts.State  where 
 
 import Data.Random.Normal
 import System.Random (RandomGen, StdGen, getStdGen, split)
 import Control.Monad (liftM, replicateM)
-import Control.Monad.State (State, StateT, execStateT, evalState, state, get,
+import Control.Monad.State.Strict (State, StateT, execStateT, evalState, state, get,
                                 put, lift)
 import Control.Parallel.Strategies (parMap, rseq)
 import System.Environment (getArgs)
@@ -16,8 +16,7 @@ type Arms = [Arm]
 type Bandit = Arms
 type ObNoise = Double
 type CReward = Double
-type LTS = (Arms, CReward, [Int], StdGen)
-type LTS2 = (Arms, CReward, [Int])
+type LTS = (Arms, CReward, [Int])
 
 parallelize :: (a -> b) -> [a] -> [b] 
 parallelize fun list = parMap rseq fun list
@@ -25,32 +24,51 @@ parallelize fun list = parMap rseq fun list
 average :: (Fractional a) => [a] -> a
 average list = (sum list) / (fromIntegral $ length list)
 
-armEstimates :: Arms
-armEstimates = replicate 2 $ (3.5, 3.0)
+-- The actual arms
+arms = [(5.0, 2.0), (2.0, 2.0), (3.0, 5.0)] :: Arms
+numArms = length arms
 
-rounds = 100 :: Int
-numBandits = 250 :: Int
+-- Starting estimates used by LTSs
+armEstimates = replicate numArms $ (3.5, 3.0) :: Arms
+
+ltsProto = (armEstimates, 0, []) :: LTS
+-- How many rounds an LTS should run for
+rounds = 100
+
+-- Number of LTSs to run in parallel
+numLtss = 1000
 
 -- obNoise = 5.0
 -- obNoiseRange = [0.00,0.125 .. 10.0]
 
--- The actual arms
-arms :: Arms
-arms = [(5.0, 2.0), (2.0, 2.0), (3.0, 5.0)]
 
-runManyLtss :: (RandomGen g) => ObNoise -> [LTS2] -> [g] -> (ObNoise, CReward)
-runManyLtss ob ltss gens = 
-    let ready = map (runLts rounds ob) ltss 
-        go =  zipWith evalState ready gens :: [LTS2]
-        getCReward (_, r, _) = r
-        avgReward = average $ parallelize getCReward go
-    in (ob, avgReward)
+main = do
+    [obStart, obEnd, obStep] <- liftM (map read) getArgs
+    gen <- getStdGen
+    let results = go [obStart, obStart+obStep .. obEnd] gen
+    putStrLn $ "Observation noise,Average cumulative reward over " ++ show rounds ++" rounds"
+    mapM_ (putStrLn.(\(ob, r) -> show ob ++ "," ++ show r)) results
 
-runLts :: RandomGen g => Int -> ObNoise -> LTS2 -> State g LTS2
+go obNoiseRange gen = 
+    zipWith (runParallelLtss numLtss ltsProto) obNoiseRange gens
+    where gens = genGens gen
+      
+genGens gen = iterate (\g -> snd $ split g) gen
+    
+runParallelLtss :: (RandomGen g) => Int -> LTS -> ObNoise -> g -> (ObNoise, CReward)
+runParallelLtss count lts ob gen = (ob, avgReward)
+    where avgReward = average $
+                parallelize getCReward $
+                zipWith evalState ltss gens
+          getCReward (_, r, _) = r
+          ltss = map (runLts rounds ob) $ replicate count lts
+          gens = genGens gen
+
+runLts :: RandomGen g => Int -> ObNoise -> LTS -> State g LTS
 runLts rounds ob startingLts =
     execStateT (replicateM rounds (pullArm ob)) startingLts
             
-pullArm ::  (RandomGen g) => ObNoise -> StateT LTS2 (State g) ()
+pullArm ::  (RandomGen g) => ObNoise -> StateT LTS (State g) ()
 pullArm ob = do
     (arms, cReward, selections) <- get
     probs <- lift $ evalArms arms
@@ -75,7 +93,7 @@ updateArm (mu, sigma) ob reward =
     
 evalArms :: (RandomGen g) => [Arm] -> State g [Double]
 evalArms = 
-   mapM (\params -> gaussian params) 
+   mapM gaussian
 
 getReward :: (RandomGen g) => Int -> State g Double
 getReward index = gaussian (arms !! index)
