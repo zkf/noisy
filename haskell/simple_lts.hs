@@ -1,3 +1,5 @@
+module Lts where
+
 import Data.Random.Normal
 import System.Random (RandomGen, StdGen, getStdGen, split)
 import Control.Monad (liftM, replicateM)
@@ -49,17 +51,14 @@ go obNoiseRange gen =
     map (runManyLtss ob) ltss
     where ltss = map makeLtss obNoiseRange (genGens gen)
       
+genGens gen = iterate (\g -> snd $ split g) gen
+
 makeLtss :: ObNoise -> StdGen -> [LTS]
 makeLtss ob gen = 
     zipWith expand startingBandits (genGens gen)
     where expand arms gen = (arms, 0, [], gen)
           startingBandits = replicate numBandits armEstimates
 
-genGens gen = iterate (\g -> snd $ split g) gen
-
-
--- Non-state version
- 
 runParallelLtss :: ObNoise -> [LTS] -> (ObNoise, Double)
 runParallelLtss ob ltss =
     let go = map (runLts rounds ob) ltss
@@ -74,7 +73,6 @@ runParallelLtss ob ltss =
     
 runLts rounds ob startingLts =
     iterate (pullArm ob startingLts)
-
     
 pullArm :: ObNoise ->  LTS -> LTS
 pullArm ob (arms, cReward, selections, gen) = 
@@ -92,6 +90,15 @@ pullArm ob (arms, cReward, selections, gen) =
                    ) $ zip [0..] arms
     in (arms', cReward + reward, (index:selections), gen'')
 
+updateArm :: Arm -> ObNoise -> Double -> Arm
+updateArm (mu, sigma) ob reward = 
+    let
+        armVariance = sigma**2
+        obVariance  = ob**2
+        mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
+        sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
+    in (mu', sigma')
+
 evalArms :: (RandomGen g) => [Arm] -> g -> ([Double], g)
 evalArms arms gen = 
     let (gen1, gen2) = split gen
@@ -108,57 +115,4 @@ getReward index gen =
  
 gaussian :: (RandomGen g) => (Double, Double) -> g -> (Double, g)
 gaussian = normal'
-
-    
----
-
-updateArm :: Arm -> ObNoise -> Double -> Arm
-updateArm (mu, sigma) ob reward = 
-    let
-        armVariance = sigma**2
-        obVariance  = ob**2
-        mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
-        sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
-    in (mu', sigma')
-    
----- State version
-
-runManyLtssSt :: (RandomGen g) => ObNoise -> [LTS2] -> [g] -> (ObNoise, CReward)
-runManyLtssSt ob ltss gens = 
-    let ready = map (runLts rounds ob) ltss 
-        go =  zipWith evalState ready gens :: [LTS2]
-        getCReward (_, r, _) = r
-        avgReward = average $ parallelize getCReward go
-    in (ob, avgReward)
-
-runLtsSt :: RandomGen g => Int -> ObNoise -> LTS2 -> State g LTS2
-runLtsSt rounds ob startingLts =
-    execStateT (replicateM rounds (pullArmSt ob)) startingLts
-            
-pullArmSt ::  (RandomGen g) => ObNoise -> StateT LTS2 (State g) ()
-pullArmSt ob = do
-    (arms, cReward, selections) <- get
-    probs <- lift $ evalArmsSt arms
-    let index = snd . maximum $ zip probs [0..]
-        arm  = arms !! index 
-    reward <- lift $ getRewardSt index
-    let arm' = updateArm arm ob reward 
-        arms' = map (\(i, e) -> if i == index
-                                then arm'  
-                                else e
-                 ) $ zip [0..] arms
-    put (arms', cReward + reward, (index:selections))
-
-evalArmsSt :: (RandomGen g) => [Arm] -> State g [Double]
-evalArmsSt = 
-   mapM (\params -> gaussianSt params) 
-
-getRewardSt :: (RandomGen g) => Int -> State g Double
-getRewardSt index = gaussianSt (arms !! index)
-
-gaussianSt :: (RandomGen g) => (Double, Double) -> State g Double
-gaussianSt params = state $ gaussian params
-
--- pullArmSt ob (arms, cReward, selections) = 
---     selectArm arms >>= \index -> getRewardSt index >>= \reward -> updateLts (
 
