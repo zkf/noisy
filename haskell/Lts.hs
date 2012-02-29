@@ -1,7 +1,7 @@
-module Lts where
+-- module Lts where 
 
 import Data.Random.Normal
-import System.Random (RandomGen, StdGen, getStdGen, split)
+import System.Random (RandomGen, getStdGen, split)
 import Control.Monad (liftM, replicateM)
 import Control.Monad.State (State, StateT, execStateT, evalState, state, get,
                                 put, lift)
@@ -15,23 +15,34 @@ type Arms = [Arm]
 type Bandit = Arms
 type ObNoise = Double
 type CReward = Double
-type LTS = (Arms, CReward, [Int], StdGen)
-type LTS2 = (Arms, CReward, [Int])
+type LTS = (Arms, CReward, [Int])
 
 
 parallelize fun list = parMap rseq fun list
 
 average list = (sum list) / (fromIntegral $ length list)
 
-armEstimates = replicate 2 $ (3.5, 3.0)
-rounds = 100
-numBandits = 250
--- obNoise = 5.0
--- obNoiseRange = [0.00,0.125 .. 10.0]
+gaussian :: (RandomGen g) => (Double, Double) -> g -> (Double, g)
+gaussian = normal'
 
 -- The actual arms
 arms :: Arms
 arms = [(5.0, 2.0), (2.0, 2.0), (3.0, 5.0)]
+numArms = length arms
+
+-- Starting estimates used by LTSs
+armEstimates = replicate numArms $ (3.5, 3.0)
+
+ltsProto = (armEstimates, 0, []) :: LTS
+-- How many rounds an LTS should run for
+rounds = 100
+
+-- Number of LTSs to run in parallel
+numLtss = 1000
+
+-- obNoise = 5.0
+-- obNoiseRange = [0.00,0.125 .. 10.0]
+
 
 main = do
     [obStart, obEnd, obStep] <- liftM (map read) getArgs
@@ -48,34 +59,27 @@ main = do
 --        ++ " rounds using ob: " ++ show obNoise
 
 go obNoiseRange gen = 
-    map (runManyLtss ob) ltss
-    where ltss = map makeLtss obNoiseRange (genGens gen)
+    zipWith (runParallelLtss numLtss ltsProto) obNoiseRange gens
+    where gens = genGens gen
       
+
+runParallelLtss :: (RandomGen g) => Int ->  LTS -> ObNoise -> g -> (ObNoise, Double)
+runParallelLtss count lts ob gen = (ob, avgReward)
+    where 
+        avgReward = average $ parallelize getCReward $ zipWith (runLts rounds ob) ltss gens
+        getCReward (_, r, _) = r
+        ltss = replicate count lts
+        gens = genGens gen
+        
 genGens gen = iterate (\g -> snd $ split g) gen
 
-makeLtss :: ObNoise -> StdGen -> [LTS]
-makeLtss ob gen = 
-    zipWith expand startingBandits (genGens gen)
-    where expand arms gen = (arms, 0, [], gen)
-          startingBandits = replicate numBandits armEstimates
-
-runParallelLtss :: ObNoise -> [LTS] -> (ObNoise, Double)
-runParallelLtss ob ltss =
-    let go = map (runLts rounds ob) ltss
-        getCReward (_, r, _) = r
-        avgReward = average $ parallelize getCReward go
-    in (ob, avgReward)
+runLts :: (RandomGen g) => Int -> ObNoise -> LTS -> g -> LTS
+runLts rounds ob startingLts gen =
+    discardRng . last . take rounds $ iterate (pullArm ob) (startingLts, gen)
+    where discardRng = fst
     
---     let cRews = parallelize ((\(_,_,c,_,_) -> c).last.take rounds.iterate pullArm) $ bandits
---         -- just get ob from first bandit
---         ob    = (\(_,ob,_,_,_) -> ob) (bandits !! 0)
---     in (ob, average cRews)
-    
-runLts rounds ob startingLts =
-    iterate (pullArm ob startingLts)
-    
-pullArm :: ObNoise ->  LTS -> LTS
-pullArm ob (arms, cReward, selections, gen) = 
+pullArm :: (RandomGen g) => ObNoise -> (LTS, g) -> (LTS, g)
+pullArm ob ((arms, cReward, selections), gen) = 
     let
         -- Select arm randomly and get index of it
         (probs, gen') = evalArms arms gen
@@ -88,7 +92,7 @@ pullArm ob (arms, cReward, selections, gen) =
                                   then arm'  
                                   else e
                    ) $ zip [0..] arms
-    in (arms', cReward + reward, (index:selections), gen'')
+    in ((arms', cReward + reward, (index:selections)), gen'')
 
 updateArm :: Arm -> ObNoise -> Double -> Arm
 updateArm (mu, sigma) ob reward = 
@@ -109,10 +113,7 @@ evalArms arms gen =
             let (sample, g') = gaussian arm g
             in  sample:(go as g')
             
-getReward :: Int -> StdGen -> (Double, StdGen)
+getReward :: (RandomGen g) => Int -> g -> (Double, g)
 getReward index gen = 
      gaussian (arms!!index) gen
- 
-gaussian :: (RandomGen g) => (Double, Double) -> g -> (Double, g)
-gaussian = normal'
 
