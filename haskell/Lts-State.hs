@@ -71,25 +71,30 @@ runLts rounds ob startingLts =
 pullArm ::  (RandomGen g) => ObNoise -> StateT LTS (State g) ()
 pullArm ob = do
     (arms, cReward, selections) <- get
-    probs <- lift $ evalArms arms
-    let index = snd . maximum $ zip probs [0..]
-        arm  = arms !! index 
-    reward <- lift $ getReward index
-    let arm' = updateArm arm ob reward 
-        arms' = map (\(i, e) -> if i == index
-                                then arm'  
-                                else e
-                 ) $ zip [0..] arms
+    (selectedArm, index)        <- lift $ selectArm arms 
+    reward                      <- lift $ getReward index
+    let arms' = updateSelectedArm arms selectedArm index ob reward 
     put (arms', cReward + reward, (index:selections))
 
-updateArm :: Arm -> ObNoise -> Double -> Arm
-updateArm (mu, sigma) ob reward = 
-    let
-        armVariance = sigma**2
+selectArm :: (RandomGen g) => Arms -> State g (Arm, Int)
+selectArm arms = do
+    probs <- evalArms arms
+    let index = snd . maximum $ zip probs [0..]
+        arm  = arms !! index 
+    return (arm, index)
+
+updateSelectedArm :: Arms -> Arm -> Int -> ObNoise -> Double -> Arms
+updateSelectedArm arms (mu, sigma) index ob reward = 
+    let armVariance = sigma**2
         obVariance  = ob**2
         mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
         sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
-    in (mu', sigma')
+        arm'   = (mu', sigma')
+        arms' = map (\(i, a) -> if i == index
+                                then arm'  
+                                else a
+                 ) $ zip [0..] arms
+    in arms'
     
 evalArms :: (RandomGen g) => [Arm] -> State g [Double]
 evalArms = 
