@@ -1,4 +1,4 @@
--- module Lts.State  where 
+module Data.BanditSolver.LTS where
 
 import Data.Random.Normal
 import System.Random (RandomGen, StdGen, getStdGen, split)
@@ -6,7 +6,6 @@ import Control.Monad (liftM, replicateM)
 import Control.Monad.State.Strict (State, StateT, execStateT, evalState, state, get,
                                 put, lift)
 import Control.Parallel.Strategies (parMap, rseq)
-import System.Environment (getArgs)
 
 
 type Mu = Double
@@ -41,13 +40,6 @@ numLtss = 1000
 -- obNoise = 5.0
 -- obNoiseRange = [0.00,0.125 .. 10.0]
 
-
-main = do
-    [obStart, obEnd, obStep] <- liftM (map read) getArgs
-    gen <- getStdGen
-    let results = go [obStart, obStart+obStep .. obEnd] gen
-    putStrLn $ "Observation noise,Average cumulative reward over " ++ show rounds ++" rounds"
-    mapM_ (putStrLn.(\(ob, r) -> show ob ++ "," ++ show r)) results
 
 go obNoiseRange gen = 
     zipWith (runParallelLtss numLtss ltsProto) obNoiseRange gens
