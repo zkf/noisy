@@ -1,8 +1,8 @@
-module Data.BanditSolver.LTS where
+module Data.BanditSolver.LTS (findBestObservationNoise) where
 
 import Data.Random.Normal
-import System.Random (RandomGen, StdGen, getStdGen, split)
-import Control.Monad (liftM, replicateM)
+import System.Random (RandomGen, split)
+import Control.Monad (replicateM)
 import Control.Monad.State.Strict (State, StateT, execStateT, evalState, state, get,
                                 put, lift)
 import Control.Parallel.Strategies (parMap, rseq)
@@ -12,10 +12,13 @@ type Mu = Double
 type Sigma = Double
 type Arm = (Mu, Sigma)
 type Arms = [Arm]
-type Bandit = Arms
 type ObNoise = Double
 type CReward = Double
 type LTS = (Arms, CReward, [Int])
+
+-- Number of LTSs to run in parallel
+numLtss :: Int
+numLtss = 1000
 
 parallelize :: (a -> b) -> [a] -> [b] 
 parallelize fun list = parMap rseq fun list
@@ -23,48 +26,45 @@ parallelize fun list = parMap rseq fun list
 average :: (Fractional a) => [a] -> a
 average list = (sum list) / (fromIntegral $ length list)
 
--- The actual arms
-arms = [(5.0, 2.0), (2.0, 2.0), (3.0, 5.0)] :: Arms
-numArms = length arms
+findBestObservationNoise :: 
+    RandomGen g =>
+       Arms
+       -> Arm
+       -> Int       -- Rounds
+       -> [ObNoise]
+       -> g
+       -> [(ObNoise, CReward)]
+findBestObservationNoise arms armEstimate rounds obNoiseRange gen =
+    go ltsProto arms rounds obNoiseRange gen
+    where ltsProto = (replicate (length arms) armEstimate, 0, []) 
 
--- Starting estimates used by LTSs
-armEstimates = replicate numArms $ (3.5, 3.0) :: Arms
-
-ltsProto = (armEstimates, 0, []) :: LTS
--- How many rounds an LTS should run for
-rounds = 100
-
--- Number of LTSs to run in parallel
-numLtss = 1000
-
--- obNoise = 5.0
--- obNoiseRange = [0.00,0.125 .. 10.0]
-
-
-go obNoiseRange gen = 
-    zipWith (runParallelLtss numLtss ltsProto) obNoiseRange gens
+go :: RandomGen g =>
+         LTS -> Arms -> Int -> [ObNoise] -> g -> [(ObNoise, CReward)]
+go ltsProto realArms rounds obNoiseRange gen = 
+    zipWith (runParallelLtss realArms rounds ltsProto) obNoiseRange gens
     where gens = genGens gen
-      
+     
+genGens :: RandomGen g => g -> [g] 
 genGens gen = iterate (\g -> snd $ split g) gen
     
-runParallelLtss :: (RandomGen g) => Int -> LTS -> ObNoise -> g -> (ObNoise, CReward)
-runParallelLtss count lts ob gen = (ob, avgReward)
+runParallelLtss :: (RandomGen g) => Arms -> Int -> LTS -> ObNoise -> g -> (ObNoise, CReward)
+runParallelLtss realArms rounds lts ob gen = (ob, avgReward)
     where avgReward = average $
                 parallelize getCReward $
                 zipWith evalState ltss gens
           getCReward (_, r, _) = r
-          ltss = map (runLts rounds ob) $ replicate count lts
+          ltss = map (runLts realArms rounds ob) $ replicate numLtss lts
           gens = genGens gen
 
-runLts :: RandomGen g => Int -> ObNoise -> LTS -> State g LTS
-runLts rounds ob startingLts =
-    execStateT (replicateM rounds (pullArm ob)) startingLts
+runLts :: RandomGen g => Arms -> Int -> ObNoise -> LTS -> State g LTS
+runLts realArms rounds ob startingLts =
+    execStateT (replicateM rounds (pullArm realArms ob)) startingLts
             
-pullArm ::  (RandomGen g) => ObNoise -> StateT LTS (State g) ()
-pullArm ob = do
+pullArm ::  (RandomGen g) => Arms -> ObNoise -> StateT LTS (State g) ()
+pullArm realArms ob = do
     (arms, cReward, selections) <- get
     (selectedArm, index)        <- lift $ selectArm arms 
-    reward                      <- lift $ getReward index
+    reward                      <- lift $ getReward realArms index
     let arms' = updateSelectedArm arms selectedArm index ob reward 
     put (arms', cReward + reward, (index:selections))
 
@@ -88,12 +88,11 @@ updateSelectedArm arms (mu, sigma) index ob reward =
                  ) $ zip [0..] arms
     in arms'
     
-evalArms :: (RandomGen g) => [Arm] -> State g [Double]
-evalArms = 
-   mapM gaussian
+evalArms :: (RandomGen g) => Arms -> State g [Double]
+evalArms = mapM gaussian
 
-getReward :: (RandomGen g) => Int -> State g Double
-getReward index = gaussian (arms !! index)
+getReward :: (RandomGen g) => Arms -> Int -> State g Double
+getReward realArms index = gaussian (realArms !! index)
 
 gaussian :: (RandomGen g) => (Double, Double) -> State g Double
 gaussian params = state $ normal' params
