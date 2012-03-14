@@ -1,102 +1,87 @@
-module Data.BanditSolver.LTS (findBestObservationNoise) where
+module Data.BanditSolver.LTS (runAveragedLts, GaussianArms(..)) where
 
-import Data.Random.Normal
-import System.Random (RandomGen, split)
-import Control.Monad (replicateM)
-import Control.Monad.State.Strict (State, StateT, execStateT, evalState, state, get,
-                                put, lift)
-import Control.Parallel.Strategies (parMap, rseq)
+import Control.Monad.State 
+import Data.Random (normal)
+import System.Random.Mersenne.Pure64 (PureMT)
+import Data.RVar (sampleRVar)
+import Statistics.Sample (meanVariance)
+import Data.Vector (fromList)
+
+-- Number of LTSs to take the average of
+numLtss :: Int
+numLtss = 500
+    
+instance Arms GaussianArms where
+
+    getReward (GaussianArms as) idx = gaussian (as !! idx)
+    
+    selectArm (GaussianArms arms) = do 
+        probs <- mapM gaussian arms
+        let index = snd . maximum $ zip probs [0..]
+        return index
+
+    updateSelectedArm (GaussianArms arms) index ob reward = 
+        let (mu, sigma) = arms !! index
+            armVariance = sigma**2
+            obVariance  = ob**2
+            mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
+            sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
+            arm'   = (mu', sigma')
+            arms' = map (\(i, a) -> if i == index
+                                    then arm'
+                                    else a
+                     ) $ zip [0..] arms
+        in (GaussianArms arms')
+
+gaussian :: GaussianArm -> State PureMT Double
+gaussian (mu, sigma) =
+    sampleRVar $ normal mu sigma
 
 
-type Mu = Double
-type Sigma = Double
-type Arm = (Mu, Sigma)
-type Arms = [Arm]
+class Arms as where
+    selectArm :: as -> State PureMT Int
+    updateSelectedArm :: as -> Int -> ObNoise -> Double -> as
+    getReward :: as -> Int -> State PureMT Double
+    
+newtype (Arms as) => BanditSolver as = BanditSolver (as, CReward)
+    
+type GaussianArm = (Double, Double) -- Mean, standard deviation
+newtype GaussianArms = GaussianArms [GaussianArm]
+    
+
 type ObNoise = Double
 type CReward = Double
-type LTS = (Arms, CReward, [Int])
+type LTS = BanditSolver (GaussianArms, CReward)
 
--- Number of LTSs to run in parallel
-numLtss :: Int
-numLtss = 1000
 
-parallelize :: (a -> b) -> [a] -> [b] 
-parallelize fun list = parMap rseq fun list
-
-average :: (Fractional a) => [a] -> a
-average list = (sum list) / (fromIntegral $ length list)
-
-findBestObservationNoise :: 
-    RandomGen g =>
-       Arms
-       -> Arm
+runAveragedLts :: (Arms a)  =>
+       a    -- Real arms
+       -> a -- beginning arm estimates
        -> Int       -- Rounds
-       -> [ObNoise]
-       -> g
-       -> [(ObNoise, CReward)]
-findBestObservationNoise arms armEstimate rounds obNoiseRange gen =
-    go ltsProto arms rounds obNoiseRange gen
-    where ltsProto = (replicate (length arms) armEstimate, 0, []) 
+       -> ObNoise
+       -> PureMT
+       -> (Double, Double) -- mean, stddev of cumulative rewards
+runAveragedLts arms armEstimates rounds obNoise gen = (mean, sqrt variance)
+    where (mean, variance) = runManyLtss arms rounds ltsProto obNoise gen
+          ltsProto = (BanditSolver (armEstimates, 0))
 
-go :: RandomGen g =>
-         LTS -> Arms -> Int -> [ObNoise] -> g -> [(ObNoise, CReward)]
-go ltsProto realArms rounds obNoiseRange gen = 
-    zipWith (runParallelLtss realArms rounds ltsProto) obNoiseRange gens
-    where gens = genGens gen
-     
-genGens :: RandomGen g => g -> [g] 
-genGens gen = iterate (\g -> snd $ split g) gen
-    
-runParallelLtss :: (RandomGen g) => Arms -> Int -> LTS -> ObNoise -> g -> (ObNoise, CReward)
-runParallelLtss realArms rounds lts ob gen = (ob, avgReward)
-    where avgReward = average $
-                parallelize getCReward $
-                zipWith evalState ltss gens
-          getCReward (_, r, _) = r
-          ltss = map (runLts realArms rounds ob) $ replicate numLtss lts
-          gens = genGens gen
+runManyLtss :: (Arms a) =>  
+    a -> Int -> BanditSolver a -> ObNoise -> PureMT -> (Double, Double) 
+runManyLtss realArms rounds lts ob gen = avgReward
+    where avgReward = meanVariance . fromList . map getCReward $ results
+          getCReward (BanditSolver (_, r)) = r
+          results = evalState (replicateM numLtss $ runLts realArms rounds ob lts) gen
 
-runLts :: RandomGen g => Arms -> Int -> ObNoise -> LTS -> State g LTS
+runLts :: Arms a => a -> Int -> ObNoise -> BanditSolver a -> State PureMT (BanditSolver a)
 runLts realArms rounds ob startingLts =
     execStateT (replicateM rounds (pullArm realArms ob)) startingLts
             
-pullArm ::  (RandomGen g) => Arms -> ObNoise -> StateT LTS (State g) ()
+pullArm :: Arms a => a -> ObNoise -> StateT (BanditSolver a) (State PureMT) ()
 pullArm realArms ob = do
-    (arms, cReward, selections) <- get
-    (selectedArm, index)        <- lift $ selectArm arms 
-    reward                      <- lift $ getReward realArms index
-    let arms' = updateSelectedArm arms selectedArm index ob reward 
-    put (arms', cReward + reward, (index:selections))
+    BanditSolver (arms, cReward) <- get
+    selected                     <- lift $ selectArm arms 
+    reward                       <- lift $ getReward realArms selected
+    let arms' = updateSelectedArm arms selected ob reward 
+    put (BanditSolver (arms', cReward + reward))
 
-selectArm :: (RandomGen g) => Arms -> State g (Arm, Int)
-selectArm arms = do
-    probs <- evalArms arms
-    let index = snd . maximum $ zip probs [0..]
-        arm  = arms !! index 
-    return (arm, index)
-
-updateSelectedArm :: Arms -> Arm -> Int -> ObNoise -> Double -> Arms
-updateSelectedArm arms (mu, sigma) index ob reward = 
-    let armVariance = sigma**2
-        obVariance  = ob**2
-        mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
-        sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
-        arm'   = (mu', sigma')
-        arms' = map (\(i, a) -> if i == index
-                                then arm'  
-                                else a
-                 ) $ zip [0..] arms
-    in arms'
-    
-evalArms :: (RandomGen g) => Arms -> State g [Double]
-evalArms = mapM gaussian
-
-getReward :: (RandomGen g) => Arms -> Int -> State g Double
-getReward realArms index = gaussian (realArms !! index)
-
-gaussian :: (RandomGen g) => (Double, Double) -> State g Double
-gaussian params = state $ normal' params
-
--- pullArm ob (arms, cReward, selections) = 
---     selectArm arms >>= \index -> getReward index >>= \reward -> updateLts (
 
