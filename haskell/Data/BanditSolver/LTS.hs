@@ -9,7 +9,7 @@ import Data.Vector (fromList)
 
 -- Number of LTSs to take the average of
 numLtss :: Int
-numLtss = 500
+numLtss = 100
     
 instance Arms GaussianArms where
 
