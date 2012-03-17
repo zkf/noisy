@@ -17,8 +17,22 @@ instance Arms GaussianArms where
 
     getReward (GaussianArms arms) idx = gaussian (arms ! idx)
     
-    selectArm (GaussianArms arms) = V.maxIndex `fmap` V.mapM gaussian arms
-
+    selectArm (GaussianArms arms) = do
+        v <- gaussian (arms ! start)
+        go start v start
+      where start = V.length arms - 1
+            go :: Int -> Double -> Int -> State PureMT Int
+            go 0 mVal idx = do
+                nVal <- gaussian (arms ! 0)
+                if nVal > mVal 
+                    then return 0
+                    else return idx 
+            go n mVal idx = do
+                nVal <- gaussian (arms ! n)
+                if nVal > mVal 
+                    then go (n-1) nVal n
+                    else go (n-1) mVal idx
+                
     updateSelectedArm (GaussianArms arms) index ob reward = 
         let (mu, sigma) = arms ! index
             armVariance = sigma**2
