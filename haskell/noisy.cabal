@@ -53,7 +53,7 @@ Executable noisy
   ghc-options: -O -threaded -rtsopts -Wall
   -- Packages needed in order to build this package.
   Build-depends:   base, mtl, random-fu, rvar, mersenne-random-pure64,
-                    binary-strict, HsOpenSSL, vector, statistics
+                    binary-strict, HsOpenSSL, vector, statistics, parallel
   extra-libraries: crypto
   
   -- Modules not exported by this package.
