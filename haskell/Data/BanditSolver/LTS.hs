@@ -9,10 +9,6 @@ import Data.Vector ((!))
 import qualified Data.Vector as V
 import Data.Vector.Generic.Mutable (write)
 
--- Number of LTSs to take the average of
-numLtss :: Int
-numLtss = 100
-    
 instance Arms GaussianArms where
 
     getReward (GaussianArms arms) idx = gaussian (arms ! idx)
@@ -61,26 +57,25 @@ newtype GaussianArms = GaussianArms (V.Vector GaussianArm)
 
 type ObNoise = Double
 type CReward = Double
-type LTS = BanditSolver (GaussianArms, CReward)
-
 
 runAveragedLts :: (Arms a)  =>
        a    -- Real arms
        -> a -- beginning arm estimates
        -> Int       -- Rounds
+       -> Int -- Repetitions
        -> ObNoise
        -> PureMT
        -> (Double, Double) -- mean, stddev of cumulative rewards
-runAveragedLts arms armEstimates rounds obNoise gen = (mean, sqrt variance)
-    where (mean, variance) = runManyLtss arms rounds ltsProto obNoise gen
+runAveragedLts arms armEstimates rounds reps obNoise gen = (mean, sqrt variance)
+    where (mean, variance) = runManyLtss arms rounds reps ltsProto obNoise gen
           ltsProto = (BanditSolver (armEstimates, 0))
 
 runManyLtss :: (Arms a) =>  
-    a -> Int -> BanditSolver a -> ObNoise -> PureMT -> (Double, Double) 
-runManyLtss realArms rounds lts ob gen = avgReward
+    a -> Int -> Int -> BanditSolver a -> ObNoise -> PureMT -> (Double, Double) 
+runManyLtss realArms rounds reps lts ob gen = avgReward
     where avgReward = meanVariance . V.fromList . map getCReward $ results
           getCReward (BanditSolver (_, r)) = r
-          results = evalState (replicateM numLtss $ runLts realArms rounds ob lts) gen
+          results = evalState (replicateM reps $ runLts realArms rounds ob lts) gen
 
 runLts :: Arms a => a -> Int -> ObNoise -> BanditSolver a -> State PureMT (BanditSolver a)
 runLts realArms rounds ob startingLts =
