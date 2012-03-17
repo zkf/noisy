@@ -5,7 +5,9 @@ import Data.Random (normal)
 import System.Random.Mersenne.Pure64 (PureMT)
 import Data.RVar (sampleRVar)
 import Statistics.Sample (meanVariance)
-import Data.Vector (fromList)
+import Data.Vector ((!))
+import qualified Data.Vector as V
+import Data.Vector.Generic.Mutable (write)
 
 -- Number of LTSs to take the average of
 numLtss :: Int
@@ -13,24 +15,18 @@ numLtss = 100
     
 instance Arms GaussianArms where
 
-    getReward (GaussianArms as) idx = gaussian (as !! idx)
+    getReward (GaussianArms arms) idx = gaussian (arms ! idx)
     
-    selectArm (GaussianArms arms) = do 
-        probs <- mapM gaussian arms
-        let index = snd . maximum $ zip probs [0..]
-        return index
+    selectArm (GaussianArms arms) = V.maxIndex `fmap` V.mapM gaussian arms
 
     updateSelectedArm (GaussianArms arms) index ob reward = 
-        let (mu, sigma) = arms !! index
+        let (mu, sigma) = arms ! index
             armVariance = sigma**2
             obVariance  = ob**2
             mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
             sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
             arm'   = (mu', sigma')
-            arms' = map (\(i, a) -> if i == index
-                                    then arm'
-                                    else a
-                     ) $ zip [0..] arms
+            arms' =  V.modify (\v -> write v index arm') arms
         in (GaussianArms arms')
 
 gaussian :: GaussianArm -> State PureMT Double
@@ -46,7 +42,7 @@ class Arms as where
 newtype (Arms as) => BanditSolver as = BanditSolver (as, CReward)
     
 type GaussianArm = (Double, Double) -- Mean, standard deviation
-newtype GaussianArms = GaussianArms [GaussianArm]
+newtype GaussianArms = GaussianArms (V.Vector GaussianArm)
     
 
 type ObNoise = Double
@@ -68,7 +64,7 @@ runAveragedLts arms armEstimates rounds obNoise gen = (mean, sqrt variance)
 runManyLtss :: (Arms a) =>  
     a -> Int -> BanditSolver a -> ObNoise -> PureMT -> (Double, Double) 
 runManyLtss realArms rounds lts ob gen = avgReward
-    where avgReward = meanVariance . fromList . map getCReward $ results
+    where avgReward = meanVariance . V.fromList . map getCReward $ results
           getCReward (BanditSolver (_, r)) = r
           results = evalState (replicateM numLtss $ runLts realArms rounds ob lts) gen
 

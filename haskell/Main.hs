@@ -14,13 +14,14 @@ import System.IO
 import Data.BanditSolver.LTS
 -- import GHC.Conc (getNumCapabilities)
 import Control.Parallel.Strategies
+import qualified Data.Vector as V 
 
 main :: IO ()
 main = do
     hSetBuffering stdout NoBuffering
     [obStart, obEnd, obStep, roundsS] <- getArgs
-    let arms = [(5.0, 2.0)] ++ replicate 99 (3.0, 2.0) -- actual arms of bandit
-        armEstimates = replicate (length arms) (3.5, 3.0) -- starting estimate for arms
+    let arms = V.fromList $ [(5.0, 2.0)] ++ replicate 99 (3.0, 2.0) -- actual arms of bandit
+        armEstimates = V.fromList $ replicate (V.length arms) (3.5, 3.0) -- starting estimate for arms
         obNoiseRange = [read obStart, (read obStart) + (read obStep) .. read obEnd]
         rounds = read roundsS
     gens <- (map pureMT) `fmap` replicateM (length obNoiseRange) getOpenSSLRand
@@ -30,7 +31,7 @@ main = do
                    ++ show rounds ++ " rounds"
     mapM_ putStrLn resultsS
     
-runSimulation ::  [(Double, Double)] -> [(Double, Double)] ->
+runSimulation ::  V.Vector (Double, Double) -> V.Vector (Double, Double) ->
     Int -> Double -> PureMT -> (Double, Double, Double)
 runSimulation arms armEstimates rounds ob rndGen =
     let !(!mean, !variance) = runAveragedLts (GaussianArms arms) (GaussianArms armEstimates) rounds ob rndGen
