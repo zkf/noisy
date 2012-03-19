@@ -8,6 +8,8 @@ import Statistics.Sample (meanVariance)
 import Data.Vector ((!))
 import qualified Data.Vector as V
 import Data.Vector.Generic.Mutable (write)
+import Data.List.Split
+import Data.List
 
 instance Arms GaussianArms where
 
@@ -49,44 +51,51 @@ class Arms as where
     updateSelectedArm :: as -> Int -> ObNoise -> Double -> as
     getReward :: as -> Int -> State PureMT Double
     
-newtype (Arms as) => BanditSolver as = BanditSolver (as, CReward)
-    
-type GaussianArm = (Double, Double) -- Mean, standard deviation
-newtype GaussianArms = GaussianArms (V.Vector GaussianArm)
-    
+newtype GaussianArms = GaussianArms (V.Vector GaussianArm) deriving Show
+newtype BanditSolver as = BanditSolver as
 
+type GaussianArm = (Double, Double) -- Mean, standard deviation
 type ObNoise = Double
-type CReward = Double
+type Reward = Double
+
+getIntermediates :: [a] -> [a]
+getIntermediates = map last . splitPlaces ([10,40,50,400,500,1000,3000,5000,90000] :: [Int])
 
 runAveragedLts :: (Arms a)  =>
-       a    -- Real arms
-       -> a -- beginning arm estimates
-       -> Int       -- Rounds
-       -> Int -- Repetitions
+       a       -- Real arms
+       -> a    -- beginning arm estimates
+       -> Int  -- Rounds
+       -> Int  -- Repetitions
        -> ObNoise
        -> PureMT
-       -> (Double, Double) -- mean, stddev of cumulative rewards
-runAveragedLts arms armEstimates rounds reps obNoise gen = (mean, sqrt variance)
-    where (mean, variance) = runManyLtss arms rounds reps ltsProto obNoise gen
-          ltsProto = (BanditSolver (armEstimates, 0))
+       -> [(Int, ObNoise, Double, Double)] -- after n rounds, obNoise, mean, stddev
+runAveragedLts arms armEstimates rounds reps obNoise gen = meanStdDev
+    where meanStdDev = runManyLtss arms rounds reps ltsProto obNoise gen
+          ltsProto = BanditSolver armEstimates
 
 runManyLtss :: (Arms a) =>  
-    a -> Int -> Int -> BanditSolver a -> ObNoise -> PureMT -> (Double, Double) 
-runManyLtss realArms rounds reps lts ob gen = avgReward
-    where avgReward = meanVariance . V.fromList . map getCReward $ results
-          getCReward (BanditSolver (_, r)) = r
-          results = evalState (replicateM reps $ runLts realArms rounds ob lts) gen
+    a -> Int -> Int -> BanditSolver a -> ObNoise -> PureMT -> [(Int, ObNoise,  Double, Double)]
+runManyLtss realArms rounds reps lts ob gen = 
+          let results = evalState (replicateM reps $ runLts realArms rounds ob lts) gen :: [[(Int, Double)]]
+              ms (roundN, creward) = let (mean, variance) =  meanVariance . V.fromList $ creward
+                                    in  (roundN, ob, mean, sqrt variance)
+              tr = transpose results
+              ids = map (head . (map fst)) tr
+              vals = map ((map snd)) tr
+              r = zip ids vals
+          in map ms r
 
-runLts :: Arms a => a -> Int -> ObNoise -> BanditSolver a -> State PureMT (BanditSolver a)
-runLts realArms rounds ob startingLts =
-    execStateT (replicateM rounds (pullArm realArms ob)) startingLts
+runLts :: Arms a => a -> Int -> ObNoise -> BanditSolver a -> State PureMT [(Int, Double)]
+runLts realArms rounds ob startingLts = do
+    rewards <- evalStateT (replicateM rounds (pullArm realArms ob)) startingLts
+    return (getIntermediates $ zip [1..] (scanl1 (+) rewards))
             
-pullArm :: Arms a => a -> ObNoise -> StateT (BanditSolver a) (State PureMT) ()
+pullArm :: Arms a => a -> ObNoise -> StateT (BanditSolver a) (State PureMT) Reward
 pullArm realArms ob = do
-    BanditSolver (arms, cReward) <- get
+    (BanditSolver arms) <- get
     selected                     <- lift $ selectArm arms 
     reward                       <- lift $ getReward realArms selected
     let arms' = updateSelectedArm arms selected ob reward 
-    put (BanditSolver (arms', cReward + reward))
-
+    put (BanditSolver arms')
+    return reward
 
