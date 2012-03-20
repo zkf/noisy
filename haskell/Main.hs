@@ -1,4 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface, BangPatterns #-}
+{-# LANGUAGE BangPatterns #-}
 module Main where
 import Data.Word
 import Foreign.Storable (sizeOf)
@@ -35,8 +35,8 @@ runSimulation ::
     PureMT -> 
     [(Int, Double, Double, Double)] -- ob, roundN, mean ,stddev
 runSimulation arms armEstimates myRounds reps ob rndGen =
-    let !resultsList = runAveragedLts 
-           arms armEstimates myRounds reps ob rndGen
+    let !resultsList = runAveragedLTS 
+           arms armEstimates ob myRounds reps rndGen
     in resultsList
 
 -- Get a decent random seed
@@ -100,8 +100,8 @@ nothingArgs = Args {
          
         , numArms = Nothing
     }
-getParams :: Args -> 
-    (GaussianArms, GaussianArms, [Double], Int, Int)
+    
+getParams :: Args -> (GaussianArms, GaussianArms, [Double], Int, Int)
 getParams args = 
     let myBestArm = case bestArm args of
                          Just a  -> a
@@ -134,8 +134,8 @@ getParams args =
                         Just a  -> a
                         Nothing -> error "Missing -obStep"
         
-        myArmEstimates = GaussianArms . V.fromList $ replicate myNumArms myArmEstimate
-        myArms = GaussianArms . V.fromList $ myBestArm : myOtherArms
+        myArmEstimates = V.fromList $ replicate myNumArms myArmEstimate
+        myArms = V.fromList $ myBestArm : myOtherArms
         myObNoiseRange = [myObStart, (myObStart + myObStep) .. myObEnd]
     in (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions)
     
