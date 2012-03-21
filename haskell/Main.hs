@@ -9,6 +9,7 @@ import System.Random.Mersenne.Pure64
 import Control.Monad 
 import Data.List
 import Data.BanditSolver.LTS
+import Control.Parallel
 import Control.Parallel.Strategies
 import qualified Data.Vector as V 
 import Control.Applicative
@@ -37,7 +38,11 @@ runSimulation ::
 runSimulation arms armEstimates myRounds reps ob rndGen =
     let !resultsList = runAveragedLTS 
            arms armEstimates ob myRounds reps rndGen
-    in resultsList
+    in forceList resultsList `seq` resultsList
+
+forceList :: [a] -> ()
+forceList (x:xs) = x `pseq` forceList xs
+forceList _      = ()
 
 -- Get a decent random seed
 -- randBytes is not thread-safe!
@@ -116,10 +121,7 @@ getParams args =
                              Just a  -> a
                              Nothing -> error "Missing -armEstimate"
         myRounds =  case rounds args of
-                         Just a  -> if a > 100000 
-                                       then error $ "More than 100000 rounds"
-                                                    ++ "are not supported"
-                                       else a
+                         Just a  -> a
                          Nothing -> error "Missing -rounds"
         myRepetitions = case repetitions args of
                              Just a  -> a
