@@ -5,6 +5,7 @@ import math
 import random
 from scipy.stats import norm
 import matplotlib.pyplot as plt
+import numpy as np
 
 class LTS:
     def __init__(self,N, init_mu, init_sd, observation_noise):
@@ -57,24 +58,26 @@ Simple simulation
 arms = 2
 bandits = list()
 
-T = 100
+T = 10
 average_cumulative_reward = 0.0
 
 # bandits setup
 init_mean_for_bandits = 3.5
 init_sd_for_bandits = 3.0
-observation_noise = 0.1
-step = 0.1
+observation_noise = 0.01
+step = 0.01
 # amount of bandits
-N = 5 
+N = 2 
 # amounts of repetitions
-I = 100
+I = 10
 
 noise = 2.0
 y = list()
 x = list()
+variance = list()
+var = list()
 
-while (observation_noise < 10.0):
+while (observation_noise < 3.5):
     for i in range (I):
         del bandits[0:N]
 
@@ -102,17 +105,19 @@ while (observation_noise < 10.0):
                 cumulative_reward += reward
                 item.update(reward)
 
-        average_cumulative_reward += cumulative_reward
-    average_cumulative_reward /= I
+        var.append(cumulative_reward)
     # print( "Average cumulative reward: {:.2f} after {} rounds with {} bandits over {} repetitions using ob: {}".format(average_cumulative_reward, T, N, I, observation_noise))
     # print( "Average cumulative reward: {:.2f} at ob {}".format(average_cumulative_reward, observation_noise))
     print str(observation_noise)    
-    y.append(average_cumulative_reward)
+    y.append(np.mean(var))
     x.append(observation_noise)
+    variance.append(np.std(var))
+    del var[0:I]
+    average_cumulative_reward = 0
     observation_noise += step
-
     
-plt.plot(x, y)
+# plt.plot(x, y)
+plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
 filename = str(I) + "_" + str(T) + "_" + str(N)
 plt.savefig(filename)
 plt.show()
