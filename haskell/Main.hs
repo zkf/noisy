@@ -15,17 +15,49 @@ import qualified Data.Vector as V
 import Control.Applicative
 import Data.List.Split
 import Control.Monad.State
-
+import System.Directory
+import System.IO
+import Text.Printf
 
 main :: IO ()
 main = do
-    (myArmEstimates, myArms, 
-        myObNoiseRange, myRounds, myRepetitions) <- (getParams . parse) `fmap` getArgs
+    hSetBuffering stdout NoBuffering
+    (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
+        myBestArm, myBadArm, myNumArms, myObNoiseStart, myObNoiseEnd, 
+        myObNoiseStep) <- (getParams . parse) `fmap` getArgs
     gens <- (map pureMT) `fmap` replicateM (length myObNoiseRange) getOpenSSLRand
-    let results = parMap rseq id .
-            getZipList $ runSimulation myArms myArmEstimates myRounds myRepetitions <$> 
+    let results = parMap rseq id . getZipList $ 
+            runSimulation myArms myArmEstimates myRounds myRepetitions <$> 
                 ZipList myObNoiseRange <*> ZipList gens
-    mapM_ (mapM_ print) (transpose results)
+        resultsTr = transpose results -- rows: rounds, columns: ob
+    showProgress results
+    mapM_ (writeResults myRepetitions myNumArms myBestArm myBadArm 
+        myObNoiseStart myObNoiseEnd myObNoiseStep) resultsTr
+    
+writeResults :: Int -> Int -> GaussianArm -> GaussianArm ->
+    Double -> Double -> Double -> [(Int, Double, Double, Double)] -> IO ()
+writeResults reps myNumArms best bad obstart obend obstep rlist = do
+    let myRounds = head.fst'.unzip4 $ rlist
+        dir = (show myNumArms) ++ "-arms/" ++ show myRounds ++ "-rounds"
+        file = dir ++ "/" ++ "good-" ++ show best ++ 
+            "_bad-" ++ show (myNumArms - 1) ++ "-" ++ show bad ++
+            "_ob-" ++ show obstart ++ "-" ++ show obend ++ 
+            "-" ++ show obstep ++ "_reps-" ++ show reps ++ ".data"
+        fst' (x,_,_,_) = x
+        header = "# Rounds: " ++ show myRounds ++ ", repetitions: " ++ show reps
+            ++ "\n# Good arm ~ N" ++ show best ++ ", " ++ show (myNumArms - 1)
+            ++ " bad arm(s) ~ N" ++ show bad
+            ++ "\n# Observation noise range from " ++ show obstart ++ " to "
+            ++ show obend ++ " with step size " ++ show obstep
+            ++ "\n\n# Observation noise | mean | standard deviation\n\n"
+    createDirectoryIfMissing True dir
+    writeFile file header 
+    appendFile file $ unlines (map prettyPrint rlist)
+   
+prettyPrint :: (Int, Double, Double, Double) -> String
+prettyPrint (_, ob, mean, stddev) = 
+    unwords . map show $ [ob, mean, stddev]
+    
     
 runSimulation ::
     GaussianArms -> 
@@ -54,6 +86,26 @@ getOpenSSLRand = do
   where n = sizeOf (undefined :: Word64)
 
 
+putProgress :: String -> IO ()
+putProgress s = hPutStr stderr $ "\r" ++ s
+
+drawProgressBar :: Int -> Rational -> String
+drawProgressBar width progress = 
+    "[" ++ replicate bars '=' ++ replicate spaces ' ' ++ "]"
+    where bars   = round (progress * fromIntegral width)
+          spaces = width - bars
+          
+drawPercentage :: Rational -> String
+drawPercentage progress = printf "%3d%%" ( round (progress * 100) :: Int )
+
+showProgress :: [a] -> IO ()
+showProgress xs = do
+    let len = fromIntegral $ length xs
+    (flip evalStateT) 0 $ forM_ xs $ \e -> e `seq` do
+        progress <- (/len) `fmap` get
+        lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
+        modify (+1)
+        
 
 data Args = Args {
           obStart :: Maybe Double
@@ -63,9 +115,9 @@ data Args = Args {
         , rounds  :: Maybe Int
         , repetitions :: Maybe Int
          
-        , bestArm :: Maybe (Double, Double)
-        , badArm  :: Maybe  (Double, Double)
-        , armEstimate  :: Maybe  (Double, Double)
+        , bestArm :: Maybe GaussianArm
+        , badArm  :: Maybe GaussianArm
+        , armEstimate  :: Maybe GaussianArm
          
         , numArms  :: Maybe Int
     }
@@ -106,14 +158,16 @@ nothingArgs = Args {
         , numArms = Nothing
     }
     
-getParams :: Args -> (GaussianArms, GaussianArms, [Double], Int, Int)
+getParams :: Args -> (GaussianArms, GaussianArms, [Double], Int, Int,
+    GaussianArm, GaussianArm, Int, Double, Double, Double)
 getParams args = 
     let myBestArm = case bestArm args of
                          Just a  -> a
                          Nothing -> error "Missing -bestArm"
-        myOtherArms = case badArm args of
-                           Just a  -> replicate (myNumArms - 1) a
-                           Nothing -> error "Missing -badArm"
+        myBadArm  = case badArm args of
+                         Just a -> a
+                         Nothing -> error "Missing -badArm"
+        myOtherArms = replicate (myNumArms - 1) myBadArm
         myNumArms = case numArms args of 
                          Just a  -> a
                          Nothing -> error "Missing -numArms"
@@ -139,5 +193,6 @@ getParams args =
         myArmEstimates = V.fromList $ replicate myNumArms myArmEstimate
         myArms = V.fromList $ myBestArm : myOtherArms
         myObNoiseRange = [myObStart, (myObStart + myObStep) .. myObEnd]
-    in (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions)
+    in (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
+         myBestArm, myBadArm, myNumArms, myObStart, myObEnd, myObStep)
     
