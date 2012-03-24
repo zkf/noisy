@@ -1,11 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
-module Data.BanditSolver.LTS (runAveragedLTS, GaussianArms) where
+module Data.BanditSolver.LTS (runAveragedLTS, GaussianArms, GaussianArm) where
 import Control.Monad.Writer
 import Control.Monad.State
 import Data.Random (normal)
 import System.Random.Mersenne.Pure64 (PureMT)
 import Data.RVar (sampleRVar)
-import Statistics.Sample (meanVariance)
+import Statistics.Sample (meanVarianceUnb)
 import Data.Vector.Generic.Mutable (write)
 import Control.Parallel (pseq)
 import Data.Vector ((!))
@@ -33,7 +33,7 @@ runAll realArms ob rounds startSolvers = run 0 startSolvers
             | otherwise = do
                 solvers' <- lift $ oneRound realArms ob solvers
                 let (_, crewards) = unzip solvers'
-                    (mean, variance) = meanVariance $ V.fromList crewards
+                    (mean, variance) = meanVarianceUnb $ V.fromList crewards
                 tell [(n, ob, mean, sqrt variance)]
                 if n == rounds
                     then return ()
