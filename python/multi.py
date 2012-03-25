@@ -7,6 +7,8 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import Pool
+import time
+import sys
 
 class LTS:
     def __init__(self,N, init_mu, init_sd, observation_noise):
@@ -46,47 +48,36 @@ class LTS:
         sd  = math.sqrt(var)
         
         self._arms[self._last_arm_pulled] = (mu, sd)
-        
-    def print_arm(self):
-        for item in self._arms:
-            print "mean: " + str(item[0])
-            print "variance: " + str(item[1])
 
         
 """
 Simple simulation
 """
 
-# environment setup
-arms = 2
-bandits = list()
+def calc(obs):
 
-T = 100
-average_cumulative_reward = 0.0
+    I = 100
+    N = 2
+    T = 100
+    
+    # environment setup
+    arms = 2
+    bandits = list()
+    average_cumulative_reward = 0.0
 
-# bandits setup
-init_mean_for_bandits = 3.5
-init_sd_for_bandits = 3.0
-observation_noise = 0.1
-step = 0.1
-# amount of bandits
-N = 2 
-# amounts of repetitions
-I = 10
-
-noise = 2.0
-y = list()
-x = list()
-variance = list()
-var = list()
-
-while (observation_noise < 3.5):
+    # bandits setup
+    init_mean_for_bandits = 3.5
+    init_sd_for_bandits = 3.0
+    
+    noise = 2.0
+    var = list()
+    
     for i in range (I):
         del bandits[0:N]
 
         # creates new bandits for each iteration
         for n in range(N):
-            bandits.append(LTS( arms, init_mean_for_bandits, init_sd_for_bandits, observation_noise ))
+            bandits.append(LTS( arms, init_mean_for_bandits, init_sd_for_bandits, obs ))
         cumulative_reward = 0.0
         
         for t in range (T):
@@ -94,34 +85,48 @@ while (observation_noise < 3.5):
             no = 0.0
 
             # gather choices
-            for item in bandits:
-                selected_arm = item.select()
+            for bandit in bandits:
+                selected_arm = bandit.select()
                 if (selected_arm == 0): yes += 1
                 else: no += 1 
             l = yes / (yes + no)
 
             # update each bandits last selected arm with a reward
-            for item in bandits:
+            for bandit in bandits:
 
                 # keep a watchful eye on sigma, its a slippery one
                 reward = norm.pdf(l, 0.0, 0.1) + random.gauss(0.0, noise)
                 cumulative_reward += reward
-                item.update(reward)
+                bandit.update(reward)
 
         var.append(cumulative_reward)
-    print str(observation_noise)    
-    y.append(np.mean(var))
-    x.append(observation_noise)
-    variance.append(np.std(var))
-    del var[0:I]
+    y = np.mean(var)
+    variance= np.std(var)
     average_cumulative_reward = 0
-    observation_noise += step
+    return obs, y, variance
 
-# plt.plot(x, y)
-plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
-filename = str(I) + "_" + str(T) + "_" + str(N)
-plt.savefig(filename)
-plt.show()
+if __name__ == '__main__':
+    start_time = time.time()
+    pool = Pool(processes=8)
+    observation_noises = list()
+    step = 0.1
+    obs_start = 0.1
+    obs_max = 4
+   
+    while (obs_start < obs_max):
+        observation_noises.append(obs_start)
+        obs_start += step
+    
+    # plt.plot(x, y)
+    results = pool.map_async(calc, observation_noises)
+    x, y, variance = zip(*results.get(None))
+    
+    plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
+    # filename = str(I) + "_" + str(T) + "_" + str(N)
+    filename = "bla"
+    plt.savefig(filename)
+    print time.time() - start_time, "seconds"
+    plt.show()
 
   
     
