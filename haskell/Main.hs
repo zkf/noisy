@@ -105,7 +105,7 @@ showProgress xs = do
         progress <- (/len) `fmap` get
         lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
         modify (+1)
-        
+    hPutStrLn stderr " Done." 
 
 data Args = Args {
           obStart :: Maybe Double
