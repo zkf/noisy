@@ -13,53 +13,58 @@ import qualified Data.Vector as V
 
 
 type GaussianArm = (Double, Double) -- Mean, standard deviation
-type GaussianArms = (V.Vector GaussianArm)
-type BanditSolver = (GaussianArms, Double)
+type GaussianArms = V.Vector GaussianArm
+data Solver = Solver !(GaussianArms, Double)
+
 
 runAveragedLTS :: GaussianArms -> GaussianArms -> Double -> Int -> Int -> PureMT
     -> [(Int, Double, Double, Double)] -- Checkpoint, ob, mean and stddev of cumulative reward
 runAveragedLTS realArms startEstimates ob rounds repetitions randomgen = 
-    snd $ evalState (runWriterT $ runAll realArms ob rounds solvers) randomgen
-  where solvers = replicate repetitions (startEstimates, 0)
+    let result = snd $ evalState (runWriterT $ runAll realArms ob rounds solvers) randomgen
+    in force result `seq` result
+  where solvers = replicate repetitions (Solver (startEstimates, 0))
+        force ((!a,!b,!c,!d):xs) = (a,b,c,d) `pseq` force xs
+        force []                 = ()
 
 
-runAll :: GaussianArms -> Double -> Int -> [BanditSolver] ->
+runAll :: GaussianArms -> Double -> Int -> [Solver] ->
     WriterT [(Int, Double, Double, Double)] (State PureMT) ()
 runAll realArms ob rounds startSolvers = run 0 startSolvers
-  where run !n solvers
+  where run n solvers
             | n `notElem` checkpoints = do
                 solvers' <- lift $ oneRound realArms ob solvers
-                forceList solvers' `seq` run (n+1) solvers'
+                force solvers' `seq` run (n+1) solvers'
             | otherwise = do
                 solvers' <- lift $ oneRound realArms ob solvers
-                let (_, crewards) = unzip solvers'
+                let crewards = force solvers' `seq` map getCReward solvers'
                     (mean, variance) = meanVarianceUnb $ V.fromList crewards
                 tell [(n, ob, mean, sqrt variance)]
                 if n == rounds
                     then return ()
-                    else forceList solvers' `seq` run (n+1) solvers'
+                    else run (n + 1) solvers'
+        getCReward (Solver (_, r)) = r
         checkpoints = rounds : [y * 10^x | y <- [1, 5],
               x <- [1 :: Int .. floor (logBase 10 $
                                          (fromIntegral rounds)/5.0 :: Double)]]
-
-forceList :: [a] -> ()
-forceList (x:xs) = x `pseq` forceList xs
-forceList _      = ()
+        force (x:xs) = x `pseq` force xs
+        force []     = ()
              
 
-oneRound :: GaussianArms -> Double -> [BanditSolver] -> State PureMT [BanditSolver]
+oneRound :: GaussianArms -> Double -> [Solver] -> State PureMT [Solver]
 oneRound realArms ob solvers = mapM (oneLTS realArms ob) solvers
 
-oneLTS :: GaussianArms -> Double -> BanditSolver -> State PureMT BanditSolver
-oneLTS realArms ob solver = 
-    selectArm solver >>= \selected -> 
-        getReward realArms selected >>= return . update ob solver selected
+oneLTS :: GaussianArms -> Double -> Solver -> State PureMT Solver
+oneLTS realArms ob solver = do
+    selected <- selectArm solver
+    reward   <- getReward realArms selected
+    let !solver' = update ob solver selected reward
+    return solver'
 
 getReward :: GaussianArms -> Int -> State PureMT Double
 getReward arms idx = gaussian (arms ! idx)
 
-selectArm :: BanditSolver -> State PureMT Int
-selectArm (arms, _) = do
+selectArm :: Solver -> State PureMT Int
+selectArm (Solver (arms, _)) = do
     v <- gaussian (arms ! start)
     go start v start
   where start = V.length arms - 1
@@ -75,17 +80,16 @@ selectArm (arms, _) = do
                 then go (n-1) nVal n
                 else go (n-1) mVal idx
             
-update :: Double -> BanditSolver -> Int -> Double -> BanditSolver
-update ob (arms, creward) index reward = 
+update :: Double -> Solver -> Int -> Double -> Solver
+update ob (Solver (arms, creward)) !index !reward = 
     let (mu, sigma) = arms ! index
         armVariance = sigma**2
         obVariance  = ob**2
-        mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
-        sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
-        arm'   = (mu', sigma')
-        arms' =  V.modify (\v -> write v index arm') arms
+        !mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
+        !sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
+        !arms' =  V.modify (\v -> write v index (mu', sigma')) arms
         !creward' = creward + reward
-    in (arms', creward')
+    in (Solver (arms', creward'))
 
 gaussian :: GaussianArm -> State PureMT Double
 gaussian (mu, sigma) =

@@ -51,7 +51,7 @@ writeResults reps myNumArms best bad obstart obend obstep rlist = do
             ++ show obend ++ " with step size " ++ show obstep
             ++ "\n\n# Observation noise | mean | standard deviation\n\n"
     createDirectoryIfMissing True dir
-    writeFile file header 
+    writeFile file header
     appendFile file $ unlines (map prettyPrint rlist)
    
 prettyPrint :: (Int, Double, Double, Double) -> String
@@ -68,13 +68,13 @@ runSimulation ::
     PureMT -> 
     [(Int, Double, Double, Double)] -- ob, roundN, mean ,stddev
 runSimulation arms armEstimates myRounds reps ob rndGen =
-    let !resultsList = runAveragedLTS 
+    let resultsList = runAveragedLTS 
            arms armEstimates ob myRounds reps rndGen
-    in forceList resultsList `seq` resultsList
+    in force resultsList `seq` resultsList
 
-forceList :: [a] -> ()
-forceList (x:xs) = x `pseq` forceList xs
-forceList _      = ()
+force :: [a] -> ()
+force (x:xs) = x `pseq` force xs
+force []      = ()
 
 -- Get a decent random seed
 -- randBytes is not thread-safe!
