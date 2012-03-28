@@ -9,6 +9,7 @@ import System.Random.Mersenne.Pure64
 import Control.Monad 
 import Data.List
 import Data.BanditSolver.LTS
+import Control.Concurrent (getNumCapabilities)
 import Control.Parallel
 import Control.Parallel.Strategies
 import qualified Data.Vector as V 
@@ -21,18 +22,19 @@ import Text.Printf
 
 main :: IO ()
 main = do
-    hSetBuffering stdout NoBuffering
+    cores <- getNumCapabilities
     (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
         myBestArm, myBadArm, myNumArms, myObNoiseStart, myObNoiseEnd, 
         myObNoiseStep) <- (getParams . parse) `fmap` getArgs
     gens <- (map pureMT) `fmap` replicateM (length myObNoiseRange) getOpenSSLRand
-    let results = parMap rseq id . getZipList $ 
+    let results = parMap' cores rseq id . getZipList $ 
             runSimulation myArms myArmEstimates myRounds myRepetitions <$> 
                 ZipList myObNoiseRange <*> ZipList gens
         resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
     mapM_ (writeResults myRepetitions myNumArms myBestArm myBadArm 
         myObNoiseStart myObNoiseEnd myObNoiseStep) resultsTr
+  where parMap' n s f = withStrategy (parBuffer n s) . map f
     
 writeResults :: Int -> Int -> GaussianArm -> GaussianArm ->
     Double -> Double -> Double -> [(Int, Double, Double, Double)] -> IO ()
