@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Main where
 import Data.Word
 import Foreign.Storable (sizeOf)
@@ -19,6 +18,7 @@ import Control.Monad.State
 import System.Directory
 import System.IO
 import Text.Printf
+import Data.Maybe
 
 main :: IO ()
 main = do
@@ -26,7 +26,7 @@ main = do
     (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
         myBestArm, myBadArm, myNumArms, myObNoiseStart, myObNoiseEnd, 
         myObNoiseStep) <- (getParams . parse) `fmap` getArgs
-    gens <- (map pureMT) `fmap` replicateM (length myObNoiseRange) getOpenSSLRand
+    gens <- map pureMT `fmap` replicateM (length myObNoiseRange) getOpenSSLRand
     let results = parMap' cores rseq id . getZipList $ 
             runSimulation myArms myArmEstimates myRounds myRepetitions <$> 
                 ZipList myObNoiseRange <*> ZipList gens
@@ -40,7 +40,7 @@ writeResults :: Int -> Int -> GaussianArm -> GaussianArm ->
     Double -> Double -> Double -> [(Int, Double, Double, Double)] -> IO ()
 writeResults reps myNumArms best bad obstart obend obstep rlist = do
     let myRounds = head.fst'.unzip4 $ rlist
-        dir = (show myNumArms) ++ "-arms/" ++ show myRounds ++ "-rounds"
+        dir = show myNumArms ++ "-arms/" ++ show myRounds ++ "-rounds"
         file = dir ++ "/" ++ "good-" ++ show best ++ 
             "_bad-" ++ show (myNumArms - 1) ++ "-" ++ show bad ++
             "_ob-" ++ show obstart ++ "-" ++ show obend ++ 
@@ -89,7 +89,7 @@ getOpenSSLRand = do
 
 
 putProgress :: String -> IO ()
-putProgress s = hPutStr stderr $ "\r" ++ s
+putProgress s = hPutStr stderr $ '\r' : s
 
 drawProgressBar :: Int -> Rational -> String
 drawProgressBar width progress = 
@@ -103,7 +103,7 @@ drawPercentage progress = printf "%3d%%" ( round (progress * 100) :: Int )
 showProgress :: [a] -> IO ()
 showProgress xs = do
     let len = fromIntegral $ length xs
-    (flip evalStateT) 0 $ forM_ xs $ \e -> e `seq` do
+    flip evalStateT 0 $ forM_ xs $ \e -> e `seq` do
         progress <- (/len) `fmap` get
         lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
         modify (+1)
@@ -125,7 +125,7 @@ data Args = Args {
     }
 
 parse :: [String] -> Args 
-parse s = (flip execState) nothingArgs $ do
+parse s = flip execState nothingArgs $ do
     let args = map words $ wordsBy (=='-') $ unwords s
     mapM_ go args
   where
@@ -163,35 +163,18 @@ nothingArgs = Args {
 getParams :: Args -> (GaussianArms, GaussianArms, [Double], Int, Int,
     GaussianArm, GaussianArm, Int, Double, Double, Double)
 getParams args = 
-    let myBestArm = case bestArm args of
-                         Just a  -> a
-                         Nothing -> error "Missing -bestArm"
-        myBadArm  = case badArm args of
-                         Just a -> a
-                         Nothing -> error "Missing -badArm"
-        myOtherArms = replicate (myNumArms - 1) myBadArm
-        myNumArms = case numArms args of 
-                         Just a  -> a
-                         Nothing -> error "Missing -numArms"
-        myArmEstimate = case armEstimate args of
-                             Just a  -> a
-                             Nothing -> error "Missing -armEstimate"
-        myRounds =  case rounds args of
-                         Just a  -> a
-                         Nothing -> error "Missing -rounds"
-        myRepetitions = case repetitions args of
-                             Just a  -> a
-                             Nothing -> error "Missing -repetitions"
-        myObStart = case obStart args of
-                         Just  a -> a
-                         Nothing -> error "Missing -obStart"
-        myObEnd = case obEnd args of
-                       Just  a -> a
-                       Nothing -> error "Missing -obEnd"
-        myObStep = case obStep args of
-                        Just a  -> a
-                        Nothing -> error "Missing -obStep"
+    
+    let myBestArm     = fromMaybe (error "Missing -bestArm") (bestArm args)
+        myBadArm      = fromMaybe (error "Missing -badArm") (badArm args)
+        myNumArms     = fromMaybe (error "Missing -numArms") (numArms args)
+        myArmEstimate = fromMaybe (error "Missing -armEstimate") (armEstimate args)
+        myRounds      = fromMaybe (error "Missing -rounds") (rounds args)
+        myRepetitions = fromMaybe (error "Missing -repetitions") (repetitions args)
+        myObStart     = fromMaybe (error "Missing -obStart") (obStart args)
+        myObEnd       = fromMaybe (error "Missing -obEnd") (obEnd args)
+        myObStep      = fromMaybe (error "Missing -obStep") (obStep args)
         
+        myOtherArms = replicate (myNumArms - 1) myBadArm
         myArmEstimates = V.fromList $ replicate myNumArms myArmEstimate
         myArms = V.fromList $ myBestArm : myOtherArms
         myObNoiseRange = [myObStart, (myObStart + myObStep) .. myObEnd]
