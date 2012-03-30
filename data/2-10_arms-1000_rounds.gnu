@@ -1,4 +1,6 @@
 reset
+rounds = 1000
+reps   = 1000
 set xtics 0.2
 set ytics 0.005
 set yrange [0.9:1]
@@ -9,9 +11,6 @@ set style data lines
 set ylabel "Normalized average cumulative reward"
 set xlabel "Observation noise"
 set title "" . rounds . " rounds with " . reps . " repetitions"
-
-rounds = 1000
-reps   = 1000
 
 filename(n) = \
     sprintf("%d-arms/%d-rounds/good-(5.0,2.0)_bad-%d-(3.0,2.0)_ob-0.1-10.0-0.1_reps-%d.data", \
