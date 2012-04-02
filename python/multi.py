@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 import math
 import random
 from scipy.stats import norm
@@ -9,6 +8,7 @@ import numpy as np
 from multiprocessing import Pool
 import time
 import sys
+import json
 
 class LTS:
     def __init__(self,N, init_mu, init_sd, observation_noise):
@@ -54,11 +54,12 @@ class LTS:
 Simple simulation
 """
 
+# Watch out for allocating inside loops, .append and such
 def calc(obs):
 
-    I = 100
+    I = 10
     N = 2
-    T = 100
+    T = 10
     
     # environment setup
     arms = 2
@@ -68,8 +69,9 @@ def calc(obs):
     # bandits setup
     init_mean_for_bandits = 3.5
     init_sd_for_bandits = 3.0
-    
-    noise = 2.0
+
+    # From 2.0 to 0.2
+    noise = 0.2
     var = list()
     
     for i in range (I):
@@ -94,7 +96,7 @@ def calc(obs):
             # update each bandits last selected arm with a reward
             for bandit in bandits:
 
-                # keep a watchful eye on sigma, its a slippery one
+                # keep a watchful eye on sigma, its a slippery one. Try 30/70 and 20/80 yes/no
                 reward = norm.pdf(l, 0.0, 0.1) + random.gauss(0.0, noise)
                 cumulative_reward += reward
                 bandit.update(reward)
@@ -111,7 +113,7 @@ if __name__ == '__main__':
     observation_noises = list()
     step = 0.1
     obs_start = 0.1
-    obs_max = 4
+    obs_max = 10
    
     while (obs_start < obs_max):
         observation_noises.append(obs_start)
@@ -123,8 +125,12 @@ if __name__ == '__main__':
     
     plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
     # filename = str(I) + "_" + str(T) + "_" + str(N)
-    filename = "bla"
+    filename = "10_10_10"
     plt.savefig(filename)
+    FILE = open(filename, "w")
+    FILE.write("#Observation noise, mean, std-dev of cumulative reward over X rounds")
+    json.dump(zip(x, y, variance), FILE, indent = 4)
+    FILE.close()
     print time.time() - start_time, "seconds"
     plt.show()
 
