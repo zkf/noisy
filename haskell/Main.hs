@@ -43,14 +43,14 @@ writeResults reps myNumArms best bad obstart obend obstep rlist = do
         dir = show myNumArms ++ "-arms/" ++ show myRounds ++ "-rounds"
         file = dir ++ "/" ++ "good-" ++ show best ++ 
             "_bad-" ++ show (myNumArms - 1) ++ "-" ++ show bad ++
-            "_ob-" ++ show obstart ++ "-" ++ show obend ++ 
-            "-" ++ show obstep ++ "_reps-" ++ show reps ++ ".data"
+            "_ob-" ++ showDouble obstart ++ "-" ++ showDouble obend ++ 
+            "-" ++ showDouble obstep ++ "_reps-" ++ show reps ++ ".data"
         fst' (x,_,_,_) = x
         header = "# Rounds: " ++ show myRounds ++ ", repetitions: " ++ show reps
             ++ "\n# Good arm ~ N" ++ show best ++ ", " ++ show (myNumArms - 1)
             ++ " bad arm(s) ~ N" ++ show bad
-            ++ "\n# Observation noise range from " ++ show obstart ++ " to "
-            ++ show obend ++ " with step size " ++ show obstep
+            ++ "\n# Observation noise range from " ++ showDouble obstart ++ " to "
+            ++ showDouble obend ++ " with step size " ++ showDouble obstep
             ++ "\n\n# Observation noise | mean | standard deviation\n\n"
     createDirectoryIfMissing True dir
     writeFile file header
@@ -58,8 +58,10 @@ writeResults reps myNumArms best bad obstart obend obstep rlist = do
    
 prettyPrint :: (Int, Double, Double, Double) -> String
 prettyPrint (_, ob, mean, stddev) = 
-    unwords . map show $ [ob, mean, stddev]
+    unwords . map showDouble $ [ob, mean, stddev]
     
+showDouble :: Double -> String
+showDouble = printf "%f"
     
 runSimulation ::
     GaussianArms -> 
