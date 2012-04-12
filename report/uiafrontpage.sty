@@ -1,9 +1,10 @@
 %%
 %% Style for redefining the \maketitle command to fit the official
-%% template for a Master Thesis report at Agder University College.
+%% template for a Master Thesis report at the University of Agder
 %%
 %%  Copyright 2003 Bent André Solheim
 %%	Modified 2006 Aleksander M. Stensby
+%%	Modified 2012 Bjørnar Hansen
 %%
 %%  This program is provided under the terms of the
 %%  LaTeX Project Public License distributed from CTAN
@@ -16,19 +17,21 @@
 %% In your .tex-file, use \titlelogo{path/to/logo}. If this macro is not
 %% used, no logo will be used.
 %%
-%% Institution, location and thesis type are also possible to define
-%% using the \institution{xxx}, \location{xxx}, thesisin{xxx} macros.
-%% They default to The University of Agder, Grimstad, and Information
-%% and Communication Technology.
+%% Institution, location, report type and thesis area are also possible to define
+%% using macros [defaults]: 
+%%     \institution{xxx} [University of Agder]
+%%     \location{xxx}    [Grimstad]
+%%     \reporttype{xxx}  [Master Thesis]
+%%     \thesisin{xxx}    [Information and Communication Technology]
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{hiafrontpage}[]
+\ProvidesPackage{uiafrontpage}[]
 
 
 \newif\iflogopathdefined
 \logopathdefinedfalse
 \providecommand{\titlelogo}[1]{}
-\renewcommand{\titlelogo}[1]{
+\renewcommand{\titlelogo}[1]{%
     \def\@logopath{#1}
     \logopathdefinedtrue
 }
@@ -42,6 +45,11 @@
 \def\@location{Grimstad}
 %\def\@location{Ottawa, Canada}
 
+\providecommand{\reporttype}[1]{}
+\renewcommand{\reporttype}[1]{\def\@reporttype{#1}}
+\def\@reporttype{Master Thesis}
+
+
 \providecommand{\thesisin}[1]{}
 \renewcommand{\thesisin}[1]{\def\@thesisin{#1}}
 \def\@thesisin{Information and Communication Technology}
@@ -54,7 +62,7 @@
 \renewcommand{\and}{\hspace{0.3in}}
 
 \providecommand{\maketitle}{}
-\renewcommand{\maketitle}{
+\renewcommand{\maketitle}{%
     \begin{titlepage}
     \begin{center}
 
@@ -79,8 +87,8 @@
     \emph{\@author}
 
 		\normalsize
-    \vspace{0.5in}                                  %%enable these when main report is written
-    Master Thesis in\\
+    \vspace{0.5in}        % Enable these when main report is written
+    \@reporttype{} in\\
     \textbf{\@thesisin}
 
     \vspace{0.2in}
