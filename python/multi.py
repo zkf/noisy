@@ -3,12 +3,12 @@
 import math
 import random
 from scipy.stats import norm
-import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import Pool
 import time
 import sys
 import json
+
 
 class LTS:
     def __init__(self,N, init_mu, init_sd, observation_noise):
@@ -55,11 +55,9 @@ Simple simulation
 """
 
 # Watch out for allocating inside loops, .append and such
-def calc(obs):
+def calc(obs):   
 
-    I = 10
-    N = 2
-    T = 10
+    
     
     # environment setup
     arms = 2
@@ -107,32 +105,34 @@ def calc(obs):
     average_cumulative_reward = 0
     return obs, y, variance
 
-if __name__ == '__main__':
+# Iterations, bandits, rounds
+I = 10
+N = 5
+T = 10
+
+if __name__ == '__main__':    
     start_time = time.time()
     pool = Pool(processes=8)
     observation_noises = list()
     step = 0.1
     obs_start = 0.1
-    obs_max = 10
+    obs_max = 5
    
     while (obs_start < obs_max):
         observation_noises.append(obs_start)
         obs_start += step
     
-    # plt.plot(x, y)
     results = pool.map_async(calc, observation_noises)
     x, y, variance = zip(*results.get(None))
     
-    plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
-    # filename = str(I) + "_" + str(T) + "_" + str(N)
-    filename = "10_10_10"
-    plt.savefig(filename)
+    filename = str(I) + "_" + str(T) + "_" + str(N) + ".data"
     FILE = open(filename, "w")
-    FILE.write("#Observation noise, mean, std-dev of cumulative reward over X rounds")
-    json.dump(zip(x, y, variance), FILE, indent = 4)
+    FILE.write("#Observation noise, mean, std-dev of cumulative reward over X rounds" + "\n")
+    output = zip(x, y, variance)
+    FILE.write('\n'.join('%s %s %s' % z for z in output))
     FILE.close()
     print time.time() - start_time, "seconds"
-    plt.show()
+
 
   
     
