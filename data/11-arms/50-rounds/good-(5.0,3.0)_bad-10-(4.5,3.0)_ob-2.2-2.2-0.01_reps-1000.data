@@ -1,0 +1,7 @@
+# Rounds: 50, repetitions: 1000
+# Good arm ~ N(5.0,3.0), 10 bad arm(s) ~ N(4.5,3.0)
+# Observation noise range from 2.2 to 2.2 with step size 0.01
+
+# Observation noise | mean | standard deviation
+
+2.2 231.88458694754303 20.979367871695977
