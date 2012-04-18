@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-
+import numpypy
 import math
 import random
-from scipy.stats import norm
-import matplotlib.pyplot as plt
+#from scipy.stats import norm
+#import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import Pool
 
@@ -80,6 +80,9 @@ x = list()
 variance = list()
 var = list()
 
+def normal(x,u,o):	
+	return (1.0/(math.sqrt(2.0*math.pi)*o))*(math.e)**(-((x-u)**2.0)/(2.0*o**2.0))
+
 while (observation_noise < 3.5):
     for i in range (I):
         del bandits[0:N]
@@ -104,7 +107,8 @@ while (observation_noise < 3.5):
             for item in bandits:
 
                 # keep a watchful eye on sigma, its a slippery one
-                reward = norm.pdf(l, 0.0, 0.1) + random.gauss(0.0, noise)
+                #reward = norm.pdf(l, 0.0, 0.1) + random.gauss(0.0, noise)
+		reward = normal(l, 0.0, 0.1) + random.gauss(0.0, noise)
                 cumulative_reward += reward
                 item.update(reward)
 
@@ -118,10 +122,11 @@ while (observation_noise < 3.5):
     observation_noise += step
 
 # plt.plot(x, y)
-plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
+#plt.errorbar(x, y, yerr=variance, fmt='ro', linestyle='-')
 filename = str(I) + "_" + str(T) + "_" + str(N)
-plt.savefig(filename)
-plt.show()
+#plt.savefig(filename)
+#plt.show()
+open(filename).write('\n'.join('%s %s %s' % z for z in variance))
 
   
     
