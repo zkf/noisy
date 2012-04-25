@@ -64,22 +64,9 @@ getReward :: GaussianArms -> Int -> State PureMT Double
 getReward arms idx = gaussian (arms ! idx)
 
 selectArm :: Solver -> State PureMT Int
-selectArm (Solver (arms, _)) = do
-    v <- gaussian (arms ! start)
-    go start v start
-  where start = V.length arms - 1
-        go :: Int -> Double -> Int -> State PureMT Int
-        go 0 mVal idx = do
-            nVal <- gaussian (arms ! 0)
-            if nVal > mVal 
-                then return 0
-                else return idx 
-        go n mVal idx = do
-            nVal <- gaussian (arms ! n)
-            if nVal > mVal 
-                then go (n-1) nVal n
-                else go (n-1) mVal idx
-            
+selectArm (Solver (arms, _)) =
+    V.maxIndex `fmap` V.mapM gaussian arms 
+
 update :: Double -> Solver -> Int -> Double -> Solver
 update ob (Solver (arms, creward)) !index !reward = 
     let (mu, sigma) = arms ! index
