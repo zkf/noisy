@@ -5,26 +5,48 @@ import System.Random.Mersenne.Pure64
 import Control.Monad.State
 import Data.List (sort)
 import qualified Data.Vector as V
+import Statistics.Sample (meanVarianceUnb)
     
 -- testing
-realArms = V.fromList $ [(5.0, 2.0)] ++ replicate 9 (3.0, 2.0)
-startEstimates = V.fromList $ replicate (V.length realArms) (2, 2)
+muBestArm = 5.0
+sigmaBestArm = 2.0
+numArms = 2
+muStartEstimate = muBestArm * 2.0
+sigmaStartEstimate = muStartEstimate / 20.0
+realArms = V.fromList $ (muBestArm, sigmaBestArm) : replicate (numArms-1) (4.0, 4.0)
+startEstimates = V.fromList $ replicate numArms (muStartEstimate, sigmaStartEstimate)
 rounds = 1000
-env = Env (realArms, startEstimates, rounds)
+obnoises = [0.01,0.02..1.0]
+numActions = length obnoises
+env = Env (realArms, startEstimates, rounds, obnoises)
 
-startEstimatesOB = V.fromList $ replicate 10 (4000, 200) -- test ob from 0 to 9 
-test g = 
-    let (LTS (arms, _, _)) = evalState (runOneLTS env startEstimatesOB 800 1000) g
-        sortedArms = map (\((m, s), rank) -> (rank, m, s)) . take 4 . reverse . sort $ zip (V.toList arms) [0..]
-    in sortedArms
+instance Environment Env where
+    getReward (Env (realArms, startEstimates, rounds, actions)) index = do
+        let ob = actions !! index
+        runAvg realArms 100 rounds (makeLTS startEstimates ob)
+
+obEstMu = fromIntegral rounds * muBestArm * 2
+obEstSigma = obEstMu / 20.0
+startEstimateOB = (obEstMu, obEstSigma)
+startEstimatesOB = V.fromList $ replicate numActions startEstimateOB -- test ob from 0 to 9 
+
+-- findAvgOB :: PureMT -> (Double, Double)
+-- findAvgOB g =
+--     let obs = evalState (replicateM 10 findOB) g
+--         (mean, var) = meanVarianceUnb $ V.fromList obs
+--     in (mean, sqrt var)
+
+--findOB :: State PureMT Double
+findOB = do
+    (LTS (arms, _, _)) <- runOne env 10000 (makeLTS startEstimatesOB 100)
+    let bestOB = map (\((m, s), action) -> (action, m, s))
+                     . take 10 . reverse
+                     . sort $ zip (V.toList arms) obnoises
+    return bestOB
 
 newtype Env = Env (GaussianArms -- real arms
                   ,GaussianArms -- starting estimates
                   ,Int          -- number of rounds
-                  )
+                  ,[Double] )   -- obnoises to test
 
-instance Environment Env where
-    getReward (Env (realArms, startEstimates, rounds)) index =
-        let ob = if index == 0 then 0.1 else fromIntegral index
-        in runOneLTS realArms startEstimates ob rounds >>= \(LTS (_, reward, _)) -> return reward
 
