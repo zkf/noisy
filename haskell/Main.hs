@@ -24,7 +24,7 @@ main :: IO ()
 main = do
     cores <- getNumCapabilities
     (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
-        myBestArm, myBadArm, myNumArms, myObNoiseStart, myObNoiseEnd, 
+        myBestArm, myBadArm, myEstimate, myNumArms, myObNoiseStart, myObNoiseEnd, 
         myObNoiseStep) <- (getParams . parse) `fmap` getArgs
     gens <- map pureMT `fmap` replicateM (length myObNoiseRange) getOpenSSLRand
     let results = parMap' cores rseq id . getZipList $ 
@@ -32,17 +32,18 @@ main = do
                 ZipList myObNoiseRange <*> ZipList gens
         resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
-    mapM_ (writeResults myRepetitions myNumArms myBestArm myBadArm 
+    mapM_ (writeResults myRepetitions myNumArms myBestArm myBadArm myEstimate
         myObNoiseStart myObNoiseEnd myObNoiseStep) resultsTr
   where parMap' n s f = withStrategy (parBuffer n s) . map f
     
-writeResults :: Int -> Int -> GaussianArm -> GaussianArm ->
+writeResults :: Int -> Int -> GaussianArm -> GaussianArm -> GaussianArm ->
     Double -> Double -> Double -> [(Int, Double, Double, Double)] -> IO ()
-writeResults reps myNumArms best bad obstart obend obstep rlist = do
+writeResults reps myNumArms best bad estimate obstart obend obstep rlist = do
     let myRounds = head.fst'.unzip4 $ rlist
         dir = show myNumArms ++ "-arms/" ++ show myRounds ++ "-rounds"
         file = dir ++ "/" ++ "good-" ++ show best ++ 
             "_bad-" ++ show (myNumArms - 1) ++ "-" ++ show bad ++
+            "_estimate-" ++ show estimate ++
             "_ob-" ++ showDouble obstart ++ "-" ++ showDouble obend ++ 
             "-" ++ showDouble obstep ++ "_reps-" ++ show reps ++ ".data"
         fst' (x,_,_,_) = x
@@ -105,10 +106,11 @@ drawPercentage progress = printf "%3d%%" ( round (progress * 100) :: Int )
 showProgress :: [a] -> IO ()
 showProgress xs = do
     let len = fromIntegral $ length xs
+    putProgress $ drawProgressBar 80 0 ++ " " ++ drawPercentage 0
     flip evalStateT 0 $ forM_ xs $ \e -> e `seq` do
+        modify (+1)
         progress <- (/len) `fmap` get
         lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
-        modify (+1)
     hPutStrLn stderr " Done." 
 
 data Args = Args {
@@ -163,7 +165,7 @@ nothingArgs = Args {
     }
     
 getParams :: Args -> (GaussianArms, GaussianArms, [Double], Int, Int,
-    GaussianArm, GaussianArm, Int, Double, Double, Double)
+    GaussianArm, GaussianArm, GaussianArm, Int, Double, Double, Double)
 getParams args = 
     
     let myBestArm     = fromMaybe (error "Missing -bestArm") (bestArm args)
@@ -181,5 +183,5 @@ getParams args =
         myArms = V.fromList $ myBestArm : myOtherArms
         myObNoiseRange = [myObStart, (myObStart + myObStep) .. myObEnd]
     in (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
-         myBestArm, myBadArm, myNumArms, myObStart, myObEnd, myObStep)
+         myBestArm, myBadArm, myArmEstimate, myNumArms, myObStart, myObEnd, myObStep)
     

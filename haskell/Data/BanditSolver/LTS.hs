@@ -1,12 +1,13 @@
 {-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances #-}
-module Data.BanditSolver.LTS (runAveragedLTS, runOneLTS, Environment(..), updateLTS, LTS(..),
-                                           Solver(..), GaussianArms, GaussianArm) where
+module Data.BanditSolver.LTS (runAveragedLTS, runOne, Environment(..),
+    updateLTS, LTS(..), makeLTS, runAvg, Solver(..), GaussianArms, GaussianArm)
+where
 import Control.Monad.Writer
 import Control.Monad.State
 import Data.Random (normal)
 import System.Random.Mersenne.Pure64 (PureMT)
 import Data.RVar (sampleRVar)
-import Statistics.Sample (meanVarianceUnb)
+import Statistics.Sample (mean, meanVarianceUnb)
 import Data.Vector.Generic.Mutable (write)
 import Control.Parallel (pseq)
 import Data.Vector ((!))
@@ -18,14 +19,20 @@ type GaussianArm = (Double, Double) -- Mean, standard deviation
 type GaussianArms = V.Vector GaussianArm
 data LTS = LTS !(GaussianArms, Double, Double) deriving (Show)-- arms, cumulative reward, obnoise
 
+makeLTS :: GaussianArms -> Double -> LTS
+makeLTS startEstimates ob = LTS (startEstimates, 0, ob)
+
 class Environment e where
     getReward :: e -> ActionId -> State PureMT Double
     
 class Solver s where
     select :: s -> State PureMT ActionId
     update :: s -> ActionId -> Reward -> s
+    continue :: s -> Bool -- condition on which to stop early
     getArms :: s -> GaussianArms
+    getCumulativeReward :: s -> Double
     select = selectArm
+    continue _ = True
 
 instance Environment GaussianArms where 
     getReward arms idx = gaussian (arms ! idx)
@@ -33,19 +40,23 @@ instance Environment GaussianArms where
 instance Solver LTS where
     update = updateLTS
     getArms (LTS (arms, _, _)) = arms
+    getCumulativeReward (LTS (_, r, _)) = r
 
-
-runOneLTS :: Environment e => e -> GaussianArms -> Double -> Int -> State PureMT LTS
-runOneLTS realArms startEstimates ob rounds = 
-    runOne realArms rounds startSolver 
-  where startSolver = (LTS (startEstimates, 0, ob))
 
 runOne :: (Environment e, Solver s) => e -> Int -> s -> State PureMT s
 runOne realArms rounds startSolver = run 0 startSolver
     where run n !solver 
             | n == rounds = return solver
-            | otherwise   = oneRound realArms solver >>= run (n + 1)
-          getCReward (LTS (_, r, _)) = r
+            | otherwise   = do
+                solver' <- oneRound realArms solver
+                if continue solver' 
+                    then run (n+1) solver'
+                    else return solver'
+
+runAvg :: (Environment e, Solver s) => e -> Int -> Int -> s -> State PureMT Double
+runAvg realArms n rounds startSolver = do
+    res <- mapM (runOne realArms rounds) (replicate n startSolver)
+    return . mean . V.fromList $ map getCumulativeReward res
 
 
 runAveragedLTS :: GaussianArms -> GaussianArms -> Double -> Int -> Int -> PureMT
@@ -66,18 +77,15 @@ runEnsemble realArms rounds startSolvers = run 0 startSolvers
                 force solvers' `seq` run (n+1) solvers'
             | otherwise = do
                 solvers' <- lift $ oneRoundEnsemble realArms solvers
-                let crewards = force solvers' `seq` map getCReward solvers'
+                let crewards = force solvers' `seq` map getCumulativeReward solvers'
                     (mean, variance) = meanVarianceUnb $ V.fromList crewards
                     ob = getOb $ head solvers'
                 tell [(n, ob, mean, sqrt variance)]
-                if n == rounds
-                    then return ()
-                    else run (n + 1) solvers'
-        getCReward (LTS (_, r, _)) = r
+                unless (n == rounds) $ run (n + 1) solvers'
         getOb (LTS (_, _, ob))     = ob
         checkpoints = rounds : [y * 10^x | y <- [1, 5],
               x <- [1 :: Int .. floor (logBase 10 $
-                                         (fromIntegral rounds)/5.0 :: Double)]]
+                                         fromIntegral rounds/5.0 :: Double)]]
         force (x:xs) = x `pseq` force xs
         force []     = ()
 
@@ -95,21 +103,8 @@ oneRound env solver = do
 selectArm :: Solver s => s -> State PureMT ActionId
 selectArm solver = do
     let arms = getArms solver
-        start = V.length arms - 1
-        go :: ActionId -> Double -> ActionId -> State PureMT ActionId
-        go 0 mVal idx = do
-            nVal <- gaussian (arms ! 0)
-            if nVal > mVal 
-                then return 0
-                else return idx 
-        go n mVal idx = do
-            nVal <- gaussian (arms ! n)
-            if nVal > mVal 
-                then go (n-1) nVal n
-                else go (n-1) mVal idx
-    v <- gaussian (arms ! start)
-    go start v start
-            
+    V.maxIndex `fmap` V.mapM gaussian arms
+
 updateLTS :: LTS -> ActionId -> Reward -> LTS
 updateLTS (LTS (arms, creward, ob)) !index !reward = 
     let (mu, sigma) = arms ! index
