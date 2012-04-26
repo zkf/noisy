@@ -3,7 +3,7 @@ module Data.BanditSolver.OBFinder where
 import Data.BanditSolver.LTS
 import System.Random.Mersenne.Pure64
 import Control.Monad.State
-import Data.List (sort)
+import Data.List (sortBy)
 import qualified Data.Vector as V
 import Statistics.Sample (meanVarianceUnb)
     
@@ -16,7 +16,7 @@ sigmaStartEstimate = muStartEstimate / 20.0
 realArms = V.fromList $ (muBestArm, sigmaBestArm) : replicate (numArms-1) (4.0, 4.0)
 startEstimates = V.fromList $ replicate numArms (muStartEstimate, sigmaStartEstimate)
 rounds = 1000
-obnoises = [0.01,0.02..1.0]
+obnoises = [0.01,0.02..5.0]
 numActions = length obnoises
 env = Env (realArms, startEstimates, rounds, obnoises)
 
@@ -26,7 +26,7 @@ instance Environment Env where
         runAvg realArms 100 rounds (makeLTS startEstimates ob)
 
 obEstMu = fromIntegral rounds * muBestArm * 2
-obEstSigma = obEstMu / 20.0
+obEstSigma = obEstMu / 50.0
 startEstimateOB = (obEstMu, obEstSigma)
 startEstimatesOB = V.fromList $ replicate numActions startEstimateOB -- test ob from 0 to 9 
 
@@ -38,11 +38,12 @@ startEstimatesOB = V.fromList $ replicate numActions startEstimateOB -- test ob 
 
 --findOB :: State PureMT Double
 findOB = do
-    (LTS (arms, _, _)) <- runOne env 10000 (makeLTS startEstimatesOB 100)
-    let bestOB = map (\((m, s), action) -> (action, m, s))
-                     . take 10 . reverse
-                     . sort $ zip (V.toList arms) obnoises
-    return bestOB
+    (LTS (arms, _, _)) <- runOne env 5000 (makeLTS startEstimatesOB 2.5)
+    let zipFun (m,s) ob = (ob, m, s)
+        comp (_, _, s1) (_, _, s2) = s1 `compare` s2
+        bestOB n = take n
+                     . sortBy comp $ zipWith zipFun (V.toList arms) obnoises
+    return $ bestOB 10
 
 newtype Env = Env (GaussianArms -- real arms
                   ,GaussianArms -- starting estimates
