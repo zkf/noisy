@@ -17,9 +17,9 @@ type ActionId = Int
 type Reward   = Double
 type GaussianArm = (Double, Double) -- Mean, standard deviation
 type GaussianArms = V.Vector GaussianArm
-data LTS = LTS !(GaussianArms, Double, Double) deriving (Show)-- arms, cumulative reward, obnoise
+data LTS = LTS !(GaussianArms, Double, Rational) deriving (Show)-- arms, cumulative reward, obnoise
 
-makeLTS :: GaussianArms -> Double -> LTS
+makeLTS :: GaussianArms -> Rational -> LTS
 makeLTS startEstimates ob = LTS (startEstimates, 0, ob)
 
 class Environment e where
@@ -58,8 +58,7 @@ runAvg realArms n rounds startSolver = do
     res <- mapM (runOne realArms rounds) (replicate n startSolver)
     return . mean . V.fromList $ map getCumulativeReward res
 
-
-runAveragedLTS :: GaussianArms -> GaussianArms -> Double -> Int -> Int -> PureMT
+runAveragedLTS :: GaussianArms -> GaussianArms -> Rational -> Int -> Int -> PureMT
     -> [(Int, Double, Double, Double)] -- Checkpoint, ob, mean and stddev of cumulative reward
 runAveragedLTS realArms startEstimates ob rounds repetitions randomgen = 
     let result = snd $ evalState (runWriterT $ runEnsemble realArms rounds solvers) randomgen
@@ -80,7 +79,7 @@ runEnsemble realArms rounds startSolvers = run 0 startSolvers
                 let crewards = force solvers' `seq` map getCumulativeReward solvers'
                     (mean, variance) = meanVarianceUnb $ V.fromList crewards
                     ob = getOb $ head solvers'
-                tell [(n, ob, mean, sqrt variance)]
+                tell [(n, fromRational ob, mean, sqrt variance)]
                 unless (n == rounds) $ run (n + 1) solvers'
         getOb (LTS (_, _, ob))     = ob
         checkpoints = rounds : [y * 10^x | y <- [1, 5],
@@ -109,7 +108,7 @@ updateLTS :: LTS -> ActionId -> Reward -> LTS
 updateLTS (LTS (arms, creward, ob)) !index !reward = 
     let (mu, sigma) = arms ! index
         armVariance = sigma**2
-        obVariance  = ob**2
+        obVariance  = fromRational $ ob*ob
         !mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
         !sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
         !arms' =  V.modify (\v -> write v index (mu', sigma')) arms
