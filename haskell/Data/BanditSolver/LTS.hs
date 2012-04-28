@@ -72,26 +72,24 @@ runAveragedLTS realArms startEstimates rounds repetitions ob randomgen =
         force []                 = ()
 
 runEnsemble :: (Environment e, Solver s) =>  e -> Int -> [s] ->
-    WriterT [(Int, Double, Double, Double)] (State PureMT) ()
-runEnsemble environment rounds startSolvers = run 1 startSolvers
-  where run n solvers = do
-            solvers' <- lift $ oneRoundEnsemble environment solvers
-            when   (n `elem` checkpoints) $ writeLog solvers' n
-            unless (n == rounds) $ force solvers' `seq` run (n + 1) solvers'
-        checkpoints = rounds : [y * 10^x | y <- [1, 5],
-              x <- [1 :: Int .. floor (logBase 10 $
-                                         fromIntegral rounds/5.0 :: Double)]]
+    WriterT [(Int, Double, Double, Double)] (State PureMT) [s]
+runEnsemble environment rounds startSolvers = run 0 startSolvers
+  where run n solvers 
+            | n == rounds = writeLog solvers n rounds >> return solvers
+            | otherwise = do
+                 solvers' <- lift $ mapM (oneRound environment) solvers
+                 writeLog solvers' n rounds
+                 force solvers' `seq` run (n + 1) solvers'
         force (x:xs) = x `pseq` force xs
         force []     = ()
-        writeLog s n =
-            let crewards    = map getCumulativeReward s
+        writeLog s n end =
+            let checkpoints = end : [y * 10^x | y <- [1, 5],
+                                          x <- [1 :: Int .. floor (logBase 10 $
+                                           fromIntegral end/5.0 :: Double)]]
+                crewards    = map getCumulativeReward s
                 (mean, var) = S.meanVarianceUnb $ V.fromList crewards
                 ob          = getObservationNoise $ head s
-            in tell [(n, ob, mean, sqrt var)]
-
-oneRoundEnsemble :: (Environment e, Solver s) => e -> [s] -> State PureMT [s]
-oneRoundEnsemble environment solvers = mapM (oneRound environment) solvers
-   
+            in when (n `elem` checkpoints) $ tell [(n, ob, mean, sqrt var)]
 
 oneRound :: (Environment e, Solver s) => e -> s -> State PureMT s
 oneRound env solver = do
