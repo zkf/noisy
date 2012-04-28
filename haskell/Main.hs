@@ -1,85 +1,88 @@
+{-# Language DeriveDataTypeable, RecordWildCards, TypeSynonymInstances,
+    FlexibleInstances #-}
 module Main where
 import Data.Word
 import Foreign.Storable (sizeOf)
 import OpenSSL.Random
 import Data.Binary.Strict.Get
-import System.Environment (getArgs)
 import System.Random.Mersenne.Pure64 
 import Control.Monad 
 import Data.List
 import Data.BanditSolver.LTS
 import Control.Concurrent (getNumCapabilities)
-import Control.Parallel
 import Control.Parallel.Strategies
 import qualified Data.Vector as V 
 import Control.Applicative
-import Data.List.Split
 import Control.Monad.State
 import System.Directory
 import System.IO
 import Text.Printf
-import Data.Maybe
+import System.Console.CmdArgs
+import System.Exit
+import Data.BanditSolver.OBFinder
 
 main :: IO ()
 main = do
+    opts <- cmdArgs mode
+    checkOpts opts
+    runMode opts
+
+runMode :: Args -> IO ()
+runMode opts@Bandit{..} = do
+    print opts
+    g <- pureMT `fmap` getOpenSSLRand
+    let result = evalState (findOB rounds bestArm badArm armEstimate numArms) g
+    mapM_ print result
+
+runMode opts@BruteForce{..}  = do
+    print opts
     cores <- getNumCapabilities
-    (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
-        myBestArm, myBadArm, myEstimate, myNumArms, myObNoiseStart, myObNoiseEnd, 
-        myObNoiseStep) <- (getParams . parse) `fmap` getArgs
-    gens <- map pureMT `fmap` replicateM (length myObNoiseRange) getOpenSSLRand
+    let armEstimates = V.fromList $ replicate numArms armEstimate
+        badArms = replicate (numArms - 1) badArm
+        arms = V.fromList $ bestArm : badArms
+        obNoiseRange = [obStart
+                       ,obStart + obStep
+                       .. obEnd]
+    gens <- map pureMT `fmap` replicateM (length obNoiseRange) getOpenSSLRand
     let results = parMap' cores rseq id . getZipList $ 
-            runSimulation myArms myArmEstimates myRounds myRepetitions <$> 
-                ZipList myObNoiseRange <*> ZipList gens
+            runAveragedLTS arms armEstimates rounds repetitions <$> 
+                ZipList obNoiseRange <*> ZipList gens
         resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
-    mapM_ (writeResults myRepetitions myNumArms myBestArm myBadArm myEstimate
-        myObNoiseStart myObNoiseEnd myObNoiseStep) resultsTr
+    mapM_ (writeResults opts) resultsTr
   where parMap' n s f = withStrategy (parBuffer n s) . map f
-    
-writeResults :: Int -> Int -> GaussianArm -> GaussianArm -> GaussianArm ->
-    Double -> Double -> Double -> [(Int, Double, Double, Double)] -> IO ()
-writeResults reps myNumArms best bad estimate obstart obend obstep rlist = do
-    let myRounds = head.fst'.unzip4 $ rlist
-        dir = show myNumArms ++ "-arms/" ++ show myRounds ++ "-rounds"
-        file = dir ++ "/" ++ "good-" ++ show best ++ 
-            "_bad-" ++ show (myNumArms - 1) ++ "-" ++ show bad ++
-            "_estimate-" ++ show estimate ++
-            "_ob-" ++ showDouble obstart ++ "-" ++ showDouble obend ++ 
-            "-" ++ showDouble obstep ++ "_reps-" ++ show reps ++ ".data"
+
+writeResults :: Args -> [(Int, Double, Double, Double)] -> IO ()
+writeResults BruteForce{..} resultlist = do
+    let myRounds = head.fst'.unzip4 $ resultlist
+        dir = show numArms ++ "-arms/" ++ show myRounds ++ "-rounds"
+        file = dir ++ "/" ++ "good-" ++ show bestArm ++ 
+            "_bad-" ++ show (numArms - 1) ++ "-" ++ show badArm ++
+            "_estimate-" ++ show armEstimate ++
+            "_ob-" ++ showDouble obStart ++ "-" ++ showDouble obEnd ++ 
+            "-" ++ showDouble obStep ++ "_reps-" ++ show repetitions ++ ".data"
         fst' (x,_,_,_) = x
-        header = "# Rounds: " ++ show myRounds ++ ", repetitions: " ++ show reps
-            ++ "\n# Good arm ~ N" ++ show best ++ ", " ++ show (myNumArms - 1)
-            ++ " bad arm(s) ~ N" ++ show bad
-            ++ "\n# Observation noise range from " ++ showDouble obstart ++ " to "
-            ++ showDouble obend ++ " with step size " ++ showDouble obstep
+        header = "# Rounds: " ++ show myRounds ++ ", repetitions: " ++ show repetitions
+            ++ "\n# Good arm ~ N" ++ show bestArm ++ ", " ++ show (numArms - 1)
+            ++ " bad arm(s) ~ N" ++ show badArm
+            ++ "\n# Observation noise range from " ++ showDouble obStart ++ " to "
+            ++ showDouble obEnd ++ " with step size " ++ showDouble obStep
             ++ "\n\n# Observation noise | mean | standard deviation\n\n"
     createDirectoryIfMissing True dir
     writeFile file header
-    appendFile file $ unlines (map prettyPrint rlist)
+    appendFile file $ unlines (map prettyPrint resultlist)
    
 prettyPrint :: (Int, Double, Double, Double) -> String
 prettyPrint (_, ob, mean, stddev) = 
     unwords . map showDouble $ [ob, mean, stddev]
     
-showDouble :: Double -> String
-showDouble = printf "%f"
+showRational :: Rational -> String
+showRational r =
+    let d = fromRational r :: Double
+    in printf "%f" d
     
-runSimulation ::
-    GaussianArms -> 
-    GaussianArms ->
-    Int -> 
-    Int ->
-    Double -> 
-    PureMT -> 
-    [(Int, Double, Double, Double)] -- ob, roundN, mean ,stddev
-runSimulation arms armEstimates myRounds reps ob rndGen =
-    let resultsList = runAveragedLTS 
-           arms armEstimates ob myRounds reps rndGen
-    in force resultsList `seq` resultsList
-
-force :: [a] -> ()
-force (x:xs) = x `pseq` force xs
-force []      = ()
+showDouble :: Double -> String
+showDouble = printf "%f" 
 
 -- Get a decent random seed
 -- randBytes is not thread-safe!
@@ -113,75 +116,80 @@ showProgress xs = do
         lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
     hPutStrLn stderr " Done." 
 
-data Args = Args {
-          obStart :: Maybe Double
-        , obEnd   :: Maybe Double
-        , obStep  :: Maybe Double
-         
-        , rounds  :: Maybe Int
-        , repetitions :: Maybe Int
-         
-        , bestArm :: Maybe GaussianArm
-        , badArm  :: Maybe GaussianArm
-        , armEstimate  :: Maybe GaussianArm
-         
-        , numArms  :: Maybe Int
-    }
+data Args = BruteForce
+        { obStart :: Double
+        , obEnd   :: Double
+        , obStep  :: Double
+        , rounds  :: Int
+        , repetitions :: Int
+        , bestArm :: GaussianArm
+        , badArm  :: GaussianArm
+        , armEstimate  :: GaussianArm
+        , numArms  :: Int }
+        | Bandit
+        { rounds  :: Int
+        , bestArm :: GaussianArm
+        , badArm  :: GaussianArm
+        , armEstimate  :: GaussianArm
+        , numArms  :: Int }
+        deriving (Data, Typeable, Show, Eq)
 
-parse :: [String] -> Args 
-parse s = flip execState nothingArgs $ do
-    let args = map words $ wordsBy (=='-') $ unwords s
-    mapM_ go args
-  where
-    go [opt, arg] = do
-        maybeArgs <- get
-        put $ case opt of
-                   "obStart"     -> maybeArgs { obStart     = Just (read arg) }
-                   "obEnd"       -> maybeArgs { obEnd       = Just (read arg) }
-                   "obStep"      -> maybeArgs { obStep      = Just (read arg) }
-                   "rounds"      -> maybeArgs { rounds      = Just (read arg) }
-                   "repetitions" -> maybeArgs { repetitions = Just (read arg) }
-                   "bestArm"     -> maybeArgs { bestArm     = Just (read arg) }
-                   "badArm"      -> maybeArgs { badArm      = Just (read arg) }
-                   "armEstimate" -> maybeArgs { armEstimate = Just (read arg) }
-                   "numArms"     -> maybeArgs { numArms     = Just (read arg) }
-                   _         -> error $ "Invalid option " ++ unwords [opt, arg]
-    go x = error $ "Invalid input " ++ unwords x
-                   
-nothingArgs :: Args
-nothingArgs = Args {
-          obStart = Nothing
-        , obEnd   = Nothing
-        , obStep  = Nothing
-         
-        , rounds  = Nothing
-        , repetitions = Nothing
-         
-        , bestArm = Nothing
-        , badArm  = Nothing
-        , armEstimate = Nothing
-         
-        , numArms = Nothing
-    }
-    
-getParams :: Args -> (GaussianArms, GaussianArms, [Double], Int, Int,
-    GaussianArm, GaussianArm, GaussianArm, Int, Double, Double, Double)
-getParams args = 
-    
-    let myBestArm     = fromMaybe (error "Missing -bestArm") (bestArm args)
-        myBadArm      = fromMaybe (error "Missing -badArm") (badArm args)
-        myNumArms     = fromMaybe (error "Missing -numArms") (numArms args)
-        myArmEstimate = fromMaybe (error "Missing -armEstimate") (armEstimate args)
-        myRounds      = fromMaybe (error "Missing -rounds") (rounds args)
-        myRepetitions = fromMaybe (error "Missing -repetitions") (repetitions args)
-        myObStart     = fromMaybe (error "Missing -obStart") (obStart args)
-        myObEnd       = fromMaybe (error "Missing -obEnd") (obEnd args)
-        myObStep      = fromMaybe (error "Missing -obStep") (obStep args)
-        
-        myOtherArms = replicate (myNumArms - 1) myBadArm
-        myArmEstimates = V.fromList $ replicate myNumArms myArmEstimate
-        myArms = V.fromList $ myBestArm : myOtherArms
-        myObNoiseRange = [myObStart, (myObStart + myObStep) .. myObEnd]
-    in (myArmEstimates, myArms, myObNoiseRange, myRounds, myRepetitions,
-         myBestArm, myBadArm, myArmEstimate, myNumArms, myObStart, myObEnd, myObStep)
-    
+bruteforce :: Args
+bruteforce = BruteForce
+    {rounds      = def
+    ,bestArm     = def
+    ,badArm      = def
+    ,armEstimate = def
+    ,numArms     = def
+    ,obStart = def &= help "Start for observation noise"
+    ,obEnd   = def
+    ,obStep  = def
+    ,repetitions = def
+    } &= help "Use a brute-force method to test all observation noises\
+             \ in the specified range."
+
+bandit :: Args
+bandit = Bandit
+    {rounds      = def
+    ,bestArm     = def
+    ,badArm      = def
+    ,armEstimate = def
+    ,numArms     = def
+    } &= help "Use an LTS bandit solver to find the best observation noise\
+             \ for the specified scenario."
+
+mode :: Args
+mode = modes [bruteforce, bandit &= auto] 
+        &= help "Find the best observation noise for LTS."
+        &= program "Noisy" &= summary "Noisy v0.2"
+
+checkOpts :: Args -> IO ()
+checkOpts opts = 
+    let requirements = case opts of 
+            BruteForce{..} -> 
+                [(repetitions < 1, "Error: Repetitions must be > 0.", True)
+                ,(obStart <= 0,
+                    "Error: Start of observation noise range must be > 0.", True)
+                ,(obEnd < obStart,
+                    "Error: End of observation noise range must be greater than start.",
+                    True)
+                ,(obStep <= 0,
+                    "Error: Observation noise step must be > 0.", True)
+                ]
+            Bandit{..} -> []
+            ++  [(rounds opts < 1, "Error: Rounds must be > 0.", True)
+                ,(numArms opts < 2, "Error: Number of arms must be > 1.", True)
+                ,(armEstimate opts == (0.0,0.0),
+                    "Warning: Estimate has default value (0.0, 0.0)", False)
+                ,(badArm opts == (0.0,0.0),
+                    "Warning: Bad arm has default value (0.0, 0.0)", False)
+                ,(bestArm opts == (0.0,0.0),
+                    "Warning: Best arm has default value (0.0, 0.0)", False)
+                ,((fst $ badArm opts) > (fst $ bestArm opts),
+                    "Error: Bad arm must be worse than best arm", True)
+                ]
+    in mapM_ handle requirements
+  where handle (predicate, msg, fatal) = when predicate $ 
+                                            putStrLn msg >> when fatal quit
+        quit = exitWith (ExitFailure 1)
+

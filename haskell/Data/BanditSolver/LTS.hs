@@ -17,9 +17,9 @@ type ActionId = Int
 type Reward   = Double
 type GaussianArm = (Double, Double) -- Mean, standard deviation
 type GaussianArms = V.Vector GaussianArm
-data LTS = LTS !(GaussianArms, Double, Rational) deriving (Show)-- arms, cumulative reward, obnoise
+data LTS = LTS !(GaussianArms, Double, Double) deriving (Show)-- arms, cumulative reward, obnoise
 
-makeLTS :: GaussianArms -> Rational -> LTS
+makeLTS :: GaussianArms -> Double -> LTS
 makeLTS startEstimates ob = LTS (startEstimates, 0, ob)
 
 class Environment e where
@@ -58,9 +58,9 @@ runAvg realArms n rounds startSolver = do
     res <- mapM (runOne realArms rounds) (replicate n startSolver)
     return . mean . V.fromList $ map getCumulativeReward res
 
-runAveragedLTS :: GaussianArms -> GaussianArms -> Rational -> Int -> Int -> PureMT
+runAveragedLTS :: GaussianArms -> GaussianArms -> Int -> Int -> Double -> PureMT
     -> [(Int, Double, Double, Double)] -- Checkpoint, ob, mean and stddev of cumulative reward
-runAveragedLTS realArms startEstimates ob rounds repetitions randomgen = 
+runAveragedLTS realArms startEstimates rounds repetitions ob randomgen = 
     let result = snd $ evalState (runWriterT $ runEnsemble realArms rounds solvers) randomgen
     in force result `seq` result
   where solvers = replicate repetitions (LTS (startEstimates, 0, ob))
@@ -79,7 +79,7 @@ runEnsemble realArms rounds startSolvers = run 0 startSolvers
                 let crewards = force solvers' `seq` map getCumulativeReward solvers'
                     (mean, variance) = meanVarianceUnb $ V.fromList crewards
                     ob = getOb $ head solvers'
-                tell [(n, fromRational ob, mean, sqrt variance)]
+                tell [(n, ob, mean, sqrt variance)]
                 unless (n == rounds) $ run (n + 1) solvers'
         getOb (LTS (_, _, ob))     = ob
         checkpoints = rounds : [y * 10^x | y <- [1, 5],
@@ -101,14 +101,32 @@ oneRound env solver = do
 
 selectArm :: Solver s => s -> State PureMT ActionId
 selectArm solver = do
-    let arms = getArms solver
-    V.maxIndex `fmap` V.mapM gaussian arms
+   let arms = getArms solver
+       start = V.length arms - 1
+       go :: ActionId -> (Double, ActionId) -> State PureMT ActionId
+       go 0 (maxValue, index) = do
+           newValue <- gaussian (arms ! 0)
+           if newValue > maxValue 
+               then return 0
+               else return index 
+       go n (maxValue, index) = do
+           newValue <- gaussian (arms ! n)
+           if newValue > maxValue 
+               then go (n - 1) (newValue, n)
+               else go (n - 1) (maxValue, index)
+   firstValue <- gaussian (arms ! start)
+   go (start - 1) (firstValue, start)
+
+-- Alternative to the `go' function above is this:
+--      V.maxIndex `fmap` V.mapM gaussian arms
+-- The downside is that it is much slower.
+
 
 updateLTS :: LTS -> ActionId -> Reward -> LTS
 updateLTS (LTS (arms, creward, ob)) !index !reward = 
     let (mu, sigma) = arms ! index
-        armVariance = sigma**2
-        obVariance  = fromRational $ ob*ob
+        armVariance = sigma*sigma
+        obVariance  = ob*ob
         !mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
         !sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
         !arms' =  V.modify (\v -> write v index (mu', sigma')) arms

@@ -1,42 +1,48 @@
-module Data.BanditSolver.OBFinder where
+module Data.BanditSolver.OBFinder (findOB) where
 
 import Data.BanditSolver.LTS
 import Data.List (sortBy)
+import Control.Monad.State
+import System.Random.Mersenne.Pure64
 import qualified Data.Vector as V
     
 -- testing
-muBestArm = 5.0
-sigmaBestArm = 2.0
-numArms = 2
-muStartEstimate = muBestArm * 2.0
-sigmaStartEstimate = muStartEstimate / 20.0
-realArms = V.fromList $ (muBestArm, sigmaBestArm) : replicate (numArms-1) (4.0, 4.0)
-startEstimates = V.fromList $ replicate numArms (muStartEstimate, sigmaStartEstimate)
-rounds = 1000
-obnoises = [0.01,0.02..5.0] :: [Rational]
-numActions = length obnoises
-env = Env (realArms, startEstimates, rounds, obnoises)
+-- muStartEstimate = muBestArm * 2.0
+-- sigmaStartEstimate = muStartEstimate / 20.0
+obFinderRounds :: Int
+obFinderRounds = 10000
 
-obEstMu          = fromIntegral rounds * muBestArm * 2
-obEstSigma       = obEstMu / 80.0
-startEstimateOB  = (obEstMu, obEstSigma)
-startEstimatesOB = V.fromList $ replicate numActions startEstimateOB
-
-findOB = do
-    (LTS (arms, _, _)) <- runOne env 10000 (makeLTS startEstimatesOB 5.0)
+findOB :: Int -> (Double, Double) -> GaussianArm -> GaussianArm -> Int
+    -> State PureMT [(Double, Double, Double)]
+findOB rounds bestArm badArm armEstimate numArms = do
+    let actions = [0.01,0.02..5.0] :: [Double] -- Observation noises to choose from
+        numActions = length actions
+        obEstMu          = fromIntegral rounds * 2 * fst bestArm
+                                 -- Twice the expected reward from best arm
+        obEstSigma       = obEstMu / 80.0
+        startEstOBFinder = V.fromList $ replicate numActions (obEstMu, obEstSigma)
+        env = makeEnv rounds bestArm badArm armEstimate numArms actions
+    (LTS (arms, _, _)) <- runOne env obFinderRounds (makeLTS startEstOBFinder 5.0)
     let zipFun (m,s) ob = (ob, m, s)
         leastSigma (_, _, s1) (_, _, s2) = s1 `compare` s2
-        ppObnoises = map fromRational obnoises :: [Double]
+        -- ppObnoises = map fromRational actions :: [Double]
         bestOB n = take n
                      . sortBy leastSigma 
-                     $ zipWith zipFun (V.toList arms) ppObnoises
+                     $ zipWith zipFun (V.toList arms) actions
     return $ bestOB 10
 
+makeEnv :: Int -> GaussianArm -> GaussianArm -> GaussianArm -> Int
+    -> [Double] -> Env
+makeEnv rounds bestArm badArm armEstimate numArms obnoises =
+    let realArms = V.fromList $ bestArm : replicate (numArms - 1) badArm
+        startEstimates = V.fromList $ replicate numArms armEstimate
+    in Env (realArms, startEstimates, rounds, obnoises)
+    
 
 newtype Env = Env (GaussianArms -- real arms
                   ,GaussianArms -- starting estimates
                   ,Int          -- number of rounds
-                  ,[Rational] )   -- obnoises to test
+                  ,[Double] )   -- obnoises to test
 
 instance Environment Env where
     getReward (Env (realArms, startEstimates, rounds, actions)) index = do
