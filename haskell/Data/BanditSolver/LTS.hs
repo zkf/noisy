@@ -7,7 +7,7 @@ import Control.Monad.State
 import Data.Random (normal)
 import System.Random.Mersenne.Pure64 (PureMT)
 import Data.RVar (sampleRVar)
-import Statistics.Sample (mean, meanVarianceUnb)
+import qualified Statistics.Sample as S (mean, meanVarianceUnb)
 import Data.Vector.Generic.Mutable (write)
 import Control.Parallel (pseq)
 import Data.Vector ((!))
@@ -31,16 +31,20 @@ class Solver s where
     continue :: s -> Bool -- condition on which to stop early
     getArms :: s -> GaussianArms
     getCumulativeReward :: s -> Double
+    getObservationNoise :: s -> Double
+    make :: GaussianArms -> Double -> Double -> s
     select = selectArm
+    update = updateLTS
     continue _ = True
 
 instance Environment GaussianArms where 
     getReward arms idx = gaussian (arms ! idx)
 
 instance Solver LTS where
-    update = updateLTS
+    make a r o = LTS (a,r,o)
     getArms (LTS (arms, _, _)) = arms
     getCumulativeReward (LTS (_, r, _)) = r
+    getObservationNoise (LTS(_,_,ob)) = ob
 
 
 runOne :: (Environment e, Solver s) => e -> Int -> s -> State PureMT s
@@ -56,40 +60,37 @@ runOne realArms rounds startSolver = run 0 startSolver
 runAvg :: (Environment e, Solver s) => e -> Int -> Int -> s -> State PureMT Double
 runAvg realArms n rounds startSolver = do
     res <- mapM (runOne realArms rounds) (replicate n startSolver)
-    return . mean . V.fromList $ map getCumulativeReward res
+    return . S.mean . V.fromList $ map getCumulativeReward res
 
 runAveragedLTS :: GaussianArms -> GaussianArms -> Int -> Int -> Double -> PureMT
     -> [(Int, Double, Double, Double)] -- Checkpoint, ob, mean and stddev of cumulative reward
 runAveragedLTS realArms startEstimates rounds repetitions ob randomgen = 
     let result = snd $ evalState (runWriterT $ runEnsemble realArms rounds solvers) randomgen
     in force result `seq` result
-  where solvers = replicate repetitions (LTS (startEstimates, 0, ob))
+  where solvers = replicate repetitions (makeLTS startEstimates ob)
         force ((!a,!b,!c,!d):xs) = (a,b,c,d) `pseq` force xs
         force []                 = ()
 
-runEnsemble :: GaussianArms -> Int -> [LTS] ->
+runEnsemble :: (Environment e, Solver s) =>  e -> Int -> [s] ->
     WriterT [(Int, Double, Double, Double)] (State PureMT) ()
-runEnsemble realArms rounds startSolvers = run 0 startSolvers
-  where run n solvers
-            | n `notElem` checkpoints = do
-                solvers' <- lift $ oneRoundEnsemble realArms solvers
-                force solvers' `seq` run (n+1) solvers'
-            | otherwise = do
-                solvers' <- lift $ oneRoundEnsemble realArms solvers
-                let crewards = force solvers' `seq` map getCumulativeReward solvers'
-                    (mean, variance) = meanVarianceUnb $ V.fromList crewards
-                    ob = getOb $ head solvers'
-                tell [(n, ob, mean, sqrt variance)]
-                unless (n == rounds) $ run (n + 1) solvers'
-        getOb (LTS (_, _, ob))     = ob
+runEnsemble environment rounds startSolvers = run 1 startSolvers
+  where run n solvers = do
+            solvers' <- lift $ oneRoundEnsemble environment solvers
+            when   (n `elem` checkpoints) $ writeLog solvers' n
+            unless (n == rounds) $ force solvers' `seq` run (n + 1) solvers'
         checkpoints = rounds : [y * 10^x | y <- [1, 5],
               x <- [1 :: Int .. floor (logBase 10 $
                                          fromIntegral rounds/5.0 :: Double)]]
         force (x:xs) = x `pseq` force xs
         force []     = ()
+        writeLog s n =
+            let crewards    = map getCumulativeReward s
+                (mean, var) = S.meanVarianceUnb $ V.fromList crewards
+                ob          = getObservationNoise $ head s
+            in tell [(n, ob, mean, sqrt var)]
 
-oneRoundEnsemble :: GaussianArms -> [LTS] -> State PureMT [LTS]
-oneRoundEnsemble realArms solvers = mapM (oneRound realArms) solvers
+oneRoundEnsemble :: (Environment e, Solver s) => e -> [s] -> State PureMT [s]
+oneRoundEnsemble environment solvers = mapM (oneRound environment) solvers
    
 
 oneRound :: (Environment e, Solver s) => e -> s -> State PureMT s
@@ -122,16 +123,19 @@ selectArm solver = do
 -- The downside is that it is much slower.
 
 
-updateLTS :: LTS -> ActionId -> Reward -> LTS
-updateLTS (LTS (arms, creward, ob)) !index !reward = 
-    let (mu, sigma) = arms ! index
+updateLTS :: Solver s => s -> ActionId -> Reward -> s
+updateLTS solver !index !reward = 
+    let arms    = getArms solver
+        creward = getCumulativeReward solver
+        ob      = getObservationNoise solver
+        (mu, sigma) = arms ! index
         armVariance = sigma*sigma
         obVariance  = ob*ob
-        !mu' = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
-        !sigma' = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
-        !arms' =  V.modify (\v -> write v index (mu', sigma')) arms
+        !mu'      = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
+        !sigma'   = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
+        !arms'    =  V.modify (\v -> write v index (mu', sigma')) arms
         !creward' = creward + reward
-    in (LTS (arms', creward', ob))
+    in make arms' creward' ob
 
 gaussian :: GaussianArm -> State PureMT Double
 gaussian (mu, sigma) =
