@@ -1,13 +1,14 @@
 {-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances #-}
 module Data.BanditSolver.LTS (runAveragedLTS, runOne, Environment(..),
-    updateLTS, LTS(..), makeLTS, runAvg, Solver(..), GaussianArms, GaussianArm)
+    updateLTS, LTS(..), makeLTS, runAvg, Solver(..), GaussianArms, GaussianArm,
+    runAveragedInstantRewards)
 where
 import Control.Monad.Writer
 import Control.Monad.State
 import Data.Random (normal)
 import System.Random.Mersenne.Pure64 (PureMT)
 import Data.RVar (sampleRVar)
-import qualified Statistics.Sample as S (mean, meanVarianceUnb)
+import qualified Statistics.Sample as S (meanVarianceUnb)
 import Data.Vector.Generic.Mutable (write)
 import Control.Parallel (pseq)
 import Data.Vector ((!))
@@ -52,7 +53,7 @@ runOne realArms rounds startSolver = run 0 startSolver
     where run n !solver 
             | n == rounds = return solver
             | otherwise   = do
-                solver' <- oneRound realArms solver
+                solver' <- fst `liftM` oneRound realArms solver
                 if continue solver' 
                     then run (n+1) solver'
                     else return solver'
@@ -60,43 +61,79 @@ runOne realArms rounds startSolver = run 0 startSolver
 runAvg :: (Environment e, Solver s) => e -> Int -> Int -> s -> State PureMT Double
 runAvg realArms n rounds startSolver = do
     res <- mapM (runOne realArms rounds) (replicate n startSolver)
-    return . S.mean . V.fromList $ map getCumulativeReward res
+    return . mean $ map getCumulativeReward res
+
+mean :: Fractional a => [a] -> a
+mean = go 0 0
+  where go len num [] = num / len
+        go len num (x:xs) = go (len + 1) (num + x) xs
 
 runAveragedLTS :: GaussianArms -> GaussianArms -> Int -> Int -> Double -> PureMT
     -> [(Int, Double, Double, Double)] -- Checkpoint, ob, mean and stddev of cumulative reward
 runAveragedLTS realArms startEstimates rounds repetitions ob randomgen = 
     let result = snd $ evalState (runWriterT $ runEnsemble realArms rounds solvers) randomgen
-    in force result `seq` result
+    in forceW result `seq` result
   where solvers = replicate repetitions (makeLTS startEstimates ob)
-        force ((!a,!b,!c,!d):xs) = (a,b,c,d) `pseq` force xs
-        force []                 = ()
+        forceW ((!a,!b,!c,!d):xs) = (a,b,c,d) `pseq` force xs
+        forceW []                 = ()
 
 runEnsemble :: (Environment e, Solver s) =>  e -> Int -> [s] ->
-    WriterT [(Int, Double, Double, Double)] (State PureMT) [s]
-runEnsemble environment rounds startSolvers = run 0 startSolvers
+    WriterT [(Int, Double, Double, Double)] (State PureMT) () 
+runEnsemble environment rounds startSolvers = run 1 startSolvers
   where run n solvers 
-            | n == rounds = writeLog solvers n rounds >> return solvers
+            | n > rounds = return ()
             | otherwise = do
-                 solvers' <- lift $ mapM (oneRound environment) solvers
-                 writeLog solvers' n rounds
+                 solvers' <- lift $ mapM (liftM fst . oneRound environment) solvers
+                 writeLog solvers' n
                  force solvers' `seq` run (n + 1) solvers'
-        force (x:xs) = x `pseq` force xs
-        force []     = ()
-        writeLog s n end =
-            let checkpoints = end : [y * 10^x | y <- [1, 5],
-                                          x <- [1 :: Int .. floor (logBase 10 $
-                                           fromIntegral end/5.0 :: Double)]]
-                crewards    = map getCumulativeReward s
-                (mean, var) = S.meanVarianceUnb $ V.fromList crewards
+        checkpoints = rounds : [y * 10^x | y <- [1, 5],
+                                        x <- [1 :: Int .. floor (logBase 10 $
+                                            fromIntegral rounds/5.0 :: Double)]]
+        writeLog s n = when (n `elem` checkpoints) $
+            let crewards    = map getCumulativeReward s
+                (myMean, var) = S.meanVarianceUnb $ V.fromList crewards
                 ob          = getObservationNoise $ head s
-            in when (n `elem` checkpoints) $ tell [(n, ob, mean, sqrt var)]
+            in tell [(n, ob, myMean, sqrt var)]
 
-oneRound :: (Environment e, Solver s) => e -> s -> State PureMT s
+runAveragedInstantRewards :: GaussianArm -> GaussianArm -> GaussianArm -> Int
+    -> Int -> Int -> Double -> PureMT -> [(Int, Reward, Double)]
+runAveragedInstantRewards bestArm badArm armEstimate numArms rounds repetitions ob gen =
+    let startEstimates = V.fromList $ replicate numArms armEstimate
+        badArms = replicate (numArms - 1) badArm
+        realArms = V.fromList $ bestArm : badArms
+        agents = replicate repetitions (makeLTS startEstimates ob)
+        forceW ((!a, !b, !c):xs) = (a, b, c) `pseq` force xs
+        forceW []                 = ()
+        result = snd $ evalState 
+                    (runWriterT $ runInstantRewards realArms agents rounds) gen
+    in forceW result `seq` result
+
+runInstantRewards :: (Environment e, Solver s) => e -> [s] -> Int 
+    -> WriterT [(Int, Reward, Double)] (State PureMT) ()
+runInstantRewards environment startAgents rounds = run 1 startAgents
+  where run n agents
+            | n > rounds  = return ()
+            | otherwise   = do
+                (agents', rewards) <- lift $ mapAndUnzipM (oneRound environment) agents
+                writeLog rewards n
+                force agents' `seq` run (n + 1) agents'
+        checkpoints = rounds : [y * 10^x | y <- [1..9],
+                                        x <- [1 :: Int .. floor (logBase 10 
+                                            (fromIntegral rounds) :: Double)]]
+        writeLog rewards n = when (n `elem` checkpoints) $
+            let (m, var) = S.meanVarianceUnb $ V.fromList rewards
+            in tell [(n, m, sqrt var)]
+
+force :: [a] -> () 
+force (x:xs) = x `pseq` force xs
+force []     = ()
+
+oneRound :: (Environment e, Solver s) => e -> s -> State PureMT (s, Reward)
 oneRound env solver = do
     selected <- select solver
     reward   <- getReward env selected
     let !solver' = update solver selected reward
-    return solver'
+    return (solver', reward)
 
 selectArm :: Solver s => s -> State PureMT ActionId
 selectArm solver = do

@@ -52,6 +52,13 @@ runMode opts@BruteForce{..}  = do
     mapM_ (writeResults opts) resultsTr
   where parMap' n s f = withStrategy (parBuffer n s) . map f
 
+runMode opts@InstantRewards{..} = do
+    print opts
+    gen <- pureMT `fmap` getOpenSSLRand
+    let result = runAveragedInstantRewards bestArm badArm armEstimate numArms
+                    rounds repetitions obNoise gen
+    mapM_ print result
+
 writeResults :: Args -> [(Int, Double, Double, Double)] -> IO ()
 writeResults BruteForce{..} resultlist = do
     let myRounds = head.fst'.unzip4 $ resultlist
@@ -132,6 +139,14 @@ data Args = BruteForce
         , badArm  :: GaussianArm
         , armEstimate  :: GaussianArm
         , numArms  :: Int }
+        | InstantRewards
+        { obNoise :: Double 
+        , rounds  :: Int
+        , repetitions :: Int
+        , bestArm :: GaussianArm
+        , badArm  :: GaussianArm
+        , armEstimate  :: GaussianArm
+        , numArms  :: Int }
         deriving (Data, Typeable, Show, Eq)
 
 bruteforce :: Args
@@ -158,8 +173,21 @@ bandit = Bandit
     } &= help "Use an LTS bandit solver to find the best observation noise\
              \ for the specified scenario."
 
+instant :: Args
+instant = InstantRewards
+    {obNoise     = def
+    ,rounds      = def
+    ,repetitions = def
+    ,bestArm     = def
+    ,badArm      = def
+    ,armEstimate = def
+    ,numArms     = def
+    } &= help "Get the instant rewards\
+             \ for the specified scenario."
+
+
 mode :: Args
-mode = modes [bruteforce, bandit &= auto] 
+mode = modes [bandit &= auto, bruteforce, instant] 
         &= help "Find the best observation noise for LTS."
         &= program "Noisy" &= summary "Noisy v0.2"
 
@@ -167,29 +195,35 @@ checkOpts :: Args -> IO ()
 checkOpts opts = 
     let requirements = case opts of 
             BruteForce{..} -> 
-                [(repetitions < 1, "Error: Repetitions must be > 0.", True)
+                [(repetitions < 1, "Repetitions must be > 0.", True)
                 ,(obStart <= 0,
-                    "Error: Start of observation noise range must be > 0.", True)
+                    "Start of observation noise range must be > 0.", True)
                 ,(obEnd < obStart,
-                    "Error: End of observation noise range must be greater than start.",
+                    "End of observation noise range must be greater than start.",
                     True)
                 ,(obStep <= 0,
-                    "Error: Observation noise step must be > 0.", True)
+                    "Observation noise step must be > 0.", True)
                 ]
             Bandit{..} -> []
-            ++  [(rounds opts < 1, "Error: Rounds must be > 0.", True)
-                ,(numArms opts < 2, "Error: Number of arms must be > 1.", True)
+            InstantRewards{..} ->
+                [(obNoise <= 0, "Observation noise must be > 0.", True)
+                ,(repetitions < 1, "Repetitions must be > 0.", True)
+                ]
+
+            ++  [(rounds opts < 1, "Rounds must be > 0.", True)
+                ,(numArms opts < 2, "Number of arms must be > 1.", True)
                 ,(armEstimate opts == (0.0,0.0),
-                    "Warning: Estimate has default value (0.0, 0.0)", False)
+                    "Estimate has default value (0.0, 0.0).", False)
                 ,(badArm opts == (0.0,0.0),
-                    "Warning: Bad arm has default value (0.0, 0.0)", False)
+                    "Bad arm has default value (0.0, 0.0).", False)
                 ,(bestArm opts == (0.0,0.0),
-                    "Warning: Best arm has default value (0.0, 0.0)", False)
+                    "Best arm has default value (0.0, 0.0).", False)
                 ,((fst $ badArm opts) > (fst $ bestArm opts),
-                    "Error: Bad arm must be worse than best arm", True)
+                    "Bad arm must be worse than best arm.", True)
                 ]
     in mapM_ handle requirements
   where handle (predicate, msg, fatal) = when predicate $ 
-                                            putStrLn msg >> when fatal quit
+                                            putStrLn (msgType fatal ++ msg) >> when fatal quit
         quit = exitWith (ExitFailure 1)
+        msgType fatal = if fatal then "\x1b[1;31mError: \x1b[0m" else "\x1b[0;33mWarning: \x1b[0m"
 
