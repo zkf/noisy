@@ -118,11 +118,9 @@ runAveragedInstantRewards bestArm badArm armEstimate numArms rounds repetitions 
         badArms = replicate (numArms - 1) myBadArm
         realArms = V.fromList $ myBestArm : badArms
         agents = replicate repetitions (makeLTS myArmEstimate numArms ob)
-        forceW ((!a, !b, !c):xs) = (a, b, c) `pseq` force xs
-        forceW []                 = ()
         result = snd $ evalState 
                     (runWriterT $ runInstantRewards realArms agents rounds) gen
-    in forceW result `seq` result
+    in result
 
 runInstantRewards :: (Environment e, Solver s) => e -> [s] -> Int 
     -> WriterT [(Int, Reward, Double)] (State PureMT) ()

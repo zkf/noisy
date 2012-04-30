@@ -53,7 +53,9 @@ runMode opts@InstantRewards{..} = do
     gen <- pureMT `fmap` getOpenSSLRand
     let result = runAveragedInstantRewards bestArm badArm armEstimate numArms
                     rounds repetitions obNoise gen
-    mapM_ print result
+    mapM_ myPrint result
+
+myPrint (round, reward, dev) = putStrLn $ unwords [show round, show reward, show dev]
 
 writeResults :: Args -> [(Int, Double, Double, Double)] -> IO ()
 writeResults BruteForce{..} resultlist = do
