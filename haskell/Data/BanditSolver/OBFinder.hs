@@ -12,18 +12,22 @@ import qualified Data.Vector as V
 obFinderRounds :: Int
 obFinderRounds = 10000
 
-findOB :: Int -> (Double, Double) -> GaussianArm -> GaussianArm -> Int
+findOB :: Int -> GA -> GA -> GA -> Int
     -> State PureMT [(Double, Double, Double)]
 findOB rounds bestArm badArm armEstimate numArms = do
-    let actions = [0.01,0.02..5.0] :: [Double] -- Observation noises to choose from
+    let myBestArm = makeGaussianArm bestArm
+        myBadArm  = makeGaussianArm badArm
+        myArmEstimate = makeGaussianArm armEstimate
+        actions = [0.01,0.02..5.0] :: [Double] -- Observation noises to choose from
         numActions = length actions
-        obEstMu          = fromIntegral rounds * 2 * fst bestArm
+        (bestMu, _) = bestArm
+        obEstMu          = fromIntegral rounds * 2 * bestMu
                                  -- Twice the expected reward from best arm
         obEstSigma       = obEstMu / 80.0
-        startEstOBFinder = V.fromList $ replicate numActions (obEstMu, obEstSigma)
-        env = makeEnv rounds bestArm badArm armEstimate numArms actions
-    (LTS (arms, _, _)) <- runOne env obFinderRounds (makeLTS startEstOBFinder 5.0)
-    let zipFun (m,s) ob = (ob, m, s)
+        solver = makeLTS (GaussianArm obEstMu obEstSigma) numActions 5.0
+        env = makeEnv rounds myBestArm myBadArm myArmEstimate numArms actions
+    (LTS arms _ _) <- runOne env obFinderRounds solver
+    let zipFun (GaussianArm m s) ob = (ob, m, s)
         leastSigma (_, _, s1) (_, _, s2) = s1 `compare` s2
         -- ppObnoises = map fromRational actions :: [Double]
         bestOB n = take n
@@ -47,4 +51,5 @@ newtype Env = Env (GaussianArms -- real arms
 instance Environment Env where
     getReward (Env (realArms, startEstimates, rounds, actions)) index = do
         let ob = actions !! index
-        runAvg realArms 50 rounds (makeLTS startEstimates ob)
+            solver = LTS startEstimates 0 ob
+        runAvg realArms 50 rounds solver

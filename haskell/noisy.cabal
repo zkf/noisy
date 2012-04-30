@@ -50,7 +50,7 @@ Executable noisy
   -- .hs or .lhs file containing the Main module.
   Main-is:         Main.hs
   
-  ghc-options: -O -threaded -rtsopts -Wall
+  ghc-options: -O -threaded -rtsopts -Wall -funbox-strict-fields
   -- Packages needed in order to build this package.
   Build-depends:   base, mtl, random-fu, rvar, mersenne-random-pure64,
                     binary-strict, HsOpenSSL, vector, statistics, parallel,

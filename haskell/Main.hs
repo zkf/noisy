@@ -11,7 +11,6 @@ import Data.List
 import Data.BanditSolver.LTS
 import Control.Concurrent (getNumCapabilities)
 import Control.Parallel.Strategies
-import qualified Data.Vector as V 
 import Control.Applicative
 import Control.Monad.State
 import System.Directory
@@ -37,15 +36,12 @@ runMode opts@Bandit{..} = do
 runMode opts@BruteForce{..}  = do
     print opts
     cores <- getNumCapabilities
-    let armEstimates = V.fromList $ replicate numArms armEstimate
-        badArms = replicate (numArms - 1) badArm
-        arms = V.fromList $ bestArm : badArms
-        obNoiseRange = [obStart
+    let obNoiseRange = [obStart
                        ,obStart + obStep
                        .. obEnd]
     gens <- map pureMT `fmap` replicateM (length obNoiseRange) getOpenSSLRand
     let results = parMap' cores rseq id . getZipList $ 
-            runAveragedLTS arms armEstimates rounds repetitions <$> 
+            runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions <$> 
                 ZipList obNoiseRange <*> ZipList gens
         resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
@@ -129,23 +125,23 @@ data Args = BruteForce
         , obStep  :: Double
         , rounds  :: Int
         , repetitions :: Int
-        , bestArm :: GaussianArm
-        , badArm  :: GaussianArm
-        , armEstimate  :: GaussianArm
+        , bestArm :: (Double, Double)
+        , badArm  :: (Double, Double)
+        , armEstimate  :: (Double, Double)
         , numArms  :: Int }
         | Bandit
         { rounds  :: Int
-        , bestArm :: GaussianArm
-        , badArm  :: GaussianArm
-        , armEstimate  :: GaussianArm
+        , bestArm :: (Double, Double)
+        , badArm  :: (Double, Double)
+        , armEstimate  :: (Double, Double)
         , numArms  :: Int }
         | InstantRewards
         { obNoise :: Double 
         , rounds  :: Int
         , repetitions :: Int
-        , bestArm :: GaussianArm
-        , badArm  :: GaussianArm
-        , armEstimate  :: GaussianArm
+        , bestArm :: (Double, Double)
+        , badArm  :: (Double, Double)
+        , armEstimate  :: (Double, Double)
         , numArms  :: Int }
         deriving (Data, Typeable, Show, Eq)
 
