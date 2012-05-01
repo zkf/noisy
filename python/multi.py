@@ -192,7 +192,7 @@ class Something:
 if __name__ == '__main__':    
     newValue = parser.parse_args()    
     start_time = time.time()
-    pool = Pool(processes=4)
+    pool = Pool(processes=7)
     observation_noises = list()
     step = 0.1
     obs_start = 0.01
