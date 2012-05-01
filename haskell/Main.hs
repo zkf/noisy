@@ -9,9 +9,6 @@ import System.Random.Mersenne.Pure64
 import Control.Monad 
 import Data.List
 import Data.BanditSolver.LTS
-import Control.Concurrent (getNumCapabilities)
-import Control.Parallel.Strategies
-import Control.Applicative
 import Control.Monad.State
 import System.Directory
 import System.IO
@@ -19,24 +16,23 @@ import Text.Printf
 import System.Console.CmdArgs
 import System.Exit
 import Control.Monad.Writer
--- import Data.BanditSolver.OBFinder
+import Data.BanditSolver.OBFinder
 
 main :: IO ()
 main = do
     opts <- cmdArgs mode
     checkOpts opts
     runMode opts
-{-
+
 runMode :: Args -> IO ()
 runMode opts@Bandit{..} = do
     print opts
     g <- pureMT `fmap` getOpenSSLRand
     let result = evalState (findOB rounds bestArm badArm armEstimate numArms) g
     mapM_ print result
--}
+
 runMode opts@BruteForce{..}  = do
     print opts
-    cores <- getNumCapabilities
     let obNoiseRange = [obStart
                        ,obStart + obStep
                        .. obEnd]
@@ -47,15 +43,14 @@ runMode opts@BruteForce{..}  = do
     let resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
     writeResults opts resultsTr
-  where parMap' n s f = withStrategy (parBuffer n s) . map f
-{-
+
 runMode opts@InstantRewards{..} = do
     print opts
     gen <- pureMT `fmap` getOpenSSLRand
     let result = runAveragedInstantRewards bestArm badArm armEstimate numArms
                     rounds repetitions obNoise gen
     mapM_ myPrint result
--}
+
 myPrint (round, reward, dev) = putStrLn $ unwords [show round, show reward, show dev]
 
 writeResults :: Args -> [[(Int, Double, Double)]] -> IO ()
