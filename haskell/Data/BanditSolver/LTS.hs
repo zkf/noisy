@@ -9,10 +9,10 @@ module Data.BanditSolver.LTS
 
 import Control.Monad.Writer
 import Control.Monad.State
---import Data.Random (normal)
+import Data.Random (normal)
 import System.Random.Mersenne.Pure64 (PureMT, newPureMT)
-import System.Random.MWC
-import System.Random.MWC.Distributions (normal)
+-- import System.Random.MWC
+-- import System.Random.MWC.Distributions (normal)
 import Data.RVar (sampleRVar)
 import qualified Statistics.Sample as S (meanVarianceUnb)
 import Data.Vector.Generic.Mutable (write)
@@ -39,11 +39,11 @@ makeLTS armEstimate numArms ob = LTS startEstimates 0 ob
   where startEstimates = V.fromList $ replicate numArms armEstimate
 
 class Environment e where
-    getReward :: e -> ActionId -> GenIO -> IO Reward
+    getReward :: e -> ActionId -> StateT PureMT IO Reward
     
 class Solver s where
     {-# INLINE select #-}
-    select :: s -> GenIO -> IO ActionId
+    select :: s -> StateT PureMT IO ActionId
     {-# INLINE update #-}
     update :: s -> ActionId -> Reward -> s
     continue :: s -> Bool -- condition on which to stop early
@@ -141,17 +141,18 @@ runAveragedLTSIO bestArm badArm armEstimate numArms rounds repetitions ob chan =
         solvers = replicate repetitions (makeLTS myArmEstimate numArms ob)
         forceW ((!a,!b,!c,!d):xs) = (a,b,c,d) `pseq` force xs
         forceW []                 = ()
-    withSystemRandom . asGenIO $ runEnsembleIO realArms rounds solvers chan
+    gen <- newPureMT
+    evalStateT (runEnsembleIO realArms rounds solvers chan) gen
 
 runEnsembleIO :: (Environment e, Solver s) =>  e -> Int -> [s] ->
-    Chan Double -> GenIO -> IO ()
-runEnsembleIO environment rounds startSolvers chan gen = run 1 startSolvers
-  where run :: Solver s => Int -> [s] -> IO () 
+    Chan Double -> StateT PureMT IO ()
+runEnsembleIO environment rounds startSolvers chan = run 1 startSolvers
+  where run :: Solver s => Int -> [s] -> StateT PureMT IO () 
         run n solvers
             | n > rounds = return ()
             | otherwise = do
-                 solvers' <- mapM (liftM fst . oneRound environment gen) solvers
-                 writeLog solvers' n
+                 solvers' <- mapM (liftM fst . oneRound environment) solvers
+                 liftIO $ writeLog solvers' n
                  run (n + 1) solvers'
         checkpoints = makeCheckpoints rounds
         writeLog s n = when (n `elem` checkpoints) $
@@ -199,30 +200,30 @@ force (x:xs) = x `pseq` force xs
 force []     = ()
 
 {-# INLINE oneRound #-}
-oneRound :: (Environment e, Solver s) => e -> GenIO ->  s -> IO (s, Reward)
-oneRound env g solver = do
-    selected <- select solver g
-    reward   <- getReward env selected g
+oneRound :: (Environment e, Solver s) => e -> s -> StateT PureMT IO (s, Reward)
+oneRound env solver = do
+    selected <- select solver
+    reward   <- getReward env selected
     let !solver' = update solver selected reward
     return (solver', reward)
 
 {-# INLINE selectArm #-}
-selectArm :: Solver s => s -> GenIO -> IO ActionId
-selectArm solver g = do
+selectArm :: Solver s => s -> StateT PureMT IO ActionId
+selectArm solver = do
    let arms = getArms solver
        start = V.length arms - 1
-       go :: ActionId -> Double -> ActionId -> IO ActionId
+       go :: ActionId -> Double -> ActionId -> StateT PureMT IO ActionId
        go 0 maxValue index = do
-           newValue <- gaussian (arms ! 0) g
+           newValue <- gaussian (arms ! 0)
            if newValue > maxValue 
                then return 0
                else return index 
        go n maxValue index = do
-           newValue <- gaussian (arms ! n) g
+           newValue <- gaussian (arms ! n)
            if newValue > maxValue 
                then go (n - 1) newValue n
                else go (n - 1) maxValue index
-   firstValue <- gaussian (arms ! start) g
+   firstValue <- gaussian (arms ! start)
    go (start - 1) firstValue start
 
 -- Alternative to the `go' function above is this:
@@ -245,6 +246,6 @@ updateLTS solver !index !reward =
         !creward' = creward + reward
     in make arms' creward' ob
 
-gaussian :: GaussianArm -> GenIO -> IO Reward
+gaussian :: GaussianArm -> StateT PureMT IO Reward
 gaussian (GaussianArm mu sigma) =
-    normal mu sigma
+    sampleRVar $ normal mu sigma
