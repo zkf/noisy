@@ -18,68 +18,62 @@ import System.IO
 import Text.Printf
 import System.Console.CmdArgs
 import System.Exit
-import Data.BanditSolver.OBFinder
+import Control.Monad.Writer
+-- import Data.BanditSolver.OBFinder
 
 main :: IO ()
 main = do
     opts <- cmdArgs mode
     checkOpts opts
     runMode opts
-
+{-
 runMode :: Args -> IO ()
 runMode opts@Bandit{..} = do
     print opts
     g <- pureMT `fmap` getOpenSSLRand
     let result = evalState (findOB rounds bestArm badArm armEstimate numArms) g
     mapM_ print result
-
+-}
 runMode opts@BruteForce{..}  = do
     print opts
     cores <- getNumCapabilities
     let obNoiseRange = [obStart
                        ,obStart + obStep
                        .. obEnd]
-    gens <- map pureMT `fmap` replicateM (length obNoiseRange) getOpenSSLRand
-    let results = parMap' cores rseq id . getZipList $ 
-            runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions <$> 
-                ZipList obNoiseRange <*> ZipList gens
-        resultsTr = transpose results -- rows: rounds, columns: ob
+--    gens <- map pureMT `fmap` replicateM (length obNoiseRange) getOpenSSLRand
+--    let results = parMap' cores rseq id . getZipList $ 
+    results <- mapM (execWriterT . runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions)
+                                 obNoiseRange
+    let resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
-    mapM_ (writeResults opts) resultsTr
+    writeResults opts resultsTr
   where parMap' n s f = withStrategy (parBuffer n s) . map f
-
+{-
 runMode opts@InstantRewards{..} = do
     print opts
     gen <- pureMT `fmap` getOpenSSLRand
     let result = runAveragedInstantRewards bestArm badArm armEstimate numArms
                     rounds repetitions obNoise gen
     mapM_ myPrint result
-
+-}
 myPrint (round, reward, dev) = putStrLn $ unwords [show round, show reward, show dev]
 
-writeResults :: Args -> [(Int, Double, Double, Double)] -> IO ()
-writeResults BruteForce{..} resultlist = do
-    let myRounds = head.fst'.unzip4 $ resultlist
-        dir = show numArms ++ "-arms/" ++ show myRounds ++ "-rounds"
-        file = dir ++ "/" ++ "good-" ++ show bestArm ++ 
-            "_bad-" ++ show (numArms - 1) ++ "-" ++ show badArm ++
-            "_estimate-" ++ show armEstimate ++
-            "_ob-" ++ showDouble obStart ++ "-" ++ showDouble obEnd ++ 
-            "-" ++ showDouble obStep ++ "_reps-" ++ show repetitions ++ ".data"
-        fst' (x,_,_,_) = x
-        header = "# Rounds: " ++ show myRounds ++ ", repetitions: " ++ show repetitions
-            ++ "\n# Good arm ~ N" ++ show bestArm ++ ", " ++ show (numArms - 1)
-            ++ " bad arm(s) ~ N" ++ show badArm
-            ++ "\n# Observation noise range from " ++ showDouble obStart ++ " to "
-            ++ showDouble obEnd ++ " with step size " ++ showDouble obStep
-            ++ "\n\n# Observation noise | mean | standard deviation\n\n"
+writeResults :: Args -> [[(Int, Double, Double)]] -> IO ()
+writeResults mode@BruteForce{..} resultlist = do
+    let dir  = "bruteforce"
+        name = filename mode
+        file = dir ++ "/" ++ name
+        hdr = header mode
     createDirectoryIfMissing True dir
-    writeFile file header
-    appendFile file $ unlines (map prettyPrint resultlist)
-   
-prettyPrint :: (Int, Double, Double, Double) -> String
-prettyPrint (_, ob, mean, stddev) = 
-    unwords . map showDouble $ [ob, mean, stddev]
+    writeFile file hdr
+    appendFile file $ unlines (map printSegment resultlist)
+ 
+printSegment :: [(Int, Double, Double)] -> String
+printSegment l = unlines $ map prettyPrint l
+
+prettyPrint :: (Int, Double, Double) -> String
+prettyPrint (rounds, ob, mean) = 
+    unwords $ [show rounds] ++ map showDouble [ob, mean]
     
 showRational :: Rational -> String
 showRational r =
@@ -183,6 +177,33 @@ instant = InstantRewards
     } &= help "Get the instant rewards\
              \ for the specified scenario."
 
+{- 
+ - good-5.0-2.0_bad-4.0,4.0_est-10.0,0.5_num-2_ob-0.6_rounds-1000_repetitions-1000000.data
+ -}
+
+filename :: Args -> String
+filename BruteForce{..} = concat 
+    ["good-", showDouble $ fst bestArm, ",", showDouble $ snd bestArm
+    ,"_bad-", showDouble $ fst badArm, ",", showDouble $ snd badArm
+    ,"_est-", showDouble $ fst armEstimate, ",", showDouble $ snd armEstimate
+    ,"_num-", show numArms
+    ,"_obstart-", showDouble obStart
+    ,"_obend-", showDouble obEnd
+    ,"_obstep-", showDouble obStep
+    ,"_rounds-", show rounds
+    ,"_reps-", show repetitions
+    ,".data"
+    ]
+
+header :: Args -> String
+header BruteForce{..} =
+            "# Rounds: " ++ show rounds ++ ", repetitions: " ++ show repetitions
+            ++ "\n# Good arm ~ N" ++ show bestArm ++ ", " ++ show (numArms - 1)
+            ++ " bad arm(s) ~ N" ++ show badArm
+            ++ "\n# Estimate ~ N" ++ show armEstimate
+            ++ "\n# Observation noise range from " ++ showDouble obStart ++ " to "
+            ++ showDouble obEnd ++ " with step size " ++ showDouble obStep
+            ++ "\n\n# Observation noise | mean | standard deviation\n\n"
 
 mode :: Args
 mode = modes [bandit &= auto, bruteforce, instant] 

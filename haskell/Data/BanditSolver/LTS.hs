@@ -1,19 +1,28 @@
 {-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances #-}
-module Data.BanditSolver.LTS (runAveragedLTS, runOne, Environment(..),
-    updateLTS, LTS(..), makeLTS, runAvg, Solver(..), GaussianArms, GaussianArm(..),
-    runAveragedInstantRewards, GA, makeGaussianArm)
-where
+module Data.BanditSolver.LTS 
+
+(   Environment(..), Solver(..), GaussianArms, GaussianArm(..), LTS(..), GA,
+    runAveragedLTS, -- runOne,runAveragedInstantRewards 
+    updateLTS, makeLTS, -- runAvg, 
+    makeGaussianArm
+) where
+
 import Control.Monad.Writer
 import Control.Monad.State
-import Data.Random (normal)
-import System.Random.Mersenne.Pure64 (PureMT)
+--import Data.Random (normal)
+import System.Random.Mersenne.Pure64 (PureMT, newPureMT)
+import System.Random.MWC
+import System.Random.MWC.Distributions (normal)
 import Data.RVar (sampleRVar)
 import qualified Statistics.Sample as S (meanVarianceUnb)
 import Data.Vector.Generic.Mutable (write)
 import Control.Parallel (pseq)
+import Control.Concurrent.Chan.Strict
+import Control.Concurrent (forkIO, getNumCapabilities)
 import Data.Vector ((!))
 import qualified Data.Vector as V
 import Data.List
+import Control.Exception (evaluate)
 
 type ActionId = Int
 type Reward   = Double
@@ -30,11 +39,11 @@ makeLTS armEstimate numArms ob = LTS startEstimates 0 ob
   where startEstimates = V.fromList $ replicate numArms armEstimate
 
 class Environment e where
-    getReward :: e -> ActionId -> State PureMT Double
+    getReward :: e -> ActionId -> GenIO -> IO Reward
     
 class Solver s where
     {-# INLINE select #-}
-    select :: s -> State PureMT ActionId
+    select :: s -> GenIO -> IO ActionId
     {-# INLINE update #-}
     update :: s -> ActionId -> Reward -> s
     continue :: s -> Bool -- condition on which to stop early
@@ -56,7 +65,7 @@ instance Solver LTS where
     getCumulativeReward (LTS _ r _) = r
     getObservationNoise (LTS _ _ ob) = ob
 
-
+{-
 runOne :: (Environment e, Solver s) => e -> Int -> s -> State PureMT s
 runOne realArms rounds startSolver = run 0 startSolver
     where run n !solver 
@@ -71,12 +80,12 @@ runAvg :: (Environment e, Solver s) => e -> Int -> Int -> s -> State PureMT Doub
 runAvg realArms n rounds startSolver = do
     res <- mapM (runOne realArms rounds) (replicate n startSolver)
     return . mean $ map getCumulativeReward res
-
+-}
 mean :: Fractional a => [a] -> a
 mean = go 0 0
   where go len num [] = num / len
         go len num (x:xs) = go (len + 1) (num + x) xs
-
+{-
 runAveragedLTS :: GA -> GA -> GA ->  Int
     -> Int -> Int -> Double -> PureMT -> [(Int, Double, Double, Double)] -- Checkpoint, ob, mean and stddev of cumulative reward
 runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions ob randomgen = 
@@ -100,15 +109,55 @@ runEnsemble environment rounds startSolvers = run 1 startSolvers
                  solvers' <- lift $ mapM (liftM fst . oneRound environment) solvers
                  writeLog solvers' n
                  force solvers' `seq` run (n + 1) solvers'
-        checkpoints = rounds : [y * 10^x | y <- [1, 5],
-                                        x <- [1 :: Int .. floor (logBase 10 $
-                                            fromIntegral rounds/5.0 :: Double)]]
+        checkpoints = makeCheckpoints rounds
         writeLog s n = when (n `elem` checkpoints) $
             let crewards    = map getCumulativeReward s
                 (myMean, var) = S.meanVarianceUnb $ V.fromList crewards
                 ob          = getObservationNoise $ head s
             in tell [(n, ob, myMean, sqrt var)]
+-}
 
+runAveragedLTS :: GA -> GA -> GA ->  Int
+    -> Int -> Int -> Double -> WriterT [(Int, Double, Double)] IO () -- Checkpoint, ob, mean of cumulative reward
+runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions ob = do
+    threads <- liftIO getNumCapabilities
+    let chunk = repetitions `div` threads
+    chans <- liftIO $ replicateM threads newChan
+    _ <- liftIO $ mapM (forkIO . runAveragedLTSIO bestArm badArm armEstimate numArms rounds chunk ob) chans
+    forM_ (makeCheckpoints rounds) $ \n -> do
+        results <- liftIO $ mapM readChan chans
+        let m = sum results / fromIntegral repetitions
+        tell [(n, ob, m)]
+    return ()
+
+runAveragedLTSIO :: GA -> GA -> GA ->  Int
+    -> Int -> Int -> Double -> Chan Double -> IO () -- Checkpoint, ob, mean and stddev of cumulative reward
+runAveragedLTSIO bestArm badArm armEstimate numArms rounds repetitions ob chan = do
+    let myBestArm = makeGaussianArm bestArm
+        myBadArm  = makeGaussianArm badArm
+        myArmEstimate = makeGaussianArm armEstimate
+        badArms = replicate (numArms - 1) myBadArm
+        realArms = V.fromList $ myBestArm : badArms
+        solvers = replicate repetitions (makeLTS myArmEstimate numArms ob)
+        forceW ((!a,!b,!c,!d):xs) = (a,b,c,d) `pseq` force xs
+        forceW []                 = ()
+    withSystemRandom . asGenIO $ runEnsembleIO realArms rounds solvers chan
+
+runEnsembleIO :: (Environment e, Solver s) =>  e -> Int -> [s] ->
+    Chan Double -> GenIO -> IO ()
+runEnsembleIO environment rounds startSolvers chan gen = run 1 startSolvers
+  where run :: Solver s => Int -> [s] -> IO () 
+        run n solvers
+            | n > rounds = return ()
+            | otherwise = do
+                 solvers' <- mapM (liftM fst . oneRound environment gen) solvers
+                 writeLog solvers' n
+                 run (n + 1) solvers'
+        checkpoints = makeCheckpoints rounds
+        writeLog s n = when (n `elem` checkpoints) $
+            let crewards      = sum $ map getCumulativeReward s
+            in evaluate crewards >>= writeChan chan
+{-
 runAveragedInstantRewards :: GA -> GA -> GA -> Int
     -> Int -> Int -> Double -> PureMT -> [(Int, Reward, Double)]
 runAveragedInstantRewards bestArm badArm armEstimate numArms rounds repetitions ob gen =
@@ -135,7 +184,7 @@ runInstantRewards environment startAgents rounds = run 1 startAgents
         writeLog rewards n = when (n `elem` checkpoints) $
             let (m, var) = S.meanVarianceUnb $ V.fromList rewards
             in tell [(n, m, sqrt var)]
-
+-}
 makeCheckpoints :: Int -> [Int]
 makeCheckpoints rounds =
     nub
@@ -150,30 +199,30 @@ force (x:xs) = x `pseq` force xs
 force []     = ()
 
 {-# INLINE oneRound #-}
-oneRound :: (Environment e, Solver s) => e -> s -> State PureMT (s, Reward)
-oneRound env solver = do
-    selected <- select solver
-    reward   <- getReward env selected
+oneRound :: (Environment e, Solver s) => e -> GenIO ->  s -> IO (s, Reward)
+oneRound env g solver = do
+    selected <- select solver g
+    reward   <- getReward env selected g
     let !solver' = update solver selected reward
     return (solver', reward)
 
 {-# INLINE selectArm #-}
-selectArm :: Solver s => s -> State PureMT ActionId
-selectArm solver = do
+selectArm :: Solver s => s -> GenIO -> IO ActionId
+selectArm solver g = do
    let arms = getArms solver
        start = V.length arms - 1
-       go :: ActionId -> Double -> ActionId -> State PureMT ActionId
+       go :: ActionId -> Double -> ActionId -> IO ActionId
        go 0 maxValue index = do
-           newValue <- gaussian (arms ! 0)
+           newValue <- gaussian (arms ! 0) g
            if newValue > maxValue 
                then return 0
                else return index 
        go n maxValue index = do
-           newValue <- gaussian (arms ! n)
+           newValue <- gaussian (arms ! n) g
            if newValue > maxValue 
                then go (n - 1) newValue n
                else go (n - 1) maxValue index
-   firstValue <- gaussian (arms ! start)
+   firstValue <- gaussian (arms ! start) g
    go (start - 1) firstValue start
 
 -- Alternative to the `go' function above is this:
@@ -196,6 +245,6 @@ updateLTS solver !index !reward =
         !creward' = creward + reward
     in make arms' creward' ob
 
-gaussian :: GaussianArm -> State PureMT Double
+gaussian :: GaussianArm -> GenIO -> IO Reward
 gaussian (GaussianArm mu sigma) =
-    sampleRVar $ normal mu sigma
+    normal mu sigma
