@@ -222,6 +222,7 @@ updateLTS solver !index !reward =
     in make arms' creward' ob
 
 {-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomStateIO Reward #-}
+{-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomState Reward #-}
 {-# INLINABLE gaussian #-}
 gaussian :: (MonadRandom m) => GaussianArm -> m Reward
 gaussian (GaussianArm mu sigma) =
