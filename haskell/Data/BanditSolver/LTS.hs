@@ -1,5 +1,4 @@
-{-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances,
-    Rank2Types #-}
+{-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances #-}
 module Data.BanditSolver.LTS 
 
 (   Environment(..), Solver(..), GaussianArms, GaussianArm(..), LTS(..), GA,
@@ -29,7 +28,8 @@ type Reward   = Double
 data GaussianArm = GaussianArm !Double !Double deriving (Show)-- Mean, standard deviation
 type GaussianArms = V.Vector GaussianArm
 data LTS = LTS !GaussianArms !Double !Double deriving (Show)-- arms, cumulative reward, obnoise
-type RandomState a =  (MonadRandom m) => m a
+type RandomStateIO = StateT PureMT IO
+type RandomState = State PureMT
 
 type GA = (Double, Double)
 makeGaussianArm :: GA -> GaussianArm
@@ -40,23 +40,25 @@ makeLTS armEstimate numArms ob = LTS startEstimates 0 ob
   where startEstimates = V.fromList $ replicate numArms armEstimate
 
 class Environment e where
-    getReward :: e -> ActionId -> RandomState Reward
+    getReward :: (MonadRandom m) => e -> ActionId -> m Reward
     
 class Solver s where
-    {-# INLINE select #-}
-    select :: s -> RandomState ActionId
-    {-# INLINE update #-}
+    select :: (MonadRandom m) => s -> m ActionId
     update :: s -> ActionId -> Reward -> s
     continue :: s -> Bool -- condition on which to stop early
     getArms :: s -> GaussianArms
     getCumulativeReward :: s -> Double
     getObservationNoise :: s -> Double
     make :: GaussianArms -> Double -> Double -> s
+    {-# INLINE select #-}
     select = selectArm
+    {-# INLINE update #-}
     update = updateLTS
     continue _ = True
 
 instance Environment GaussianArms where 
+    {-# SPECIALIZE INLINE getReward :: GaussianArms -> ActionId -> RandomStateIO Reward #-}
+    {-# SPECIALIZE INLINE getReward :: GaussianArms -> ActionId -> RandomState Reward #-}
     {-# INLINE getReward #-}
     getReward arms idx = gaussian (arms ! idx)
 
@@ -67,7 +69,8 @@ instance Solver LTS where
     getObservationNoise (LTS _ _ ob) = ob
 
 
-runOne :: (Environment e, Solver s) => e -> Int -> s -> RandomState s
+{-# SPECIALIZE INLINE runOne :: (Environment e, Solver s) => e -> Int -> s -> RandomState s #-}
+runOne :: (MonadRandom m, Environment e, Solver s) => e -> Int -> s -> m s
 runOne realArms rounds startSolver = run 0 startSolver
     where run n !solver 
             | n == rounds = return solver
@@ -77,7 +80,9 @@ runOne realArms rounds startSolver = run 0 startSolver
                     then run (n+1) solver'
                     else return solver'
 
-runAvg :: (Environment e, Solver s) => e -> Int -> Int -> s -> RandomState Double
+{-# SPECIALIZE INLINE runAvg :: (Environment e, Solver s) => e -> Int -> Int 
+ -> s -> RandomState Reward #-}
+runAvg :: (MonadRandom m, Environment e, Solver s) => e -> Int -> Int -> s -> m Reward
 runAvg realArms repetitions rounds startSolver = do
     res <- mapM (runOne realArms rounds) (replicate repetitions startSolver)
     return . mean $ map getCumulativeReward res
@@ -113,9 +118,9 @@ runAveragedLTSIO bestArm badArm armEstimate numArms rounds repetitions ob chan =
     evalStateT (runEnsembleIO realArms rounds solvers chan) gen
 
 runEnsembleIO :: (Environment e, Solver s) =>  e -> Int -> [s] ->
-    Chan Double -> StateT PureMT IO ()
+    Chan Double -> RandomStateIO ()
 runEnsembleIO environment rounds startSolvers chan = run 1 startSolvers
-  where run :: Solver s => Int -> [s] -> StateT PureMT IO () 
+  where run :: Solver s => Int -> [s] -> RandomStateIO () 
         run n solvers
             | n > rounds = return ()
             | otherwise = do
@@ -165,20 +170,23 @@ force :: [a] -> ()
 force (x:xs) = x `pseq` force xs
 force []     = ()
 
+{-# SPECIALIZE INLINE oneRound :: GaussianArms -> LTS -> RandomStateIO (LTS, Reward) #-}
+{-# SPECIALIZE INLINE oneRound :: GaussianArms -> LTS -> RandomState (LTS, Reward) #-}
 {-# INLINE oneRound #-}
-oneRound :: (Environment e, Solver s) => e -> s -> RandomState (s, Reward)
+oneRound :: (MonadRandom m, Environment e, Solver s) => e -> s -> m (s, Reward)
 oneRound env solver = do
     selected <- select solver
     reward   <- getReward env selected
     let !solver' = update solver selected reward
     return (solver', reward)
 
+{-# SPECIALIZE INLINE selectArm :: LTS -> RandomStateIO ActionId #-}
+{-# SPECIALIZE INLINE selectArm :: LTS -> RandomState ActionId #-}
 {-# INLINE selectArm #-}
-selectArm :: Solver s => s -> RandomState ActionId
+selectArm :: (MonadRandom m, Solver s) => s -> m ActionId
 selectArm solver = do
    let arms = getArms solver
        start = V.length arms - 1
-       go :: ActionId -> Double -> ActionId -> RandomState ActionId
        go 0 maxValue index = do
            newValue <- gaussian (arms ! 0)
            if newValue > maxValue 
@@ -197,6 +205,7 @@ selectArm solver = do
 -- The downside is that it is much slower.
 
 
+{-# SPECIALIZE INLINE updateLTS :: LTS -> ActionId -> Reward -> LTS #-}
 {-# INLINE updateLTS #-}
 updateLTS :: Solver s => s -> ActionId -> Reward -> s
 updateLTS solver !index !reward = 
@@ -212,6 +221,9 @@ updateLTS solver !index !reward =
         !creward' = creward + reward
     in make arms' creward' ob
 
-gaussian :: GaussianArm -> RandomState Reward
+{-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomStateIO Reward #-}
+{-# INLINABLE gaussian #-}
+gaussian :: (MonadRandom m) => GaussianArm -> m Reward
 gaussian (GaussianArm mu sigma) =
     sampleRVar $ normal mu sigma
+
