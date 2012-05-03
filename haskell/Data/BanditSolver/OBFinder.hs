@@ -22,7 +22,7 @@ findOB rounds bestArm badArm armEstimate numArms = do
         numActions = V.length actions
         obEstMu     = 2.0 -- Twice the scaled expected reward from best arm
         obEstSigma  = 0.1
-        obOb        = 0.15
+        obOb        = 0.00001
         obSolver = makeLTS (GaussianArm obEstMu obEstSigma) numActions obOb
         env = makeEnv rounds myBestArm myBadArm myArmEstimate numArms actions
     (LTS arms _ _) <- runOne env obFinderRounds obSolver
