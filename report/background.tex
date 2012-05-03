@@ -1,6 +1,65 @@
 \chapter{Background}
 \label{ch:background}
 
+\section{The multi-armed bandit problem}
+A popular and surprisingly fitting way to model stochastic optimization problems 
+is through the multi-armed bandit scenario. Imagine, if you will, the iconic 
+gambling machine to be found in any casino. Only this apparatus has not one, but 
+many arms with which a player may try her luck. Oh, but which arm to choose? 
+With so many possible choices, a strategy for optimising the machine’s payout 
+must be employed. 
+
+Before any arm-pulling has been done, nothing is known about the possible 
+payoffs from the multitude of available arms exept that some arms are better 
+than others -- obviously our player will profit the most from playing only the 
+best arm. And so, it comes to this: she must make a tradeoff between exploration 
+-- discovering which arm is truly the best one -- and exploitation -- actually 
+picking the best arm.
+
+
+\section{Learning automata}
+The model of a learning automaton is illustrated in figure~\ref{fig:la}.
+\begin{figure}[ht]
+        \begin{verbatim}
+                   |-------------|  r
+              |--->| Environment |----|
+              |    |-------------|    |
+              |                       | 
+              | a  |-------------|    |
+              |----|   Learner   |<---|
+                   |-------------|
+         
+                     a: action
+                     r: reward
+        \end{verbatim}
+        \label{fig:la}
+    \caption{Replace with drawing}
+\end{figure}
+
+\section{Thompson sampling}
+Thompson sampling is a technique for updating prior knowledge with new 
+information.
+
+It employs the nefarious and infamous parameter known as the Observation Noise, 
+or $\sigma_{ob}$. This is not for the faint of heart!
+
+
+\section{The Goore Game}
+Introduced by Tsetlin in 1973, the Goore game is a cooperation game where each  
+player is not privvy to information on the other players choices. It can be 
+described as a voting process where the referree knows the correct answer, and 
+the referrers cast their votes as simple ‘yes’ or ‘no’. The correct answer is a 
+certain number of yes’s and no’s, and players are rewarded based on how close 
+they collectively are to the ideal solution.
+
+
+
+\section{Gaussian process}
+A secretive procedure invented by a certain Mr. G. Process. Contrary to 
+widespread belief, it does not involve the use of black magick.
+
+
+
 % \section{Sample stuff}
 % Some simple and useful latex formatting.
 % 
