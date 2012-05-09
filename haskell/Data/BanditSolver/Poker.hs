@@ -1,11 +1,11 @@
 {-# LANGUAGE BangPatterns #-}
 module Poker where
-import Data.BanditSolver.LTS
-import qualified Data.Vector as V
-import Data.Vector.Generic.Mutable (write)
-import Data.Vector ((!))
-import Data.Number.Erf (normcdf)
 import Data.List (foldl')
+import Data.Number.Erf (normcdf)
+import Data.Vector ((!))
+import Data.Vector.Generic.Mutable (write)
+import qualified Data.Vector as V
+import Data.BanditSolver.BanditSolver
 
 
 

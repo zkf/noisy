@@ -1,10 +1,11 @@
 module Data.BanditSolver.OBFinder (findOB) where
 
-import Data.BanditSolver.LTS
-import Data.List (sortBy)
 import Control.Monad.State
+import Data.List (sortBy)
 import System.Random.Mersenne.Pure64
 import qualified Data.Vector as V
+import Data.BanditSolver.BanditSolver
+import Data.BanditSolver.LTS
     
 -- testing
 -- muStartEstimate = muBestArm * 2.0

@@ -1,26 +1,26 @@
 {-# Language DeriveDataTypeable, RecordWildCards, TypeSynonymInstances,
     FlexibleInstances #-}
 module Main where
+import Control.Applicative
+import Control.Concurrent (getNumCapabilities)
+import Control.Monad 
+import Control.Monad.State
+import Control.Monad.Writer
+import Control.Parallel.Strategies
+import Data.Binary.Strict.Get
+import Data.List
+import Data.Maybe
 import Data.Word
 import Foreign.Storable (sizeOf)
 import OpenSSL.Random
-import Data.Binary.Strict.Get
-import System.Random.Mersenne.Pure64 
-import Control.Monad 
-import Data.List
-import Data.BanditSolver.LTS
-import Control.Monad.State
-import System.Directory
-import System.IO
-import Text.Printf
 import System.Console.CmdArgs
+import System.Directory
 import System.Exit
-import Control.Monad.Writer
+import System.IO
+import System.Random.Mersenne.Pure64 
+import Text.Printf
+import Data.BanditSolver.LTS
 import Data.BanditSolver.OBFinder
-import Control.Concurrent (getNumCapabilities)
-import Control.Parallel.Strategies
-import Control.Applicative
-import Data.Maybe
 
 main :: IO ()
 main = do
