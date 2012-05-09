@@ -17,6 +17,10 @@ import System.Console.CmdArgs
 import System.Exit
 import Control.Monad.Writer
 import Data.BanditSolver.OBFinder
+import Control.Concurrent (getNumCapabilities)
+import Control.Parallel.Strategies
+import Control.Applicative
+import Data.Maybe
 
 main :: IO ()
 main = do
@@ -27,9 +31,22 @@ main = do
 runMode :: Args -> IO ()
 runMode opts@Bandit{..} = do
     print opts
-    g <- pureMT `fmap` getOpenSSLRand
-    let result = evalState (findOB rounds bestArm badArm armEstimate numArms) g
+    threads <- getNumCapabilities
+    let roundsList = [rounds] --  takeWhile (< rounds) [x * 10^y | y <- [(1::Int)..], x <- [1, 3]] ++ [rounds]
+        (bestArmList, badArmList, numArmsList) = 
+            case vary of 
+                 Nothing           -> ([bestArm], [badArm], [numArms])
+                 Just BestArmMean -> ([(m, snd bestArm) | let start = fst bestArm
+                                                   , let step = fst $ fromJust stepEnd
+                                                   , let stop = snd $ fromJust stepEnd
+                                                   , m <- [start, start + step .. stop]]
+                                 , [badArm], [numArms])
+                 -- BestArmStdDev -> 
+    gs <- replicateM (length roundsList * length bestArmList * length badArmList * length numArmsList)
+                     $ pureMT `fmap` getOpenSSLRand
+    let result = parMap' threads id . getZipList $ ZipList (evalState <$> (findOB <$> roundsList <*> bestArmList <*> badArmList <*> [armEstimate] <*> numArmsList)) <*> ZipList gs
     mapM_ print result
+  where parMap' n f = withStrategy (parBuffer n rseq) . map f
 
 runMode opts@BruteForce{..}  = do
     print opts
@@ -110,6 +127,10 @@ showProgress xs = do
         lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
     hPutStrLn stderr " Done." 
 
+
+data WhatRange = BestArmMean | BestArmStdDev
+    deriving (Eq,Show,Data,Typeable)
+
 data Args = BruteForce
         { obStart :: Double
         , obEnd   :: Double
@@ -125,7 +146,9 @@ data Args = BruteForce
         , bestArm :: (Double, Double)
         , badArm  :: (Double, Double)
         , armEstimate  :: (Double, Double)
-        , numArms  :: Int }
+        , numArms  :: Int
+        , vary  :: Maybe WhatRange
+        , stepEnd  :: Maybe (Double, Double)}
         | InstantRewards
         { obNoise :: Double 
         , rounds  :: Int
@@ -157,6 +180,8 @@ bandit = Bandit
     ,badArm      = def
     ,armEstimate = def
     ,numArms     = def
+    ,vary        = def
+    ,stepEnd     = def
     } &= help "Use an LTS bandit solver to find the best observation noise\
              \ for the specified scenario."
 
@@ -218,7 +243,11 @@ checkOpts opts =
                 ,(obStep <= 0,
                     "Observation noise step must be > 0.", True)
                 ]
-            Bandit{..} -> []
+            Bandit{..} -> 
+                [((isJust vary && isNothing stepEnd)
+                    || (isNothing vary && isJust stepEnd) 
+                    , "Either both or none of vary and stepend must be specified"
+                    , True)]
             InstantRewards{..} ->
                 [(obNoise <= 0, "Observation noise must be > 0.", True)
                 ,(repetitions < 1, "Repetitions must be > 0.", True)
