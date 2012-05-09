@@ -2,6 +2,7 @@
 module Data.BanditSolver.LTS 
 
 (   Environment(..), Solver(..), GaussianArms, GaussianArm(..), LTS(..), GA,
+    ActionId, RandomState, Reward,
     runAveragedLTS, runOne,runAveragedInstantRewards,
     updateLTS, makeLTS, runAvg, 
     makeGaussianArm
@@ -46,14 +47,7 @@ class Solver s where
     select :: (MonadRandom m) => s -> m ActionId
     update :: s -> ActionId -> Reward -> s
     continue :: s -> Bool -- condition on which to stop early
-    getArms :: s -> GaussianArms
     getCumulativeReward :: s -> Double
-    getObservationNoise :: s -> Double
-    make :: GaussianArms -> Double -> Double -> s
-    {-# INLINE select #-}
-    select = selectArm
-    {-# INLINE update #-}
-    update = updateLTS
     continue _ = True
 
 instance Environment GaussianArms where 
@@ -63,10 +57,11 @@ instance Environment GaussianArms where
     getReward arms idx = gaussian (arms ! idx)
 
 instance Solver LTS where
-    make = LTS
-    getArms (LTS arms _ _) = arms
+    {-# INLINE select #-}
+    select = selectArm
+    {-# INLINE update #-}
+    update = updateLTS
     getCumulativeReward (LTS _ r _) = r
-    getObservationNoise (LTS _ _ ob) = ob
 
 
 {-# SPECIALIZE INLINE runOne :: (Environment e, Solver s) => e -> Int -> s -> RandomState s #-}
@@ -183,10 +178,9 @@ oneRound env solver = do
 {-# SPECIALIZE INLINE selectArm :: LTS -> RandomStateIO ActionId #-}
 {-# SPECIALIZE INLINE selectArm :: LTS -> RandomState ActionId #-}
 {-# INLINE selectArm #-}
-selectArm :: (MonadRandom m, Solver s) => s -> m ActionId
-selectArm solver = do
-   let arms = getArms solver
-       start = V.length arms - 1
+selectArm :: (MonadRandom m) => LTS -> m ActionId
+selectArm (LTS arms _ _) = do
+   let start = V.length arms - 1
        go 0 maxValue index = do
            newValue <- gaussian (arms ! 0)
            if newValue > maxValue 
@@ -207,19 +201,16 @@ selectArm solver = do
 
 {-# SPECIALIZE INLINE updateLTS :: LTS -> ActionId -> Reward -> LTS #-}
 {-# INLINE updateLTS #-}
-updateLTS :: Solver s => s -> ActionId -> Reward -> s
-updateLTS solver !index !reward = 
-    let arms    = getArms solver
-        creward = getCumulativeReward solver
-        ob      = getObservationNoise solver
-        (GaussianArm mu sigma) = arms ! index
+updateLTS :: LTS -> ActionId -> Reward -> LTS
+updateLTS (LTS arms creward ob) !index !reward = 
+    let (GaussianArm mu sigma) = arms ! index
         armVariance = sigma * sigma
         obVariance  = ob * ob
         !mu'      = (armVariance * reward + obVariance * mu)/(armVariance + obVariance)
         !sigma'   = sqrt $ (armVariance * obVariance)/(armVariance + obVariance)
         !arms'    =  V.modify (\v -> write v index (GaussianArm mu' sigma')) arms
         !creward' = creward + reward
-    in make arms' creward' ob
+    in LTS arms' creward' ob
 
 {-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomStateIO Reward #-}
 {-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomState Reward #-}
