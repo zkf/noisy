@@ -68,19 +68,26 @@ widespread belief, it does not involve the use of black magick.
 
 \section{Algorithms for solving the multi-armed bandit problem}
 
-In addition to local Thompson sampling, we implemented a few other algorithms 
-for comparing optimised Thompson samplers. All the algorithms are described in 
-the next subsections.
+In addition to local Thompson sampling, we implemented the UCB1 algorithm for 
+comparing optimised Thompson samplers. Both algorithms are described in the next 
+subsections.
 
 \subsection{Local Thompson sampling}
+A lesser known algorithm, based on principles set forth by Thompson in 1933. 
+formattingfor every available arm it keeps a distribution estimate, which is 
+updated based on received reward. The use of Thompson sampling in the bandit 
+setting depends on a parameter known as observation noise, $\sigma_{ob}$, which 
+is assigned a value based on how much new information is to be trusted. A low 
+observation noise signifies that new information should be considered 
+trustworthy, while a high value means that observations are insecure. 
 
 \subsection{UCB1}
 
 UCB1 (Upper Confidence Bound) is a well-known algorithm for multi-armed bandits.
 It is popular due to being very simple and reasonably performant. In comparison 
-to LTS, it does not require any constant parameters, and in place of a starting 
-estimate for the available arms it is initialised by playing each available arm 
-once.
+to LTS, it does not require any constant parameters, and in place of a given 
+start estimate for the available arms the fist $K$ rounds are dedicated to 
+initialising the arm estimates by playing every arm once.
 
 The UCB1 strategy is simply to play the the arm with index $i$ such that
 \begin{displaymath}
