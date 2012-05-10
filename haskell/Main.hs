@@ -297,6 +297,8 @@ checkOpts opts =
                 [(algo == LTS && obNoise <= 0, "Observation noise must be > 0.", True)
                 ,(algo == LTS && armEstimate == (0.0,0.0),
                     "Estimate has default value (0.0, 0.0).", False)
+                ,(algo == UCB1 && numArms > rounds,
+                    "UCB1 does not work when the number of arms is > rounds.", True)
                 ,(repetitions < 1, "Repetitions must be > 0.", True)
                 ]
 
