@@ -1,0 +1,16 @@
+import math
+import random
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+
+#rewardsci = norm.pdf(5, 0.0, 0.1)
+#rewardmine = normal(5, 0.0, 0.1)
+
+#print rewardsci + " " + rewardmine
+print math.e
+
+#def normal(x,u,o):
+	#return (1/root(2*math.pi*o))math.e^(-((x-u)^2)/2*o)
