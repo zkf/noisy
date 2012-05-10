@@ -111,7 +111,7 @@ force (x:xs) = x `pseq` force xs
 force []     = ()
 
 makeCheckpoints :: Int -> [Int]
-makeCheckpoints rounds = takeWhile (< rounds) [10 * 2^x | x <- [0..]] ++ [rounds]
+makeCheckpoints rounds = takeWhile (< rounds) [1 * 2^x | x <- [0..]] ++ [rounds]
 
 showDouble :: Double -> String
 showDouble = printf "%f" 
