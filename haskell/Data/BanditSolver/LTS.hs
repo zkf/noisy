@@ -18,26 +18,14 @@ import Data.Vector ((!))
 import Data.Vector.Generic.Mutable (write)
 import System.Random.Mersenne.Pure64 (PureMT, newPureMT)
 import qualified Data.Vector as V
+import Text.Printf
 import Data.BanditSolver.BanditSolver
 
-data GaussianArm = GaussianArm !Double !Double deriving (Show)-- Mean, standard deviation
-type GaussianArms = V.Vector GaussianArm
 data LTS = LTS !GaussianArms !Double !Double deriving (Show)-- arms, cumulative reward, obnoise
-
-type GA = (Double, Double)
-makeGaussianArm :: GA -> GaussianArm
-makeGaussianArm (mu, sigma) = GaussianArm mu sigma
 
 makeLTS :: GaussianArm -> Int -> Double -> LTS
 makeLTS armEstimate numArms ob = LTS startEstimates 0 ob
   where startEstimates = V.fromList $ replicate numArms armEstimate
-
-
-instance Environment GaussianArms where 
-    {-# SPECIALIZE INLINE getReward :: GaussianArms -> ActionId -> RandomStateIO Reward #-}
-    {-# SPECIALIZE INLINE getReward :: GaussianArms -> ActionId -> RandomState Reward #-}
-    {-# INLINE getReward #-}
-    getReward arms idx = gaussian (arms ! idx)
 
 instance Solver LTS where
     {-# INLINE select #-}
@@ -51,7 +39,7 @@ instance Solver LTS where
 
 
 runAveragedLTS :: GA -> GA -> GA ->  Int
-    -> Int -> Int -> Double -> WriterT [(Int, Double, Double)] IO () -- Checkpoint, ob, mean of cumulative reward
+    -> Int -> Int -> Double -> WriterT [String] IO () -- Checkpoint, ob, mean of cumulative reward
 runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions ob = do
     threads <- lift getNumCapabilities
     let chunk = repetitions `div` threads
@@ -60,8 +48,11 @@ runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions ob = do
     forM_ (makeCheckpoints rounds) $ \n -> do
         results <- liftIO $ mapM readChan chans
         let m = sum results / fromIntegral repetitions
-        tell [(n, ob, m)]
+        tell [ unwords [show n, showDouble ob, showDouble m]]
     return ()
+
+showDouble :: Double -> String
+showDouble = printf "%f" 
 
 runAveragedLTSIO :: GA -> GA -> GA ->  Int
     -> Int -> Int -> Double -> Chan Double -> IO () -- Checkpoint, ob, mean and stddev of cumulative reward
@@ -76,7 +67,7 @@ runAveragedLTSIO bestArm badArm armEstimate numArms rounds repetitions ob chan =
     evalStateT (runEnsembleIO realArms rounds solvers chan) gen
 
 runAveragedInstantRewards :: GA -> GA -> GA -> Int
-    -> Int -> Int -> Double -> PureMT -> [(Int, Reward, Double)]
+    -> Int -> Int -> Double -> PureMT -> [String]
 runAveragedInstantRewards bestArm badArm armEstimate numArms rounds repetitions ob gen =
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm
@@ -122,11 +113,4 @@ updateLTS (LTS arms creward ob) !index !reward =
         !arms'    =  V.modify (\v -> write v index (GaussianArm mu' sigma')) arms
         !creward' = creward + reward
     in LTS arms' creward' ob
-
-{-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomStateIO Reward #-}
-{-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomState Reward #-}
-{-# INLINABLE gaussian #-}
-gaussian :: (MonadRandom m) => GaussianArm -> m Reward
-gaussian (GaussianArm mu sigma) =
-    sampleRVar $ normal mu sigma
 

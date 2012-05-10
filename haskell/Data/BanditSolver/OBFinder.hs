@@ -6,6 +6,7 @@ import System.Random.Mersenne.Pure64
 import qualified Data.Vector as V
 import Data.BanditSolver.BanditSolver
 import Data.BanditSolver.LTS
+import Text.Printf
     
 -- testing
 -- muStartEstimate = muBestArm * 2.0
@@ -14,7 +15,7 @@ obFinderRounds :: Int
 obFinderRounds = 10000
 
 findOB :: Int -> GA -> GA -> GA -> Int
-    -> State PureMT (Double, Double, Double, Double, Int, Int, Double)
+    -> State PureMT String
 findOB rounds bestArm badArm armEstimate numArms = do
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm
@@ -37,8 +38,14 @@ findOB rounds bestArm badArm armEstimate numArms = do
                      . V.toList
                      $ V.zipWith zipFun arms actions
     return 
-      . (\o -> (fst bestArm, snd bestArm, fst badArm, snd badArm, numArms, rounds, o))
+      . (\o -> unwords
+            [unwords $ map showDouble [fst bestArm, snd bestArm, fst badArm, snd badArm]
+            ,show numArms, show rounds, showDouble o])
       . fst' . head $ bestOB 10
+
+showDouble :: Double -> String
+showDouble = printf "%f" 
+
 
 makeEnv :: Int -> GaussianArm -> GaussianArm -> GaussianArm -> Int
     -> V.Vector Double -> Env

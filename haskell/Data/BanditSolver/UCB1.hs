@@ -40,7 +40,7 @@ instance Solver UCB1 where
     getCumulativeReward (UCB1 rewards _) = V.sum rewards
 
 runAveragedInstantRewards :: GA -> GA -> Int
-    -> Int -> Int -> PureMT -> [(Int, Reward, Double)]
+    -> Int -> Int -> PureMT -> [String]
 runAveragedInstantRewards bestArm badArm numArms rounds repetitions gen =
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm

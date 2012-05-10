@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances, Rank2Types #-}
 module Data.BanditSolver.BanditSolver 
 ( runOne
 , runAvg
@@ -6,12 +6,17 @@ module Data.BanditSolver.BanditSolver
 , runEnsembleIO
 , oneRound
 , makeCheckpoints
+, makeGaussianArm
+, gaussian
 , ActionId
 , Reward
 , Environment (..)
 , Solver (..)
 , RandomStateIO
 , RandomState
+, GA
+, GaussianArm (..)
+, GaussianArms
 ) where 
 
 import Control.Concurrent.Chan.Strict
@@ -19,16 +24,30 @@ import Control.Exception (evaluate)
 import Control.Monad.State
 import Control.Monad.Writer
 import Control.Parallel (pseq)
-import Data.List
-import Data.Random (MonadRandom)
+import Data.RVar (sampleRVar)
+import Data.Random (MonadRandom, normal)
 import System.Random.Mersenne.Pure64
 import qualified Data.Vector as V
+import Data.Vector ((!))
 import qualified Statistics.Sample as S
+import Text.Printf (printf)
 
 type ActionId = Int
 type Reward   = Double
 type RandomStateIO = StateT PureMT IO
 type RandomState = State PureMT
+type GA = (Double, Double)
+makeGaussianArm :: GA -> GaussianArm
+makeGaussianArm (mu, sigma) = GaussianArm mu sigma
+data GaussianArm = GaussianArm !Double !Double deriving (Show)-- Mean, standard deviation
+type GaussianArms = V.Vector GaussianArm
+
+instance Environment GaussianArms where 
+    {-# SPECIALIZE INLINE getReward :: GaussianArms -> ActionId -> RandomStateIO Reward #-}
+    {-# SPECIALIZE INLINE getReward :: GaussianArms -> ActionId -> RandomState Reward #-}
+    {-# INLINE getReward #-}
+    getReward arms idx = gaussian (arms ! idx)
+
 
 class Environment e where
     getReward :: (MonadRandom m) => e -> ActionId -> m Reward
@@ -74,7 +93,7 @@ runEnsembleIO environment rounds startSolvers chan = run 1 startSolvers
             in evaluate crewards >>= writeChan chan
 
 runInstantRewards :: (Environment e, Solver s) => e -> [s] -> Int 
-    -> WriterT [(Int, Reward, Double)] (State PureMT) ()
+    -> WriterT [String] (State PureMT) ()
 runInstantRewards environment startAgents rounds = run 1 startAgents
   where run n agents
             | n > rounds  = return ()
@@ -85,21 +104,18 @@ runInstantRewards environment startAgents rounds = run 1 startAgents
         checkpoints = makeCheckpoints rounds
         writeLog rewards n = when (n `elem` checkpoints) $
             let (m, var) = S.meanVarianceUnb $ V.fromList rewards
-            in tell [(n, m, sqrt var)]
+            in tell $ [unwords [show n, showDouble m, showDouble $ sqrt var]]
 
 force :: [a] -> () 
 force (x:xs) = x `pseq` force xs
 force []     = ()
 
-
 makeCheckpoints :: Int -> [Int]
-makeCheckpoints rounds =
-    nub
-    . sort
-    $ rounds : [c | y <- [1..99]
-          , x <- [0 :: Int .. floor ( logBase 10 (fromIntegral rounds) - 1 :: Double)]
-          , let c = y * 10^x
-          , c < rounds]
+makeCheckpoints rounds = takeWhile (< rounds) [10 * 2^x | x <- [0..]] ++ [rounds]
+
+showDouble :: Double -> String
+showDouble = printf "%f" 
+
 
 {-# INLINE oneRound #-}
 oneRound :: (MonadRandom m, Environment e, Solver s) => e -> s -> m (s, Reward)
@@ -113,4 +129,11 @@ mean :: Fractional a => [a] -> a
 mean = go 0 0
   where go len num [] = num / len
         go len num (x:xs) = go (len + 1) (num + x) xs
+
+{-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomStateIO Reward #-}
+{-# SPECIALIZE INLINE gaussian :: GaussianArm -> RandomState Reward #-}
+{-# INLINABLE gaussian #-}
+gaussian :: (MonadRandom m) => GaussianArm -> m Reward
+gaussian (GaussianArm mu sigma) =
+    sampleRVar $ normal mu sigma
 
