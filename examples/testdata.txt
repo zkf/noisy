@@ -1,0 +1,2001 @@
+Cumulative reward: 223.54 after 50 rounds using ob: 0.1
+
+Cumulative reward: 240.44 after 50 rounds using ob: 0.2
+
+Cumulative reward: 233.00 after 50 rounds using ob: 0.30000000000000004
+
+Cumulative reward: 253.49 after 50 rounds using ob: 0.4
+
+Cumulative reward: 226.79 after 50 rounds using ob: 0.5
+
+Cumulative reward: 225.65 after 50 rounds using ob: 0.6
+
+Cumulative reward: 259.37 after 50 rounds using ob: 0.7
+
+Cumulative reward: 258.97 after 50 rounds using ob: 0.7999999999999999
+
+Cumulative reward: 245.93 after 50 rounds using ob: 0.8999999999999999
+
+Cumulative reward: 234.63 after 50 rounds using ob: 0.9999999999999999
+
+Cumulative reward: 224.30 after 50 rounds using ob: 1.0999999999999999
+
+Cumulative reward: 233.13 after 50 rounds using ob: 1.2
+
+Cumulative reward: 241.56 after 50 rounds using ob: 1.3
+
+Cumulative reward: 233.57 after 50 rounds using ob: 1.4000000000000001
+
+Cumulative reward: 248.41 after 50 rounds using ob: 1.5000000000000002
+
+Cumulative reward: 222.65 after 50 rounds using ob: 1.6000000000000003
+
+Cumulative reward: 233.06 after 50 rounds using ob: 1.7000000000000004
+
+Cumulative reward: 226.50 after 50 rounds using ob: 1.8000000000000005
+
+Cumulative reward: 238.65 after 50 rounds using ob: 1.9000000000000006
+
+Cumulative reward: 258.18 after 50 rounds using ob: 2.0000000000000004
+
+Cumulative reward: 229.18 after 50 rounds using ob: 2.1000000000000005
+
+Cumulative reward: 209.46 after 50 rounds using ob: 2.2000000000000006
+
+Cumulative reward: 221.53 after 50 rounds using ob: 2.3000000000000007
+
+Cumulative reward: 257.45 after 50 rounds using ob: 2.400000000000001
+
+Cumulative reward: 226.26 after 50 rounds using ob: 2.500000000000001
+
+Cumulative reward: 250.12 after 50 rounds using ob: 2.600000000000001
+
+Cumulative reward: 231.23 after 50 rounds using ob: 2.700000000000001
+
+Cumulative reward: 214.55 after 50 rounds using ob: 2.800000000000001
+
+Cumulative reward: 232.12 after 50 rounds using ob: 2.9000000000000012
+
+Cumulative reward: 213.63 after 50 rounds using ob: 3.0000000000000013
+
+Cumulative reward: 195.66 after 50 rounds using ob: 3.1000000000000014
+
+Cumulative reward: 231.20 after 50 rounds using ob: 3.2000000000000015
+
+Cumulative reward: 207.56 after 50 rounds using ob: 3.3000000000000016
+
+Cumulative reward: 230.10 after 50 rounds using ob: 3.4000000000000017
+
+Cumulative reward: 229.21 after 50 rounds using ob: 3.5000000000000018
+
+Cumulative reward: 215.31 after 50 rounds using ob: 3.600000000000002
+
+Cumulative reward: 218.89 after 50 rounds using ob: 3.700000000000002
+
+Cumulative reward: 213.34 after 50 rounds using ob: 3.800000000000002
+
+Cumulative reward: 220.36 after 50 rounds using ob: 3.900000000000002
+
+Cumulative reward: 232.03 after 50 rounds using ob: 4.000000000000002
+
+Cumulative reward: 235.49 after 50 rounds using ob: 4.100000000000001
+
+Cumulative reward: 201.60 after 50 rounds using ob: 4.200000000000001
+
+Cumulative reward: 202.01 after 50 rounds using ob: 4.300000000000001
+
+Cumulative reward: 186.83 after 50 rounds using ob: 4.4
+
+Cumulative reward: 208.56 after 50 rounds using ob: 4.5
+
+Cumulative reward: 205.79 after 50 rounds using ob: 4.6
+
+Cumulative reward: 202.41 after 50 rounds using ob: 4.699999999999999
+
+Cumulative reward: 176.12 after 50 rounds using ob: 4.799999999999999
+
+Cumulative reward: 209.53 after 50 rounds using ob: 4.899999999999999
+
+Cumulative reward: 170.55 after 50 rounds using ob: 4.999999999999998
+
+Cumulative reward: 198.21 after 50 rounds using ob: 5.099999999999998
+
+Cumulative reward: 195.85 after 50 rounds using ob: 5.1999999999999975
+
+Cumulative reward: 195.92 after 50 rounds using ob: 5.299999999999997
+
+Cumulative reward: 235.40 after 50 rounds using ob: 5.399999999999997
+
+Cumulative reward: 210.63 after 50 rounds using ob: 5.4999999999999964
+
+Cumulative reward: 203.75 after 50 rounds using ob: 5.599999999999996
+
+Cumulative reward: 168.95 after 50 rounds using ob: 5.699999999999996
+
+Cumulative reward: 193.21 after 50 rounds using ob: 5.799999999999995
+
+Cumulative reward: 163.79 after 50 rounds using ob: 5.899999999999995
+
+Cumulative reward: 184.45 after 50 rounds using ob: 5.999999999999995
+
+Cumulative reward: 224.84 after 50 rounds using ob: 6.099999999999994
+
+Cumulative reward: 177.70 after 50 rounds using ob: 6.199999999999994
+
+Cumulative reward: 161.12 after 50 rounds using ob: 6.299999999999994
+
+Cumulative reward: 180.46 after 50 rounds using ob: 6.399999999999993
+
+Cumulative reward: 200.34 after 50 rounds using ob: 6.499999999999993
+
+Cumulative reward: 170.59 after 50 rounds using ob: 6.5999999999999925
+
+Cumulative reward: 160.87 after 50 rounds using ob: 6.699999999999992
+
+Cumulative reward: 189.59 after 50 rounds using ob: 6.799999999999992
+
+Cumulative reward: 155.52 after 50 rounds using ob: 6.8999999999999915
+
+Cumulative reward: 143.17 after 50 rounds using ob: 6.999999999999991
+
+Cumulative reward: 158.91 after 50 rounds using ob: 7.099999999999991
+
+Cumulative reward: 200.12 after 50 rounds using ob: 7.19999999999999
+
+Cumulative reward: 175.72 after 50 rounds using ob: 7.29999999999999
+
+Cumulative reward: 163.71 after 50 rounds using ob: 7.39999999999999
+
+Cumulative reward: 200.04 after 50 rounds using ob: 7.499999999999989
+
+Cumulative reward: 165.22 after 50 rounds using ob: 7.599999999999989
+
+Cumulative reward: 179.64 after 50 rounds using ob: 7.699999999999989
+
+Cumulative reward: 185.04 after 50 rounds using ob: 7.799999999999988
+
+Cumulative reward: 187.25 after 50 rounds using ob: 7.899999999999988
+
+Cumulative reward: 186.49 after 50 rounds using ob: 7.999999999999988
+
+Cumulative reward: 148.05 after 50 rounds using ob: 8.099999999999987
+
+Cumulative reward: 163.96 after 50 rounds using ob: 8.199999999999987
+
+Cumulative reward: 215.40 after 50 rounds using ob: 8.299999999999986
+
+Cumulative reward: 170.08 after 50 rounds using ob: 8.399999999999986
+
+Cumulative reward: 174.86 after 50 rounds using ob: 8.499999999999986
+
+Cumulative reward: 137.85 after 50 rounds using ob: 8.599999999999985
+
+Cumulative reward: 166.81 after 50 rounds using ob: 8.699999999999985
+
+Cumulative reward: 140.61 after 50 rounds using ob: 8.799999999999985
+
+Cumulative reward: 173.43 after 50 rounds using ob: 8.899999999999984
+
+Cumulative reward: 175.12 after 50 rounds using ob: 8.999999999999984
+
+Cumulative reward: 186.45 after 50 rounds using ob: 9.099999999999984
+
+Cumulative reward: 148.98 after 50 rounds using ob: 9.199999999999983
+
+Cumulative reward: 147.25 after 50 rounds using ob: 9.299999999999983
+
+Cumulative reward: 189.76 after 50 rounds using ob: 9.399999999999983
+
+Cumulative reward: 211.02 after 50 rounds using ob: 9.499999999999982
+
+Cumulative reward: 151.88 after 50 rounds using ob: 9.599999999999982
+
+Cumulative reward: 147.76 after 50 rounds using ob: 9.699999999999982
+
+Cumulative reward: 170.12 after 50 rounds using ob: 9.799999999999981
+
+Cumulative reward: 180.54 after 50 rounds using ob: 9.89999999999998
+
+Cumulative reward: 165.47 after 50 rounds using ob: 9.99999999999998
+
+Cumulative reward: 180.26 after 50 rounds using ob: 10.09999999999998
+
+Cumulative reward: 176.40 after 50 rounds using ob: 10.19999999999998
+
+Cumulative reward: 166.72 after 50 rounds using ob: 10.29999999999998
+
+Cumulative reward: 169.97 after 50 rounds using ob: 10.399999999999979
+
+Cumulative reward: 182.82 after 50 rounds using ob: 10.499999999999979
+
+Cumulative reward: 141.58 after 50 rounds using ob: 10.599999999999978
+
+Cumulative reward: 173.33 after 50 rounds using ob: 10.699999999999978
+
+Cumulative reward: 159.97 after 50 rounds using ob: 10.799999999999978
+
+Cumulative reward: 170.32 after 50 rounds using ob: 10.899999999999977
+
+Cumulative reward: 131.68 after 50 rounds using ob: 10.999999999999977
+
+Cumulative reward: 173.30 after 50 rounds using ob: 11.099999999999977
+
+Cumulative reward: 125.65 after 50 rounds using ob: 11.199999999999976
+
+Cumulative reward: 121.61 after 50 rounds using ob: 11.299999999999976
+
+Cumulative reward: 136.85 after 50 rounds using ob: 11.399999999999975
+
+Cumulative reward: 153.79 after 50 rounds using ob: 11.499999999999975
+
+Cumulative reward: 167.14 after 50 rounds using ob: 11.599999999999975
+
+Cumulative reward: 156.40 after 50 rounds using ob: 11.699999999999974
+
+Cumulative reward: 157.14 after 50 rounds using ob: 11.799999999999974
+
+Cumulative reward: 138.01 after 50 rounds using ob: 11.899999999999974
+
+Cumulative reward: 162.48 after 50 rounds using ob: 11.999999999999973
+
+Cumulative reward: 183.35 after 50 rounds using ob: 12.099999999999973
+
+Cumulative reward: 178.00 after 50 rounds using ob: 12.199999999999973
+
+Cumulative reward: 157.83 after 50 rounds using ob: 12.299999999999972
+
+Cumulative reward: 140.42 after 50 rounds using ob: 12.399999999999972
+
+Cumulative reward: 166.63 after 50 rounds using ob: 12.499999999999972
+
+Cumulative reward: 131.66 after 50 rounds using ob: 12.599999999999971
+
+Cumulative reward: 165.81 after 50 rounds using ob: 12.69999999999997
+
+Cumulative reward: 147.26 after 50 rounds using ob: 12.79999999999997
+
+Cumulative reward: 154.99 after 50 rounds using ob: 12.89999999999997
+
+Cumulative reward: 187.04 after 50 rounds using ob: 12.99999999999997
+
+Cumulative reward: 143.91 after 50 rounds using ob: 13.09999999999997
+
+Cumulative reward: 160.02 after 50 rounds using ob: 13.199999999999969
+
+Cumulative reward: 158.39 after 50 rounds using ob: 13.299999999999969
+
+Cumulative reward: 151.21 after 50 rounds using ob: 13.399999999999968
+
+Cumulative reward: 154.63 after 50 rounds using ob: 13.499999999999968
+
+Cumulative reward: 168.63 after 50 rounds using ob: 13.599999999999968
+
+Cumulative reward: 136.23 after 50 rounds using ob: 13.699999999999967
+
+Cumulative reward: 154.37 after 50 rounds using ob: 13.799999999999967
+
+Cumulative reward: 191.22 after 50 rounds using ob: 13.899999999999967
+
+Cumulative reward: 157.74 after 50 rounds using ob: 13.999999999999966
+
+Cumulative reward: 117.45 after 50 rounds using ob: 14.099999999999966
+
+Cumulative reward: 161.63 after 50 rounds using ob: 14.199999999999966
+
+Cumulative reward: 157.67 after 50 rounds using ob: 14.299999999999965
+
+Cumulative reward: 144.40 after 50 rounds using ob: 14.399999999999965
+
+Cumulative reward: 135.85 after 50 rounds using ob: 14.499999999999964
+
+Cumulative reward: 129.29 after 50 rounds using ob: 14.599999999999964
+
+Cumulative reward: 173.79 after 50 rounds using ob: 14.699999999999964
+
+Cumulative reward: 153.55 after 50 rounds using ob: 14.799999999999963
+
+Cumulative reward: 153.04 after 50 rounds using ob: 14.899999999999963
+
+Cumulative reward: 162.30 after 50 rounds using ob: 14.999999999999963
+
+Cumulative reward: 121.34 after 50 rounds using ob: 15.099999999999962
+
+Cumulative reward: 151.15 after 50 rounds using ob: 15.199999999999962
+
+Cumulative reward: 132.09 after 50 rounds using ob: 15.299999999999962
+
+Cumulative reward: 140.37 after 50 rounds using ob: 15.399999999999961
+
+Cumulative reward: 141.20 after 50 rounds using ob: 15.499999999999961
+
+Cumulative reward: 132.06 after 50 rounds using ob: 15.59999999999996
+
+Cumulative reward: 132.34 after 50 rounds using ob: 15.69999999999996
+
+Cumulative reward: 142.88 after 50 rounds using ob: 15.79999999999996
+
+Cumulative reward: 145.27 after 50 rounds using ob: 15.89999999999996
+
+Cumulative reward: 159.43 after 50 rounds using ob: 15.99999999999996
+
+Cumulative reward: 159.99 after 50 rounds using ob: 16.09999999999996
+
+Cumulative reward: 163.32 after 50 rounds using ob: 16.19999999999996
+
+Cumulative reward: 128.84 after 50 rounds using ob: 16.29999999999996
+
+Cumulative reward: 149.78 after 50 rounds using ob: 16.399999999999963
+
+Cumulative reward: 141.48 after 50 rounds using ob: 16.499999999999964
+
+Cumulative reward: 142.26 after 50 rounds using ob: 16.599999999999966
+
+Cumulative reward: 161.26 after 50 rounds using ob: 16.699999999999967
+
+Cumulative reward: 130.45 after 50 rounds using ob: 16.79999999999997
+
+Cumulative reward: 135.26 after 50 rounds using ob: 16.89999999999997
+
+Cumulative reward: 112.93 after 50 rounds using ob: 16.99999999999997
+
+Cumulative reward: 154.04 after 50 rounds using ob: 17.099999999999973
+
+Cumulative reward: 167.40 after 50 rounds using ob: 17.199999999999974
+
+Cumulative reward: 164.63 after 50 rounds using ob: 17.299999999999976
+
+Cumulative reward: 167.02 after 50 rounds using ob: 17.399999999999977
+
+Cumulative reward: 113.27 after 50 rounds using ob: 17.49999999999998
+
+Cumulative reward: 116.21 after 50 rounds using ob: 17.59999999999998
+
+Cumulative reward: 186.36 after 50 rounds using ob: 17.69999999999998
+
+Cumulative reward: 151.02 after 50 rounds using ob: 17.799999999999983
+
+Cumulative reward: 169.84 after 50 rounds using ob: 17.899999999999984
+
+Cumulative reward: 111.87 after 50 rounds using ob: 17.999999999999986
+
+Cumulative reward: 127.63 after 50 rounds using ob: 18.099999999999987
+
+Cumulative reward: 165.96 after 50 rounds using ob: 18.19999999999999
+
+Cumulative reward: 174.24 after 50 rounds using ob: 18.29999999999999
+
+Cumulative reward: 164.15 after 50 rounds using ob: 18.39999999999999
+
+Cumulative reward: 132.67 after 50 rounds using ob: 18.499999999999993
+
+Cumulative reward: 134.70 after 50 rounds using ob: 18.599999999999994
+
+Cumulative reward: 154.82 after 50 rounds using ob: 18.699999999999996
+
+Cumulative reward: 134.57 after 50 rounds using ob: 18.799999999999997
+
+Cumulative reward: 157.94 after 50 rounds using ob: 18.9
+
+Cumulative reward: 129.77 after 50 rounds using ob: 19.0
+
+Cumulative reward: 147.38 after 50 rounds using ob: 19.1
+
+Cumulative reward: 151.70 after 50 rounds using ob: 19.200000000000003
+
+Cumulative reward: 137.98 after 50 rounds using ob: 19.300000000000004
+
+Cumulative reward: 124.52 after 50 rounds using ob: 19.400000000000006
+
+Cumulative reward: 107.77 after 50 rounds using ob: 19.500000000000007
+
+Cumulative reward: 133.25 after 50 rounds using ob: 19.60000000000001
+
+Cumulative reward: 124.58 after 50 rounds using ob: 19.70000000000001
+
+Cumulative reward: 170.08 after 50 rounds using ob: 19.80000000000001
+
+Cumulative reward: 115.49 after 50 rounds using ob: 19.900000000000013
+
+Cumulative reward: 155.54 after 50 rounds using ob: 20.000000000000014
+
+Cumulative reward: 144.14 after 50 rounds using ob: 20.100000000000016
+
+Cumulative reward: 152.69 after 50 rounds using ob: 20.200000000000017
+
+Cumulative reward: 172.73 after 50 rounds using ob: 20.30000000000002
+
+Cumulative reward: 121.47 after 50 rounds using ob: 20.40000000000002
+
+Cumulative reward: 126.77 after 50 rounds using ob: 20.50000000000002
+
+Cumulative reward: 132.08 after 50 rounds using ob: 20.600000000000023
+
+Cumulative reward: 146.36 after 50 rounds using ob: 20.700000000000024
+
+Cumulative reward: 118.25 after 50 rounds using ob: 20.800000000000026
+
+Cumulative reward: 148.23 after 50 rounds using ob: 20.900000000000027
+
+Cumulative reward: 141.53 after 50 rounds using ob: 21.00000000000003
+
+Cumulative reward: 144.65 after 50 rounds using ob: 21.10000000000003
+
+Cumulative reward: 169.33 after 50 rounds using ob: 21.20000000000003
+
+Cumulative reward: 136.08 after 50 rounds using ob: 21.300000000000033
+
+Cumulative reward: 154.56 after 50 rounds using ob: 21.400000000000034
+
+Cumulative reward: 157.52 after 50 rounds using ob: 21.500000000000036
+
+Cumulative reward: 118.30 after 50 rounds using ob: 21.600000000000037
+
+Cumulative reward: 129.44 after 50 rounds using ob: 21.70000000000004
+
+Cumulative reward: 145.26 after 50 rounds using ob: 21.80000000000004
+
+Cumulative reward: 133.79 after 50 rounds using ob: 21.90000000000004
+
+Cumulative reward: 142.29 after 50 rounds using ob: 22.000000000000043
+
+Cumulative reward: 176.40 after 50 rounds using ob: 22.100000000000044
+
+Cumulative reward: 151.74 after 50 rounds using ob: 22.200000000000045
+
+Cumulative reward: 125.59 after 50 rounds using ob: 22.300000000000047
+
+Cumulative reward: 171.85 after 50 rounds using ob: 22.40000000000005
+
+Cumulative reward: 139.32 after 50 rounds using ob: 22.50000000000005
+
+Cumulative reward: 162.82 after 50 rounds using ob: 22.60000000000005
+
+Cumulative reward: 154.96 after 50 rounds using ob: 22.700000000000053
+
+Cumulative reward: 127.48 after 50 rounds using ob: 22.800000000000054
+
+Cumulative reward: 145.49 after 50 rounds using ob: 22.900000000000055
+
+Cumulative reward: 113.90 after 50 rounds using ob: 23.000000000000057
+
+Cumulative reward: 154.25 after 50 rounds using ob: 23.10000000000006
+
+Cumulative reward: 130.50 after 50 rounds using ob: 23.20000000000006
+
+Cumulative reward: 146.56 after 50 rounds using ob: 23.30000000000006
+
+Cumulative reward: 155.91 after 50 rounds using ob: 23.400000000000063
+
+Cumulative reward: 135.56 after 50 rounds using ob: 23.500000000000064
+
+Cumulative reward: 126.90 after 50 rounds using ob: 23.600000000000065
+
+Cumulative reward: 152.55 after 50 rounds using ob: 23.700000000000067
+
+Cumulative reward: 136.78 after 50 rounds using ob: 23.800000000000068
+
+Cumulative reward: 142.91 after 50 rounds using ob: 23.90000000000007
+
+Cumulative reward: 122.48 after 50 rounds using ob: 24.00000000000007
+
+Cumulative reward: 127.31 after 50 rounds using ob: 24.100000000000072
+
+Cumulative reward: 181.46 after 50 rounds using ob: 24.200000000000074
+
+Cumulative reward: 124.55 after 50 rounds using ob: 24.300000000000075
+
+Cumulative reward: 140.53 after 50 rounds using ob: 24.400000000000077
+
+Cumulative reward: 139.46 after 50 rounds using ob: 24.500000000000078
+
+Cumulative reward: 160.78 after 50 rounds using ob: 24.60000000000008
+
+Cumulative reward: 183.66 after 50 rounds using ob: 24.70000000000008
+
+Cumulative reward: 161.02 after 50 rounds using ob: 24.800000000000082
+
+Cumulative reward: 152.08 after 50 rounds using ob: 24.900000000000084
+
+Cumulative reward: 140.61 after 50 rounds using ob: 25.000000000000085
+
+Cumulative reward: 178.66 after 50 rounds using ob: 25.100000000000087
+
+Cumulative reward: 135.40 after 50 rounds using ob: 25.200000000000088
+
+Cumulative reward: 124.55 after 50 rounds using ob: 25.30000000000009
+
+Cumulative reward: 156.84 after 50 rounds using ob: 25.40000000000009
+
+Cumulative reward: 120.78 after 50 rounds using ob: 25.500000000000092
+
+Cumulative reward: 154.82 after 50 rounds using ob: 25.600000000000094
+
+Cumulative reward: 150.04 after 50 rounds using ob: 25.700000000000095
+
+Cumulative reward: 132.09 after 50 rounds using ob: 25.800000000000097
+
+Cumulative reward: 105.83 after 50 rounds using ob: 25.900000000000098
+
+Cumulative reward: 147.08 after 50 rounds using ob: 26.0000000000001
+
+Cumulative reward: 153.01 after 50 rounds using ob: 26.1000000000001
+
+Cumulative reward: 169.42 after 50 rounds using ob: 26.200000000000102
+
+Cumulative reward: 155.43 after 50 rounds using ob: 26.300000000000104
+
+Cumulative reward: 132.18 after 50 rounds using ob: 26.400000000000105
+
+Cumulative reward: 107.65 after 50 rounds using ob: 26.500000000000107
+
+Cumulative reward: 105.68 after 50 rounds using ob: 26.600000000000108
+
+Cumulative reward: 166.57 after 50 rounds using ob: 26.70000000000011
+
+Cumulative reward: 150.82 after 50 rounds using ob: 26.80000000000011
+
+Cumulative reward: 148.99 after 50 rounds using ob: 26.900000000000112
+
+Cumulative reward: 144.69 after 50 rounds using ob: 27.000000000000114
+
+Cumulative reward: 126.25 after 50 rounds using ob: 27.100000000000115
+
+Cumulative reward: 108.81 after 50 rounds using ob: 27.200000000000117
+
+Cumulative reward: 149.44 after 50 rounds using ob: 27.300000000000118
+
+Cumulative reward: 114.45 after 50 rounds using ob: 27.40000000000012
+
+Cumulative reward: 140.63 after 50 rounds using ob: 27.50000000000012
+
+Cumulative reward: 178.68 after 50 rounds using ob: 27.600000000000122
+
+Cumulative reward: 154.21 after 50 rounds using ob: 27.700000000000124
+
+Cumulative reward: 118.11 after 50 rounds using ob: 27.800000000000125
+
+Cumulative reward: 134.56 after 50 rounds using ob: 27.900000000000126
+
+Cumulative reward: 113.32 after 50 rounds using ob: 28.000000000000128
+
+Cumulative reward: 166.15 after 50 rounds using ob: 28.10000000000013
+
+Cumulative reward: 152.55 after 50 rounds using ob: 28.20000000000013
+
+Cumulative reward: 155.51 after 50 rounds using ob: 28.300000000000132
+
+Cumulative reward: 181.39 after 50 rounds using ob: 28.400000000000134
+
+Cumulative reward: 167.36 after 50 rounds using ob: 28.500000000000135
+
+Cumulative reward: 130.88 after 50 rounds using ob: 28.600000000000136
+
+Cumulative reward: 107.57 after 50 rounds using ob: 28.700000000000138
+
+Cumulative reward: 150.42 after 50 rounds using ob: 28.80000000000014
+
+Cumulative reward: 171.84 after 50 rounds using ob: 28.90000000000014
+
+Cumulative reward: 145.50 after 50 rounds using ob: 29.000000000000142
+
+Cumulative reward: 146.66 after 50 rounds using ob: 29.100000000000144
+
+Cumulative reward: 154.51 after 50 rounds using ob: 29.200000000000145
+
+Cumulative reward: 114.92 after 50 rounds using ob: 29.300000000000146
+
+Cumulative reward: 142.52 after 50 rounds using ob: 29.400000000000148
+
+Cumulative reward: 143.25 after 50 rounds using ob: 29.50000000000015
+
+Cumulative reward: 145.67 after 50 rounds using ob: 29.60000000000015
+
+Cumulative reward: 148.13 after 50 rounds using ob: 29.700000000000152
+
+Cumulative reward: 139.98 after 50 rounds using ob: 29.800000000000153
+
+Cumulative reward: 153.90 after 50 rounds using ob: 29.900000000000155
+
+Cumulative reward: 136.83 after 50 rounds using ob: 30.000000000000156
+
+Cumulative reward: 150.37 after 50 rounds using ob: 30.100000000000158
+
+Cumulative reward: 121.30 after 50 rounds using ob: 30.20000000000016
+
+Cumulative reward: 123.37 after 50 rounds using ob: 30.30000000000016
+
+Cumulative reward: 141.58 after 50 rounds using ob: 30.400000000000162
+
+Cumulative reward: 154.66 after 50 rounds using ob: 30.500000000000163
+
+Cumulative reward: 152.37 after 50 rounds using ob: 30.600000000000165
+
+Cumulative reward: 119.33 after 50 rounds using ob: 30.700000000000166
+
+Cumulative reward: 149.67 after 50 rounds using ob: 30.800000000000168
+
+Cumulative reward: 157.51 after 50 rounds using ob: 30.90000000000017
+
+Cumulative reward: 130.42 after 50 rounds using ob: 31.00000000000017
+
+Cumulative reward: 140.39 after 50 rounds using ob: 31.100000000000172
+
+Cumulative reward: 134.52 after 50 rounds using ob: 31.200000000000173
+
+Cumulative reward: 127.61 after 50 rounds using ob: 31.300000000000175
+
+Cumulative reward: 128.05 after 50 rounds using ob: 31.400000000000176
+
+Cumulative reward: 130.53 after 50 rounds using ob: 31.500000000000178
+
+Cumulative reward: 116.65 after 50 rounds using ob: 31.60000000000018
+
+Cumulative reward: 126.37 after 50 rounds using ob: 31.70000000000018
+
+Cumulative reward: 151.31 after 50 rounds using ob: 31.800000000000182
+
+Cumulative reward: 124.97 after 50 rounds using ob: 31.900000000000183
+
+Cumulative reward: 140.82 after 50 rounds using ob: 32.000000000000185
+
+Cumulative reward: 132.69 after 50 rounds using ob: 32.100000000000186
+
+Cumulative reward: 126.69 after 50 rounds using ob: 32.20000000000019
+
+Cumulative reward: 131.51 after 50 rounds using ob: 32.30000000000019
+
+Cumulative reward: 105.56 after 50 rounds using ob: 32.40000000000019
+
+Cumulative reward: 123.74 after 50 rounds using ob: 32.50000000000019
+
+Cumulative reward: 146.82 after 50 rounds using ob: 32.60000000000019
+
+Cumulative reward: 129.52 after 50 rounds using ob: 32.700000000000195
+
+Cumulative reward: 131.40 after 50 rounds using ob: 32.800000000000196
+
+Cumulative reward: 134.15 after 50 rounds using ob: 32.9000000000002
+
+Cumulative reward: 128.78 after 50 rounds using ob: 33.0000000000002
+
+Cumulative reward: 134.48 after 50 rounds using ob: 33.1000000000002
+
+Cumulative reward: 110.50 after 50 rounds using ob: 33.2000000000002
+
+Cumulative reward: 131.92 after 50 rounds using ob: 33.3000000000002
+
+Cumulative reward: 152.75 after 50 rounds using ob: 33.400000000000205
+
+Cumulative reward: 138.27 after 50 rounds using ob: 33.500000000000206
+
+Cumulative reward: 150.00 after 50 rounds using ob: 33.60000000000021
+
+Cumulative reward: 131.19 after 50 rounds using ob: 33.70000000000021
+
+Cumulative reward: 103.66 after 50 rounds using ob: 33.80000000000021
+
+Cumulative reward: 147.20 after 50 rounds using ob: 33.90000000000021
+
+Cumulative reward: 165.13 after 50 rounds using ob: 34.00000000000021
+
+Cumulative reward: 122.68 after 50 rounds using ob: 34.100000000000215
+
+Cumulative reward: 123.42 after 50 rounds using ob: 34.200000000000216
+
+Cumulative reward: 159.48 after 50 rounds using ob: 34.30000000000022
+
+Cumulative reward: 139.41 after 50 rounds using ob: 34.40000000000022
+
+Cumulative reward: 163.01 after 50 rounds using ob: 34.50000000000022
+
+Cumulative reward: 136.55 after 50 rounds using ob: 34.60000000000022
+
+Cumulative reward: 121.79 after 50 rounds using ob: 34.70000000000022
+
+Cumulative reward: 170.15 after 50 rounds using ob: 34.800000000000225
+
+Cumulative reward: 154.02 after 50 rounds using ob: 34.900000000000226
+
+Cumulative reward: 145.11 after 50 rounds using ob: 35.00000000000023
+
+Cumulative reward: 131.45 after 50 rounds using ob: 35.10000000000023
+
+Cumulative reward: 158.61 after 50 rounds using ob: 35.20000000000023
+
+Cumulative reward: 117.61 after 50 rounds using ob: 35.30000000000023
+
+Cumulative reward: 139.18 after 50 rounds using ob: 35.40000000000023
+
+Cumulative reward: 138.45 after 50 rounds using ob: 35.500000000000234
+
+Cumulative reward: 171.10 after 50 rounds using ob: 35.600000000000236
+
+Cumulative reward: 123.32 after 50 rounds using ob: 35.70000000000024
+
+Cumulative reward: 142.93 after 50 rounds using ob: 35.80000000000024
+
+Cumulative reward: 117.28 after 50 rounds using ob: 35.90000000000024
+
+Cumulative reward: 118.18 after 50 rounds using ob: 36.00000000000024
+
+Cumulative reward: 137.10 after 50 rounds using ob: 36.10000000000024
+
+Cumulative reward: 136.55 after 50 rounds using ob: 36.200000000000244
+
+Cumulative reward: 135.87 after 50 rounds using ob: 36.300000000000246
+
+Cumulative reward: 137.40 after 50 rounds using ob: 36.40000000000025
+
+Cumulative reward: 159.48 after 50 rounds using ob: 36.50000000000025
+
+Cumulative reward: 145.56 after 50 rounds using ob: 36.60000000000025
+
+Cumulative reward: 137.29 after 50 rounds using ob: 36.70000000000025
+
+Cumulative reward: 137.79 after 50 rounds using ob: 36.80000000000025
+
+Cumulative reward: 102.02 after 50 rounds using ob: 36.900000000000254
+
+Cumulative reward: 137.79 after 50 rounds using ob: 37.000000000000256
+
+Cumulative reward: 117.03 after 50 rounds using ob: 37.10000000000026
+
+Cumulative reward: 142.56 after 50 rounds using ob: 37.20000000000026
+
+Cumulative reward: 113.87 after 50 rounds using ob: 37.30000000000026
+
+Cumulative reward: 145.73 after 50 rounds using ob: 37.40000000000026
+
+Cumulative reward: 112.88 after 50 rounds using ob: 37.50000000000026
+
+Cumulative reward: 140.96 after 50 rounds using ob: 37.600000000000264
+
+Cumulative reward: 128.94 after 50 rounds using ob: 37.700000000000266
+
+Cumulative reward: 121.93 after 50 rounds using ob: 37.80000000000027
+
+Cumulative reward: 124.59 after 50 rounds using ob: 37.90000000000027
+
+Cumulative reward: 148.84 after 50 rounds using ob: 38.00000000000027
+
+Cumulative reward: 105.27 after 50 rounds using ob: 38.10000000000027
+
+Cumulative reward: 121.68 after 50 rounds using ob: 38.20000000000027
+
+Cumulative reward: 149.11 after 50 rounds using ob: 38.300000000000274
+
+Cumulative reward: 129.94 after 50 rounds using ob: 38.400000000000276
+
+Cumulative reward: 142.83 after 50 rounds using ob: 38.50000000000028
+
+Cumulative reward: 123.57 after 50 rounds using ob: 38.60000000000028
+
+Cumulative reward: 143.57 after 50 rounds using ob: 38.70000000000028
+
+Cumulative reward: 136.34 after 50 rounds using ob: 38.80000000000028
+
+Cumulative reward: 143.30 after 50 rounds using ob: 38.90000000000028
+
+Cumulative reward: 140.62 after 50 rounds using ob: 39.000000000000284
+
+Cumulative reward: 122.56 after 50 rounds using ob: 39.100000000000286
+
+Cumulative reward: 148.33 after 50 rounds using ob: 39.20000000000029
+
+Cumulative reward: 103.76 after 50 rounds using ob: 39.30000000000029
+
+Cumulative reward: 112.21 after 50 rounds using ob: 39.40000000000029
+
+Cumulative reward: 143.33 after 50 rounds using ob: 39.50000000000029
+
+Cumulative reward: 160.59 after 50 rounds using ob: 39.60000000000029
+
+Cumulative reward: 153.45 after 50 rounds using ob: 39.700000000000294
+
+Cumulative reward: 100.54 after 50 rounds using ob: 39.800000000000296
+
+Cumulative reward: 151.08 after 50 rounds using ob: 39.9000000000003
+
+Cumulative reward: 109.53 after 50 rounds using ob: 40.0000000000003
+
+Cumulative reward: 123.06 after 50 rounds using ob: 40.1000000000003
+
+Cumulative reward: 156.27 after 50 rounds using ob: 40.2000000000003
+
+Cumulative reward: 117.91 after 50 rounds using ob: 40.3000000000003
+
+Cumulative reward: 137.50 after 50 rounds using ob: 40.400000000000304
+
+Cumulative reward: 108.31 after 50 rounds using ob: 40.500000000000306
+
+Cumulative reward: 140.52 after 50 rounds using ob: 40.60000000000031
+
+Cumulative reward: 139.01 after 50 rounds using ob: 40.70000000000031
+
+Cumulative reward: 131.75 after 50 rounds using ob: 40.80000000000031
+
+Cumulative reward: 152.53 after 50 rounds using ob: 40.90000000000031
+
+Cumulative reward: 129.29 after 50 rounds using ob: 41.00000000000031
+
+Cumulative reward: 120.97 after 50 rounds using ob: 41.100000000000314
+
+Cumulative reward: 165.05 after 50 rounds using ob: 41.200000000000315
+
+Cumulative reward: 118.27 after 50 rounds using ob: 41.30000000000032
+
+Cumulative reward: 134.86 after 50 rounds using ob: 41.40000000000032
+
+Cumulative reward: 122.22 after 50 rounds using ob: 41.50000000000032
+
+Cumulative reward: 124.26 after 50 rounds using ob: 41.60000000000032
+
+Cumulative reward: 138.42 after 50 rounds using ob: 41.70000000000032
+
+Cumulative reward: 156.85 after 50 rounds using ob: 41.800000000000324
+
+Cumulative reward: 149.40 after 50 rounds using ob: 41.900000000000325
+
+Cumulative reward: 138.33 after 50 rounds using ob: 42.00000000000033
+
+Cumulative reward: 149.19 after 50 rounds using ob: 42.10000000000033
+
+Cumulative reward: 106.06 after 50 rounds using ob: 42.20000000000033
+
+Cumulative reward: 164.89 after 50 rounds using ob: 42.30000000000033
+
+Cumulative reward: 139.81 after 50 rounds using ob: 42.40000000000033
+
+Cumulative reward: 120.89 after 50 rounds using ob: 42.500000000000334
+
+Cumulative reward: 112.87 after 50 rounds using ob: 42.600000000000335
+
+Cumulative reward: 136.20 after 50 rounds using ob: 42.70000000000034
+
+Cumulative reward: 128.29 after 50 rounds using ob: 42.80000000000034
+
+Cumulative reward: 126.12 after 50 rounds using ob: 42.90000000000034
+
+Cumulative reward: 134.81 after 50 rounds using ob: 43.00000000000034
+
+Cumulative reward: 128.69 after 50 rounds using ob: 43.10000000000034
+
+Cumulative reward: 136.10 after 50 rounds using ob: 43.200000000000344
+
+Cumulative reward: 116.87 after 50 rounds using ob: 43.300000000000345
+
+Cumulative reward: 140.08 after 50 rounds using ob: 43.40000000000035
+
+Cumulative reward: 119.40 after 50 rounds using ob: 43.50000000000035
+
+Cumulative reward: 143.95 after 50 rounds using ob: 43.60000000000035
+
+Cumulative reward: 119.68 after 50 rounds using ob: 43.70000000000035
+
+Cumulative reward: 145.45 after 50 rounds using ob: 43.80000000000035
+
+Cumulative reward: 123.98 after 50 rounds using ob: 43.900000000000354
+
+Cumulative reward: 151.26 after 50 rounds using ob: 44.000000000000355
+
+Cumulative reward: 137.10 after 50 rounds using ob: 44.10000000000036
+
+Cumulative reward: 113.55 after 50 rounds using ob: 44.20000000000036
+
+Cumulative reward: 152.90 after 50 rounds using ob: 44.30000000000036
+
+Cumulative reward: 148.73 after 50 rounds using ob: 44.40000000000036
+
+Cumulative reward: 166.81 after 50 rounds using ob: 44.50000000000036
+
+Cumulative reward: 156.79 after 50 rounds using ob: 44.600000000000364
+
+Cumulative reward: 115.77 after 50 rounds using ob: 44.700000000000365
+
+Cumulative reward: 133.64 after 50 rounds using ob: 44.80000000000037
+
+Cumulative reward: 130.32 after 50 rounds using ob: 44.90000000000037
+
+Cumulative reward: 156.73 after 50 rounds using ob: 45.00000000000037
+
+Cumulative reward: 124.54 after 50 rounds using ob: 45.10000000000037
+
+Cumulative reward: 140.01 after 50 rounds using ob: 45.20000000000037
+
+Cumulative reward: 141.77 after 50 rounds using ob: 45.300000000000374
+
+Cumulative reward: 106.07 after 50 rounds using ob: 45.400000000000375
+
+Cumulative reward: 175.18 after 50 rounds using ob: 45.50000000000038
+
+Cumulative reward: 126.14 after 50 rounds using ob: 45.60000000000038
+
+Cumulative reward: 136.12 after 50 rounds using ob: 45.70000000000038
+
+Cumulative reward: 136.00 after 50 rounds using ob: 45.80000000000038
+
+Cumulative reward: 127.43 after 50 rounds using ob: 45.90000000000038
+
+Cumulative reward: 106.81 after 50 rounds using ob: 46.000000000000384
+
+Cumulative reward: 140.81 after 50 rounds using ob: 46.100000000000385
+
+Cumulative reward: 118.14 after 50 rounds using ob: 46.20000000000039
+
+Cumulative reward: 116.39 after 50 rounds using ob: 46.30000000000039
+
+Cumulative reward: 113.95 after 50 rounds using ob: 46.40000000000039
+
+Cumulative reward: 132.58 after 50 rounds using ob: 46.50000000000039
+
+Cumulative reward: 128.02 after 50 rounds using ob: 46.60000000000039
+
+Cumulative reward: 145.13 after 50 rounds using ob: 46.700000000000394
+
+Cumulative reward: 131.58 after 50 rounds using ob: 46.800000000000395
+
+Cumulative reward: 133.53 after 50 rounds using ob: 46.9000000000004
+
+Cumulative reward: 117.61 after 50 rounds using ob: 47.0000000000004
+
+Cumulative reward: 120.28 after 50 rounds using ob: 47.1000000000004
+
+Cumulative reward: 124.42 after 50 rounds using ob: 47.2000000000004
+
+Cumulative reward: 132.03 after 50 rounds using ob: 47.3000000000004
+
+Cumulative reward: 169.37 after 50 rounds using ob: 47.400000000000404
+
+Cumulative reward: 146.57 after 50 rounds using ob: 47.500000000000405
+
+Cumulative reward: 142.81 after 50 rounds using ob: 47.600000000000406
+
+Cumulative reward: 114.73 after 50 rounds using ob: 47.70000000000041
+
+Cumulative reward: 142.20 after 50 rounds using ob: 47.80000000000041
+
+Cumulative reward: 154.27 after 50 rounds using ob: 47.90000000000041
+
+Cumulative reward: 106.90 after 50 rounds using ob: 48.00000000000041
+
+Cumulative reward: 139.59 after 50 rounds using ob: 48.10000000000041
+
+Cumulative reward: 131.79 after 50 rounds using ob: 48.200000000000415
+
+Cumulative reward: 154.23 after 50 rounds using ob: 48.300000000000416
+
+Cumulative reward: 136.79 after 50 rounds using ob: 48.40000000000042
+
+Cumulative reward: 127.36 after 50 rounds using ob: 48.50000000000042
+
+Cumulative reward: 167.22 after 50 rounds using ob: 48.60000000000042
+
+Cumulative reward: 150.39 after 50 rounds using ob: 48.70000000000042
+
+Cumulative reward: 101.46 after 50 rounds using ob: 48.80000000000042
+
+Cumulative reward: 161.96 after 50 rounds using ob: 48.900000000000425
+
+Cumulative reward: 154.73 after 50 rounds using ob: 49.000000000000426
+
+Cumulative reward: 147.86 after 50 rounds using ob: 49.10000000000043
+
+Cumulative reward: 144.18 after 50 rounds using ob: 49.20000000000043
+
+Cumulative reward: 148.82 after 50 rounds using ob: 49.30000000000043
+
+Cumulative reward: 111.45 after 50 rounds using ob: 49.40000000000043
+
+Cumulative reward: 146.81 after 50 rounds using ob: 49.50000000000043
+
+Cumulative reward: 131.91 after 50 rounds using ob: 49.600000000000435
+
+Cumulative reward: 140.68 after 50 rounds using ob: 49.700000000000436
+
+Cumulative reward: 153.29 after 50 rounds using ob: 49.80000000000044
+
+Cumulative reward: 153.52 after 50 rounds using ob: 49.90000000000044
+
+Cumulative reward: 118.27 after 50 rounds using ob: 50.00000000000044
+
+Cumulative reward: 144.46 after 50 rounds using ob: 50.10000000000044
+
+Cumulative reward: 130.14 after 50 rounds using ob: 50.20000000000044
+
+Cumulative reward: 135.23 after 50 rounds using ob: 50.300000000000445
+
+Cumulative reward: 115.56 after 50 rounds using ob: 50.400000000000446
+
+Cumulative reward: 131.19 after 50 rounds using ob: 50.50000000000045
+
+Cumulative reward: 153.90 after 50 rounds using ob: 50.60000000000045
+
+Cumulative reward: 126.07 after 50 rounds using ob: 50.70000000000045
+
+Cumulative reward: 125.55 after 50 rounds using ob: 50.80000000000045
+
+Cumulative reward: 90.02 after 50 rounds using ob: 50.90000000000045
+
+Cumulative reward: 160.80 after 50 rounds using ob: 51.000000000000455
+
+Cumulative reward: 143.93 after 50 rounds using ob: 51.100000000000456
+
+Cumulative reward: 133.23 after 50 rounds using ob: 51.20000000000046
+
+Cumulative reward: 135.23 after 50 rounds using ob: 51.30000000000046
+
+Cumulative reward: 175.43 after 50 rounds using ob: 51.40000000000046
+
+Cumulative reward: 153.22 after 50 rounds using ob: 51.50000000000046
+
+Cumulative reward: 153.48 after 50 rounds using ob: 51.60000000000046
+
+Cumulative reward: 142.86 after 50 rounds using ob: 51.700000000000465
+
+Cumulative reward: 121.18 after 50 rounds using ob: 51.800000000000466
+
+Cumulative reward: 129.07 after 50 rounds using ob: 51.90000000000047
+
+Cumulative reward: 126.67 after 50 rounds using ob: 52.00000000000047
+
+Cumulative reward: 119.87 after 50 rounds using ob: 52.10000000000047
+
+Cumulative reward: 110.44 after 50 rounds using ob: 52.20000000000047
+
+Cumulative reward: 147.37 after 50 rounds using ob: 52.30000000000047
+
+Cumulative reward: 134.62 after 50 rounds using ob: 52.400000000000475
+
+Cumulative reward: 138.55 after 50 rounds using ob: 52.500000000000476
+
+Cumulative reward: 129.29 after 50 rounds using ob: 52.60000000000048
+
+Cumulative reward: 159.80 after 50 rounds using ob: 52.70000000000048
+
+Cumulative reward: 116.17 after 50 rounds using ob: 52.80000000000048
+
+Cumulative reward: 125.64 after 50 rounds using ob: 52.90000000000048
+
+Cumulative reward: 93.92 after 50 rounds using ob: 53.00000000000048
+
+Cumulative reward: 136.49 after 50 rounds using ob: 53.100000000000485
+
+Cumulative reward: 139.73 after 50 rounds using ob: 53.200000000000486
+
+Cumulative reward: 143.10 after 50 rounds using ob: 53.30000000000049
+
+Cumulative reward: 135.26 after 50 rounds using ob: 53.40000000000049
+
+Cumulative reward: 129.44 after 50 rounds using ob: 53.50000000000049
+
+Cumulative reward: 174.02 after 50 rounds using ob: 53.60000000000049
+
+Cumulative reward: 126.70 after 50 rounds using ob: 53.70000000000049
+
+Cumulative reward: 148.84 after 50 rounds using ob: 53.800000000000495
+
+Cumulative reward: 143.77 after 50 rounds using ob: 53.900000000000496
+
+Cumulative reward: 144.91 after 50 rounds using ob: 54.0000000000005
+
+Cumulative reward: 131.58 after 50 rounds using ob: 54.1000000000005
+
+Cumulative reward: 139.51 after 50 rounds using ob: 54.2000000000005
+
+Cumulative reward: 142.38 after 50 rounds using ob: 54.3000000000005
+
+Cumulative reward: 138.38 after 50 rounds using ob: 54.4000000000005
+
+Cumulative reward: 145.68 after 50 rounds using ob: 54.500000000000504
+
+Cumulative reward: 133.47 after 50 rounds using ob: 54.600000000000506
+
+Cumulative reward: 126.34 after 50 rounds using ob: 54.70000000000051
+
+Cumulative reward: 164.31 after 50 rounds using ob: 54.80000000000051
+
+Cumulative reward: 167.98 after 50 rounds using ob: 54.90000000000051
+
+Cumulative reward: 149.19 after 50 rounds using ob: 55.00000000000051
+
+Cumulative reward: 100.93 after 50 rounds using ob: 55.10000000000051
+
+Cumulative reward: 149.96 after 50 rounds using ob: 55.200000000000514
+
+Cumulative reward: 149.72 after 50 rounds using ob: 55.300000000000516
+
+Cumulative reward: 134.17 after 50 rounds using ob: 55.40000000000052
+
+Cumulative reward: 179.84 after 50 rounds using ob: 55.50000000000052
+
+Cumulative reward: 129.65 after 50 rounds using ob: 55.60000000000052
+
+Cumulative reward: 142.59 after 50 rounds using ob: 55.70000000000052
+
+Cumulative reward: 125.03 after 50 rounds using ob: 55.80000000000052
+
+Cumulative reward: 127.78 after 50 rounds using ob: 55.900000000000524
+
+Cumulative reward: 133.40 after 50 rounds using ob: 56.000000000000526
+
+Cumulative reward: 114.33 after 50 rounds using ob: 56.10000000000053
+
+Cumulative reward: 147.03 after 50 rounds using ob: 56.20000000000053
+
+Cumulative reward: 127.72 after 50 rounds using ob: 56.30000000000053
+
+Cumulative reward: 142.79 after 50 rounds using ob: 56.40000000000053
+
+Cumulative reward: 153.06 after 50 rounds using ob: 56.50000000000053
+
+Cumulative reward: 149.87 after 50 rounds using ob: 56.600000000000534
+
+Cumulative reward: 112.45 after 50 rounds using ob: 56.700000000000536
+
+Cumulative reward: 132.09 after 50 rounds using ob: 56.80000000000054
+
+Cumulative reward: 153.31 after 50 rounds using ob: 56.90000000000054
+
+Cumulative reward: 131.97 after 50 rounds using ob: 57.00000000000054
+
+Cumulative reward: 123.19 after 50 rounds using ob: 57.10000000000054
+
+Cumulative reward: 132.15 after 50 rounds using ob: 57.20000000000054
+
+Cumulative reward: 185.51 after 50 rounds using ob: 57.300000000000544
+
+Cumulative reward: 124.12 after 50 rounds using ob: 57.400000000000546
+
+Cumulative reward: 142.70 after 50 rounds using ob: 57.50000000000055
+
+Cumulative reward: 159.55 after 50 rounds using ob: 57.60000000000055
+
+Cumulative reward: 133.01 after 50 rounds using ob: 57.70000000000055
+
+Cumulative reward: 131.85 after 50 rounds using ob: 57.80000000000055
+
+Cumulative reward: 146.63 after 50 rounds using ob: 57.90000000000055
+
+Cumulative reward: 160.60 after 50 rounds using ob: 58.000000000000554
+
+Cumulative reward: 125.63 after 50 rounds using ob: 58.100000000000556
+
+Cumulative reward: 137.55 after 50 rounds using ob: 58.20000000000056
+
+Cumulative reward: 138.85 after 50 rounds using ob: 58.30000000000056
+
+Cumulative reward: 128.35 after 50 rounds using ob: 58.40000000000056
+
+Cumulative reward: 139.69 after 50 rounds using ob: 58.50000000000056
+
+Cumulative reward: 121.47 after 50 rounds using ob: 58.60000000000056
+
+Cumulative reward: 120.31 after 50 rounds using ob: 58.700000000000564
+
+Cumulative reward: 125.53 after 50 rounds using ob: 58.800000000000566
+
+Cumulative reward: 107.78 after 50 rounds using ob: 58.90000000000057
+
+Cumulative reward: 126.74 after 50 rounds using ob: 59.00000000000057
+
+Cumulative reward: 118.58 after 50 rounds using ob: 59.10000000000057
+
+Cumulative reward: 128.18 after 50 rounds using ob: 59.20000000000057
+
+Cumulative reward: 139.09 after 50 rounds using ob: 59.30000000000057
+
+Cumulative reward: 135.46 after 50 rounds using ob: 59.400000000000574
+
+Cumulative reward: 131.93 after 50 rounds using ob: 59.500000000000576
+
+Cumulative reward: 134.62 after 50 rounds using ob: 59.60000000000058
+
+Cumulative reward: 171.44 after 50 rounds using ob: 59.70000000000058
+
+Cumulative reward: 130.67 after 50 rounds using ob: 59.80000000000058
+
+Cumulative reward: 144.12 after 50 rounds using ob: 59.90000000000058
+
+Cumulative reward: 131.49 after 50 rounds using ob: 60.00000000000058
+
+Cumulative reward: 149.76 after 50 rounds using ob: 60.100000000000584
+
+Cumulative reward: 109.31 after 50 rounds using ob: 60.200000000000585
+
+Cumulative reward: 118.02 after 50 rounds using ob: 60.30000000000059
+
+Cumulative reward: 122.47 after 50 rounds using ob: 60.40000000000059
+
+Cumulative reward: 121.75 after 50 rounds using ob: 60.50000000000059
+
+Cumulative reward: 124.18 after 50 rounds using ob: 60.60000000000059
+
+Cumulative reward: 142.34 after 50 rounds using ob: 60.70000000000059
+
+Cumulative reward: 141.27 after 50 rounds using ob: 60.800000000000594
+
+Cumulative reward: 134.12 after 50 rounds using ob: 60.900000000000595
+
+Cumulative reward: 148.29 after 50 rounds using ob: 61.0000000000006
+
+Cumulative reward: 101.45 after 50 rounds using ob: 61.1000000000006
+
+Cumulative reward: 160.16 after 50 rounds using ob: 61.2000000000006
+
+Cumulative reward: 143.93 after 50 rounds using ob: 61.3000000000006
+
+Cumulative reward: 142.86 after 50 rounds using ob: 61.4000000000006
+
+Cumulative reward: 110.19 after 50 rounds using ob: 61.500000000000604
+
+Cumulative reward: 168.53 after 50 rounds using ob: 61.600000000000605
+
+Cumulative reward: 152.84 after 50 rounds using ob: 61.70000000000061
+
+Cumulative reward: 131.85 after 50 rounds using ob: 61.80000000000061
+
+Cumulative reward: 100.08 after 50 rounds using ob: 61.90000000000061
+
+Cumulative reward: 132.25 after 50 rounds using ob: 62.00000000000061
+
+Cumulative reward: 135.39 after 50 rounds using ob: 62.10000000000061
+
+Cumulative reward: 153.08 after 50 rounds using ob: 62.200000000000614
+
+Cumulative reward: 131.65 after 50 rounds using ob: 62.300000000000615
+
+Cumulative reward: 143.69 after 50 rounds using ob: 62.40000000000062
+
+Cumulative reward: 145.11 after 50 rounds using ob: 62.50000000000062
+
+Cumulative reward: 111.67 after 50 rounds using ob: 62.60000000000062
+
+Cumulative reward: 134.11 after 50 rounds using ob: 62.70000000000062
+
+Cumulative reward: 138.72 after 50 rounds using ob: 62.80000000000062
+
+Cumulative reward: 125.51 after 50 rounds using ob: 62.900000000000624
+
+Cumulative reward: 154.02 after 50 rounds using ob: 63.000000000000625
+
+Cumulative reward: 120.20 after 50 rounds using ob: 63.10000000000063
+
+Cumulative reward: 135.42 after 50 rounds using ob: 63.20000000000063
+
+Cumulative reward: 151.84 after 50 rounds using ob: 63.30000000000063
+
+Cumulative reward: 115.24 after 50 rounds using ob: 63.40000000000063
+
+Cumulative reward: 130.03 after 50 rounds using ob: 63.50000000000063
+
+Cumulative reward: 126.11 after 50 rounds using ob: 63.600000000000634
+
+Cumulative reward: 108.02 after 50 rounds using ob: 63.700000000000635
+
+Cumulative reward: 106.38 after 50 rounds using ob: 63.80000000000064
+
+Cumulative reward: 174.22 after 50 rounds using ob: 63.90000000000064
+
+Cumulative reward: 116.72 after 50 rounds using ob: 64.00000000000064
+
+Cumulative reward: 127.35 after 50 rounds using ob: 64.10000000000063
+
+Cumulative reward: 123.30 after 50 rounds using ob: 64.20000000000063
+
+Cumulative reward: 143.52 after 50 rounds using ob: 64.30000000000062
+
+Cumulative reward: 123.44 after 50 rounds using ob: 64.40000000000062
+
+Cumulative reward: 146.03 after 50 rounds using ob: 64.50000000000061
+
+Cumulative reward: 140.65 after 50 rounds using ob: 64.6000000000006
+
+Cumulative reward: 145.10 after 50 rounds using ob: 64.7000000000006
+
+Cumulative reward: 123.50 after 50 rounds using ob: 64.8000000000006
+
+Cumulative reward: 146.24 after 50 rounds using ob: 64.90000000000059
+
+Cumulative reward: 98.62 after 50 rounds using ob: 65.00000000000058
+
+Cumulative reward: 151.52 after 50 rounds using ob: 65.10000000000058
+
+Cumulative reward: 148.33 after 50 rounds using ob: 65.20000000000057
+
+Cumulative reward: 130.15 after 50 rounds using ob: 65.30000000000057
+
+Cumulative reward: 159.42 after 50 rounds using ob: 65.40000000000056
+
+Cumulative reward: 129.80 after 50 rounds using ob: 65.50000000000055
+
+Cumulative reward: 147.63 after 50 rounds using ob: 65.60000000000055
+
+Cumulative reward: 99.72 after 50 rounds using ob: 65.70000000000054
+
+Cumulative reward: 116.27 after 50 rounds using ob: 65.80000000000054
+
+Cumulative reward: 128.17 after 50 rounds using ob: 65.90000000000053
+
+Cumulative reward: 142.12 after 50 rounds using ob: 66.00000000000053
+
+Cumulative reward: 122.71 after 50 rounds using ob: 66.10000000000052
+
+Cumulative reward: 134.22 after 50 rounds using ob: 66.20000000000051
+
+Cumulative reward: 122.46 after 50 rounds using ob: 66.30000000000051
+
+Cumulative reward: 160.97 after 50 rounds using ob: 66.4000000000005
+
+Cumulative reward: 119.95 after 50 rounds using ob: 66.5000000000005
+
+Cumulative reward: 107.42 after 50 rounds using ob: 66.60000000000049
+
+Cumulative reward: 119.04 after 50 rounds using ob: 66.70000000000049
+
+Cumulative reward: 134.39 after 50 rounds using ob: 66.80000000000048
+
+Cumulative reward: 135.59 after 50 rounds using ob: 66.90000000000047
+
+Cumulative reward: 152.06 after 50 rounds using ob: 67.00000000000047
+
+Cumulative reward: 128.15 after 50 rounds using ob: 67.10000000000046
+
+Cumulative reward: 156.87 after 50 rounds using ob: 67.20000000000046
+
+Cumulative reward: 161.14 after 50 rounds using ob: 67.30000000000045
+
+Cumulative reward: 141.08 after 50 rounds using ob: 67.40000000000045
+
+Cumulative reward: 132.11 after 50 rounds using ob: 67.50000000000044
+
+Cumulative reward: 143.06 after 50 rounds using ob: 67.60000000000043
+
+Cumulative reward: 135.94 after 50 rounds using ob: 67.70000000000043
+
+Cumulative reward: 155.43 after 50 rounds using ob: 67.80000000000042
+
+Cumulative reward: 135.80 after 50 rounds using ob: 67.90000000000042
+
+Cumulative reward: 137.25 after 50 rounds using ob: 68.00000000000041
+
+Cumulative reward: 120.98 after 50 rounds using ob: 68.1000000000004
+
+Cumulative reward: 157.21 after 50 rounds using ob: 68.2000000000004
+
+Cumulative reward: 141.73 after 50 rounds using ob: 68.3000000000004
+
+Cumulative reward: 126.38 after 50 rounds using ob: 68.40000000000039
+
+Cumulative reward: 119.75 after 50 rounds using ob: 68.50000000000038
+
+Cumulative reward: 135.01 after 50 rounds using ob: 68.60000000000038
+
+Cumulative reward: 131.49 after 50 rounds using ob: 68.70000000000037
+
+Cumulative reward: 144.51 after 50 rounds using ob: 68.80000000000037
+
+Cumulative reward: 131.00 after 50 rounds using ob: 68.90000000000036
+
+Cumulative reward: 131.02 after 50 rounds using ob: 69.00000000000036
+
+Cumulative reward: 135.92 after 50 rounds using ob: 69.10000000000035
+
+Cumulative reward: 119.88 after 50 rounds using ob: 69.20000000000034
+
+Cumulative reward: 163.85 after 50 rounds using ob: 69.30000000000034
+
+Cumulative reward: 177.42 after 50 rounds using ob: 69.40000000000033
+
+Cumulative reward: 149.14 after 50 rounds using ob: 69.50000000000033
+
+Cumulative reward: 144.21 after 50 rounds using ob: 69.60000000000032
+
+Cumulative reward: 162.46 after 50 rounds using ob: 69.70000000000032
+
+Cumulative reward: 101.48 after 50 rounds using ob: 69.80000000000031
+
+Cumulative reward: 120.29 after 50 rounds using ob: 69.9000000000003
+
+Cumulative reward: 144.15 after 50 rounds using ob: 70.0000000000003
+
+Cumulative reward: 152.71 after 50 rounds using ob: 70.10000000000029
+
+Cumulative reward: 148.90 after 50 rounds using ob: 70.20000000000029
+
+Cumulative reward: 159.55 after 50 rounds using ob: 70.30000000000028
+
+Cumulative reward: 168.39 after 50 rounds using ob: 70.40000000000028
+
+Cumulative reward: 141.54 after 50 rounds using ob: 70.50000000000027
+
+Cumulative reward: 119.02 after 50 rounds using ob: 70.60000000000026
+
+Cumulative reward: 131.85 after 50 rounds using ob: 70.70000000000026
+
+Cumulative reward: 153.86 after 50 rounds using ob: 70.80000000000025
+
+Cumulative reward: 107.94 after 50 rounds using ob: 70.90000000000025
+
+Cumulative reward: 149.18 after 50 rounds using ob: 71.00000000000024
+
+Cumulative reward: 124.61 after 50 rounds using ob: 71.10000000000024
+
+Cumulative reward: 128.49 after 50 rounds using ob: 71.20000000000023
+
+Cumulative reward: 129.69 after 50 rounds using ob: 71.30000000000022
+
+Cumulative reward: 118.19 after 50 rounds using ob: 71.40000000000022
+
+Cumulative reward: 145.39 after 50 rounds using ob: 71.50000000000021
+
+Cumulative reward: 126.34 after 50 rounds using ob: 71.60000000000021
+
+Cumulative reward: 137.06 after 50 rounds using ob: 71.7000000000002
+
+Cumulative reward: 163.95 after 50 rounds using ob: 71.8000000000002
+
+Cumulative reward: 143.35 after 50 rounds using ob: 71.90000000000019
+
+Cumulative reward: 143.43 after 50 rounds using ob: 72.00000000000018
+
+Cumulative reward: 117.52 after 50 rounds using ob: 72.10000000000018
+
+Cumulative reward: 107.66 after 50 rounds using ob: 72.20000000000017
+
+Cumulative reward: 140.37 after 50 rounds using ob: 72.30000000000017
+
+Cumulative reward: 109.35 after 50 rounds using ob: 72.40000000000016
+
+Cumulative reward: 142.71 after 50 rounds using ob: 72.50000000000016
+
+Cumulative reward: 110.12 after 50 rounds using ob: 72.60000000000015
+
+Cumulative reward: 112.93 after 50 rounds using ob: 72.70000000000014
+
+Cumulative reward: 124.65 after 50 rounds using ob: 72.80000000000014
+
+Cumulative reward: 159.29 after 50 rounds using ob: 72.90000000000013
+
+Cumulative reward: 139.78 after 50 rounds using ob: 73.00000000000013
+
+Cumulative reward: 119.91 after 50 rounds using ob: 73.10000000000012
+
+Cumulative reward: 113.47 after 50 rounds using ob: 73.20000000000012
+
+Cumulative reward: 161.97 after 50 rounds using ob: 73.30000000000011
+
+Cumulative reward: 89.83 after 50 rounds using ob: 73.4000000000001
+
+Cumulative reward: 117.42 after 50 rounds using ob: 73.5000000000001
+
+Cumulative reward: 140.59 after 50 rounds using ob: 73.6000000000001
+
+Cumulative reward: 160.94 after 50 rounds using ob: 73.70000000000009
+
+Cumulative reward: 115.94 after 50 rounds using ob: 73.80000000000008
+
+Cumulative reward: 130.32 after 50 rounds using ob: 73.90000000000008
+
+Cumulative reward: 110.49 after 50 rounds using ob: 74.00000000000007
+
+Cumulative reward: 134.68 after 50 rounds using ob: 74.10000000000007
+
+Cumulative reward: 158.94 after 50 rounds using ob: 74.20000000000006
+
+Cumulative reward: 144.12 after 50 rounds using ob: 74.30000000000005
+
+Cumulative reward: 149.74 after 50 rounds using ob: 74.40000000000005
+
+Cumulative reward: 122.59 after 50 rounds using ob: 74.50000000000004
+
+Cumulative reward: 146.04 after 50 rounds using ob: 74.60000000000004
+
+Cumulative reward: 116.41 after 50 rounds using ob: 74.70000000000003
+
+Cumulative reward: 138.56 after 50 rounds using ob: 74.80000000000003
+
+Cumulative reward: 117.58 after 50 rounds using ob: 74.90000000000002
+
+Cumulative reward: 146.72 after 50 rounds using ob: 75.00000000000001
+
+Cumulative reward: 156.76 after 50 rounds using ob: 75.10000000000001
+
+Cumulative reward: 154.54 after 50 rounds using ob: 75.2
+
+Cumulative reward: 155.95 after 50 rounds using ob: 75.3
+
+Cumulative reward: 117.08 after 50 rounds using ob: 75.39999999999999
+
+Cumulative reward: 115.47 after 50 rounds using ob: 75.49999999999999
+
+Cumulative reward: 123.41 after 50 rounds using ob: 75.59999999999998
+
+Cumulative reward: 141.06 after 50 rounds using ob: 75.69999999999997
+
+Cumulative reward: 147.98 after 50 rounds using ob: 75.79999999999997
+
+Cumulative reward: 146.51 after 50 rounds using ob: 75.89999999999996
+
+Cumulative reward: 98.60 after 50 rounds using ob: 75.99999999999996
+
+Cumulative reward: 124.36 after 50 rounds using ob: 76.09999999999995
+
+Cumulative reward: 123.70 after 50 rounds using ob: 76.19999999999995
+
+Cumulative reward: 81.29 after 50 rounds using ob: 76.29999999999994
+
+Cumulative reward: 110.58 after 50 rounds using ob: 76.39999999999993
+
+Cumulative reward: 140.25 after 50 rounds using ob: 76.49999999999993
+
+Cumulative reward: 135.02 after 50 rounds using ob: 76.59999999999992
+
+Cumulative reward: 122.16 after 50 rounds using ob: 76.69999999999992
+
+Cumulative reward: 118.70 after 50 rounds using ob: 76.79999999999991
+
+Cumulative reward: 112.60 after 50 rounds using ob: 76.8999999999999
+
+Cumulative reward: 126.09 after 50 rounds using ob: 76.9999999999999
+
+Cumulative reward: 111.85 after 50 rounds using ob: 77.0999999999999
+
+Cumulative reward: 128.70 after 50 rounds using ob: 77.19999999999989
+
+Cumulative reward: 144.41 after 50 rounds using ob: 77.29999999999988
+
+Cumulative reward: 116.31 after 50 rounds using ob: 77.39999999999988
+
+Cumulative reward: 124.95 after 50 rounds using ob: 77.49999999999987
+
+Cumulative reward: 131.71 after 50 rounds using ob: 77.59999999999987
+
+Cumulative reward: 126.57 after 50 rounds using ob: 77.69999999999986
+
+Cumulative reward: 114.50 after 50 rounds using ob: 77.79999999999986
+
+Cumulative reward: 146.85 after 50 rounds using ob: 77.89999999999985
+
+Cumulative reward: 138.57 after 50 rounds using ob: 77.99999999999984
+
+Cumulative reward: 128.84 after 50 rounds using ob: 78.09999999999984
+
+Cumulative reward: 119.36 after 50 rounds using ob: 78.19999999999983
+
+Cumulative reward: 121.53 after 50 rounds using ob: 78.29999999999983
+
+Cumulative reward: 153.54 after 50 rounds using ob: 78.39999999999982
+
+Cumulative reward: 136.97 after 50 rounds using ob: 78.49999999999982
+
+Cumulative reward: 115.11 after 50 rounds using ob: 78.59999999999981
+
+Cumulative reward: 157.68 after 50 rounds using ob: 78.6999999999998
+
+Cumulative reward: 135.64 after 50 rounds using ob: 78.7999999999998
+
+Cumulative reward: 141.61 after 50 rounds using ob: 78.89999999999979
+
+Cumulative reward: 141.20 after 50 rounds using ob: 78.99999999999979
+
+Cumulative reward: 116.15 after 50 rounds using ob: 79.09999999999978
+
+Cumulative reward: 133.17 after 50 rounds using ob: 79.19999999999978
+
+Cumulative reward: 168.91 after 50 rounds using ob: 79.29999999999977
+
+Cumulative reward: 107.15 after 50 rounds using ob: 79.39999999999976
+
+Cumulative reward: 131.90 after 50 rounds using ob: 79.49999999999976
+
+Cumulative reward: 118.94 after 50 rounds using ob: 79.59999999999975
+
+Cumulative reward: 145.36 after 50 rounds using ob: 79.69999999999975
+
+Cumulative reward: 138.55 after 50 rounds using ob: 79.79999999999974
+
+Cumulative reward: 147.91 after 50 rounds using ob: 79.89999999999974
+
+Cumulative reward: 112.72 after 50 rounds using ob: 79.99999999999973
+
+Cumulative reward: 114.56 after 50 rounds using ob: 80.09999999999972
+
+Cumulative reward: 148.42 after 50 rounds using ob: 80.19999999999972
+
+Cumulative reward: 122.88 after 50 rounds using ob: 80.29999999999971
+
+Cumulative reward: 147.24 after 50 rounds using ob: 80.39999999999971
+
+Cumulative reward: 131.01 after 50 rounds using ob: 80.4999999999997
+
+Cumulative reward: 127.51 after 50 rounds using ob: 80.5999999999997
+
+Cumulative reward: 142.75 after 50 rounds using ob: 80.69999999999969
+
+Cumulative reward: 130.72 after 50 rounds using ob: 80.79999999999968
+
+Cumulative reward: 134.22 after 50 rounds using ob: 80.89999999999968
+
+Cumulative reward: 166.48 after 50 rounds using ob: 80.99999999999967
+
+Cumulative reward: 96.78 after 50 rounds using ob: 81.09999999999967
+
+Cumulative reward: 135.89 after 50 rounds using ob: 81.19999999999966
+
+Cumulative reward: 138.53 after 50 rounds using ob: 81.29999999999966
+
+Cumulative reward: 126.34 after 50 rounds using ob: 81.39999999999965
+
+Cumulative reward: 135.36 after 50 rounds using ob: 81.49999999999964
+
+Cumulative reward: 112.52 after 50 rounds using ob: 81.59999999999964
+
+Cumulative reward: 147.46 after 50 rounds using ob: 81.69999999999963
+
+Cumulative reward: 139.87 after 50 rounds using ob: 81.79999999999963
+
+Cumulative reward: 133.56 after 50 rounds using ob: 81.89999999999962
+
+Cumulative reward: 139.50 after 50 rounds using ob: 81.99999999999962
+
+Cumulative reward: 144.87 after 50 rounds using ob: 82.09999999999961
+
+Cumulative reward: 161.96 after 50 rounds using ob: 82.1999999999996
+
+Cumulative reward: 132.94 after 50 rounds using ob: 82.2999999999996
+
+Cumulative reward: 166.11 after 50 rounds using ob: 82.3999999999996
+
+Cumulative reward: 134.16 after 50 rounds using ob: 82.49999999999959
+
+Cumulative reward: 132.12 after 50 rounds using ob: 82.59999999999958
+
+Cumulative reward: 123.72 after 50 rounds using ob: 82.69999999999958
+
+Cumulative reward: 117.62 after 50 rounds using ob: 82.79999999999957
+
+Cumulative reward: 125.61 after 50 rounds using ob: 82.89999999999957
+
+Cumulative reward: 102.33 after 50 rounds using ob: 82.99999999999956
+
+Cumulative reward: 110.16 after 50 rounds using ob: 83.09999999999955
+
+Cumulative reward: 146.82 after 50 rounds using ob: 83.19999999999955
+
+Cumulative reward: 145.93 after 50 rounds using ob: 83.29999999999954
+
+Cumulative reward: 130.74 after 50 rounds using ob: 83.39999999999954
+
+Cumulative reward: 137.36 after 50 rounds using ob: 83.49999999999953
+
+Cumulative reward: 137.82 after 50 rounds using ob: 83.59999999999953
+
+Cumulative reward: 143.96 after 50 rounds using ob: 83.69999999999952
+
+Cumulative reward: 141.56 after 50 rounds using ob: 83.79999999999951
+
+Cumulative reward: 140.45 after 50 rounds using ob: 83.89999999999951
+
+Cumulative reward: 156.99 after 50 rounds using ob: 83.9999999999995
+
+Cumulative reward: 126.34 after 50 rounds using ob: 84.0999999999995
+
+Cumulative reward: 121.98 after 50 rounds using ob: 84.19999999999949
+
+Cumulative reward: 135.89 after 50 rounds using ob: 84.29999999999949
+
+Cumulative reward: 135.76 after 50 rounds using ob: 84.39999999999948
+
+Cumulative reward: 142.99 after 50 rounds using ob: 84.49999999999947
+
+Cumulative reward: 125.50 after 50 rounds using ob: 84.59999999999947
+
+Cumulative reward: 155.13 after 50 rounds using ob: 84.69999999999946
+
+Cumulative reward: 166.93 after 50 rounds using ob: 84.79999999999946
+
+Cumulative reward: 119.77 after 50 rounds using ob: 84.89999999999945
+
+Cumulative reward: 136.48 after 50 rounds using ob: 84.99999999999945
+
+Cumulative reward: 134.10 after 50 rounds using ob: 85.09999999999944
+
+Cumulative reward: 139.80 after 50 rounds using ob: 85.19999999999943
+
+Cumulative reward: 145.39 after 50 rounds using ob: 85.29999999999943
+
+Cumulative reward: 129.96 after 50 rounds using ob: 85.39999999999942
+
+Cumulative reward: 117.90 after 50 rounds using ob: 85.49999999999942
+
+Cumulative reward: 138.19 after 50 rounds using ob: 85.59999999999941
+
+Cumulative reward: 165.35 after 50 rounds using ob: 85.6999999999994
+
+Cumulative reward: 116.90 after 50 rounds using ob: 85.7999999999994
+
+Cumulative reward: 133.37 after 50 rounds using ob: 85.8999999999994
+
+Cumulative reward: 146.75 after 50 rounds using ob: 85.99999999999939
+
+Cumulative reward: 147.00 after 50 rounds using ob: 86.09999999999938
+
+Cumulative reward: 155.55 after 50 rounds using ob: 86.19999999999938
+
+Cumulative reward: 94.66 after 50 rounds using ob: 86.29999999999937
+
+Cumulative reward: 152.52 after 50 rounds using ob: 86.39999999999937
+
+Cumulative reward: 165.02 after 50 rounds using ob: 86.49999999999936
+
+Cumulative reward: 160.58 after 50 rounds using ob: 86.59999999999935
+
+Cumulative reward: 124.63 after 50 rounds using ob: 86.69999999999935
+
+Cumulative reward: 129.62 after 50 rounds using ob: 86.79999999999934
+
+Cumulative reward: 138.87 after 50 rounds using ob: 86.89999999999934
+
+Cumulative reward: 164.50 after 50 rounds using ob: 86.99999999999933
+
+Cumulative reward: 153.16 after 50 rounds using ob: 87.09999999999933
+
+Cumulative reward: 130.64 after 50 rounds using ob: 87.19999999999932
+
+Cumulative reward: 107.75 after 50 rounds using ob: 87.29999999999932
+
+Cumulative reward: 115.46 after 50 rounds using ob: 87.39999999999931
+
+Cumulative reward: 122.60 after 50 rounds using ob: 87.4999999999993
+
+Cumulative reward: 136.78 after 50 rounds using ob: 87.5999999999993
+
+Cumulative reward: 102.14 after 50 rounds using ob: 87.69999999999929
+
+Cumulative reward: 121.26 after 50 rounds using ob: 87.79999999999929
+
+Cumulative reward: 121.41 after 50 rounds using ob: 87.89999999999928
+
+Cumulative reward: 134.31 after 50 rounds using ob: 87.99999999999928
+
+Cumulative reward: 170.24 after 50 rounds using ob: 88.09999999999927
+
+Cumulative reward: 148.46 after 50 rounds using ob: 88.19999999999926
+
+Cumulative reward: 135.10 after 50 rounds using ob: 88.29999999999926
+
+Cumulative reward: 125.41 after 50 rounds using ob: 88.39999999999925
+
+Cumulative reward: 137.91 after 50 rounds using ob: 88.49999999999925
+
+Cumulative reward: 125.34 after 50 rounds using ob: 88.59999999999924
+
+Cumulative reward: 111.93 after 50 rounds using ob: 88.69999999999924
+
+Cumulative reward: 119.40 after 50 rounds using ob: 88.79999999999923
+
+Cumulative reward: 126.01 after 50 rounds using ob: 88.89999999999922
+
+Cumulative reward: 127.79 after 50 rounds using ob: 88.99999999999922
+
+Cumulative reward: 120.23 after 50 rounds using ob: 89.09999999999921
+
+Cumulative reward: 121.59 after 50 rounds using ob: 89.1999999999992
+
+Cumulative reward: 148.13 after 50 rounds using ob: 89.2999999999992
+
+Cumulative reward: 154.43 after 50 rounds using ob: 89.3999999999992
+
+Cumulative reward: 123.45 after 50 rounds using ob: 89.49999999999919
+
+Cumulative reward: 131.16 after 50 rounds using ob: 89.59999999999918
+
+Cumulative reward: 124.32 after 50 rounds using ob: 89.69999999999918
+
+Cumulative reward: 106.36 after 50 rounds using ob: 89.79999999999917
+
+Cumulative reward: 170.78 after 50 rounds using ob: 89.89999999999917
+
+Cumulative reward: 88.32 after 50 rounds using ob: 89.99999999999916
+
+Cumulative reward: 114.83 after 50 rounds using ob: 90.09999999999916
+
+Cumulative reward: 137.22 after 50 rounds using ob: 90.19999999999915
+
+Cumulative reward: 163.25 after 50 rounds using ob: 90.29999999999914
+
+Cumulative reward: 128.55 after 50 rounds using ob: 90.39999999999914
+
+Cumulative reward: 138.08 after 50 rounds using ob: 90.49999999999913
+
+Cumulative reward: 109.04 after 50 rounds using ob: 90.59999999999913
+
+Cumulative reward: 133.44 after 50 rounds using ob: 90.69999999999912
+
+Cumulative reward: 119.24 after 50 rounds using ob: 90.79999999999912
+
+Cumulative reward: 160.22 after 50 rounds using ob: 90.89999999999911
+
+Cumulative reward: 151.42 after 50 rounds using ob: 90.9999999999991
+
+Cumulative reward: 146.56 after 50 rounds using ob: 91.0999999999991
+
+Cumulative reward: 124.98 after 50 rounds using ob: 91.1999999999991
+
+Cumulative reward: 105.15 after 50 rounds using ob: 91.29999999999909
+
+Cumulative reward: 137.14 after 50 rounds using ob: 91.39999999999908
+
+Cumulative reward: 149.94 after 50 rounds using ob: 91.49999999999908
+
+Cumulative reward: 156.01 after 50 rounds using ob: 91.59999999999907
+
+Cumulative reward: 126.03 after 50 rounds using ob: 91.69999999999906
+
+Cumulative reward: 147.95 after 50 rounds using ob: 91.79999999999906
+
+Cumulative reward: 131.52 after 50 rounds using ob: 91.89999999999905
+
+Cumulative reward: 109.27 after 50 rounds using ob: 91.99999999999905
+
+Cumulative reward: 152.54 after 50 rounds using ob: 92.09999999999904
+
+Cumulative reward: 144.59 after 50 rounds using ob: 92.19999999999904
+
+Cumulative reward: 129.28 after 50 rounds using ob: 92.29999999999903
+
+Cumulative reward: 127.88 after 50 rounds using ob: 92.39999999999903
+
+Cumulative reward: 116.92 after 50 rounds using ob: 92.49999999999902
+
+Cumulative reward: 155.48 after 50 rounds using ob: 92.59999999999901
+
+Cumulative reward: 152.77 after 50 rounds using ob: 92.69999999999901
+
+Cumulative reward: 117.59 after 50 rounds using ob: 92.799999999999
+
+Cumulative reward: 121.59 after 50 rounds using ob: 92.899999999999
+
+Cumulative reward: 142.68 after 50 rounds using ob: 92.99999999999899
+
+Cumulative reward: 145.15 after 50 rounds using ob: 93.09999999999899
+
+Cumulative reward: 135.42 after 50 rounds using ob: 93.19999999999898
+
+Cumulative reward: 187.59 after 50 rounds using ob: 93.29999999999897
+
+Cumulative reward: 125.25 after 50 rounds using ob: 93.39999999999897
+
+Cumulative reward: 133.00 after 50 rounds using ob: 93.49999999999896
+
+Cumulative reward: 143.81 after 50 rounds using ob: 93.59999999999896
+
+Cumulative reward: 114.05 after 50 rounds using ob: 93.69999999999895
+
+Cumulative reward: 147.88 after 50 rounds using ob: 93.79999999999895
+
+Cumulative reward: 151.90 after 50 rounds using ob: 93.89999999999894
+
+Cumulative reward: 138.78 after 50 rounds using ob: 93.99999999999893
+
+Cumulative reward: 127.87 after 50 rounds using ob: 94.09999999999893
+
+Cumulative reward: 136.13 after 50 rounds using ob: 94.19999999999892
+
+Cumulative reward: 122.50 after 50 rounds using ob: 94.29999999999892
+
+Cumulative reward: 158.96 after 50 rounds using ob: 94.39999999999891
+
+Cumulative reward: 137.02 after 50 rounds using ob: 94.4999999999989
+
+Cumulative reward: 136.60 after 50 rounds using ob: 94.5999999999989
+
+Cumulative reward: 132.79 after 50 rounds using ob: 94.6999999999989
+
+Cumulative reward: 141.25 after 50 rounds using ob: 94.79999999999889
+
+Cumulative reward: 149.08 after 50 rounds using ob: 94.89999999999888
+
+Cumulative reward: 157.26 after 50 rounds using ob: 94.99999999999888
+
+Cumulative reward: 129.95 after 50 rounds using ob: 95.09999999999887
+
+Cumulative reward: 136.42 after 50 rounds using ob: 95.19999999999887
+
+Cumulative reward: 143.53 after 50 rounds using ob: 95.29999999999886
+
+Cumulative reward: 136.36 after 50 rounds using ob: 95.39999999999885
+
+Cumulative reward: 111.75 after 50 rounds using ob: 95.49999999999885
+
+Cumulative reward: 151.50 after 50 rounds using ob: 95.59999999999884
+
+Cumulative reward: 134.49 after 50 rounds using ob: 95.69999999999884
+
+Cumulative reward: 148.67 after 50 rounds using ob: 95.79999999999883
+
+Cumulative reward: 114.49 after 50 rounds using ob: 95.89999999999883
+
+Cumulative reward: 108.74 after 50 rounds using ob: 95.99999999999882
+
+Cumulative reward: 128.23 after 50 rounds using ob: 96.09999999999881
+
+Cumulative reward: 135.55 after 50 rounds using ob: 96.19999999999881
+
+Cumulative reward: 119.37 after 50 rounds using ob: 96.2999999999988
+
+Cumulative reward: 166.71 after 50 rounds using ob: 96.3999999999988
+
+Cumulative reward: 134.80 after 50 rounds using ob: 96.49999999999879
+
+Cumulative reward: 118.54 after 50 rounds using ob: 96.59999999999879
+
+Cumulative reward: 147.69 after 50 rounds using ob: 96.69999999999878
+
+Cumulative reward: 99.06 after 50 rounds using ob: 96.79999999999878
+
+Cumulative reward: 130.70 after 50 rounds using ob: 96.89999999999877
+
+Cumulative reward: 150.08 after 50 rounds using ob: 96.99999999999876
+
+Cumulative reward: 152.13 after 50 rounds using ob: 97.09999999999876
+
+Cumulative reward: 164.05 after 50 rounds using ob: 97.19999999999875
+
+Cumulative reward: 123.71 after 50 rounds using ob: 97.29999999999875
+
+Cumulative reward: 124.97 after 50 rounds using ob: 97.39999999999874
+
+Cumulative reward: 121.85 after 50 rounds using ob: 97.49999999999874
+
+Cumulative reward: 147.55 after 50 rounds using ob: 97.59999999999873
+
+Cumulative reward: 117.35 after 50 rounds using ob: 97.69999999999872
+
+Cumulative reward: 120.98 after 50 rounds using ob: 97.79999999999872
+
+Cumulative reward: 140.91 after 50 rounds using ob: 97.89999999999871
+
+Cumulative reward: 141.25 after 50 rounds using ob: 97.9999999999987
+
+Cumulative reward: 120.78 after 50 rounds using ob: 98.0999999999987
+
+Cumulative reward: 147.72 after 50 rounds using ob: 98.1999999999987
+
+Cumulative reward: 179.37 after 50 rounds using ob: 98.29999999999869
+
+Cumulative reward: 136.54 after 50 rounds using ob: 98.39999999999868
+
+Cumulative reward: 120.75 after 50 rounds using ob: 98.49999999999868
+
+Cumulative reward: 123.05 after 50 rounds using ob: 98.59999999999867
+
+Cumulative reward: 177.96 after 50 rounds using ob: 98.69999999999867
+
+Cumulative reward: 125.21 after 50 rounds using ob: 98.79999999999866
+
+Cumulative reward: 114.22 after 50 rounds using ob: 98.89999999999866
+
+Cumulative reward: 142.90 after 50 rounds using ob: 98.99999999999865
+
+Cumulative reward: 134.05 after 50 rounds using ob: 99.09999999999864
+
+Cumulative reward: 122.09 after 50 rounds using ob: 99.19999999999864
+
+Cumulative reward: 150.32 after 50 rounds using ob: 99.29999999999863
+
+Cumulative reward: 123.50 after 50 rounds using ob: 99.39999999999863
+
+Cumulative reward: 130.42 after 50 rounds using ob: 99.49999999999862
+
+Cumulative reward: 130.39 after 50 rounds using ob: 99.59999999999862
+
+Cumulative reward: 138.16 after 50 rounds using ob: 99.69999999999861
+
+Cumulative reward: 154.35 after 50 rounds using ob: 99.7999999999986
+
+Cumulative reward: 149.80 after 50 rounds using ob: 99.8999999999986
+
+Cumulative reward: 127.29 after 50 rounds using ob: 99.9999999999986
+
+Done with the simulation.
