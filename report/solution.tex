@@ -12,10 +12,9 @@ rewards at log-scale timesteps given the simulation parameters.
 
 \subsection{Brute force solution}
 
-By testing all the values we can examine the results afterwards and determine what
-values are the best or what values that need more testing. The downside with this solution
-is that you need to run a lot of tests to maybe find the best values for your
-parameters.
+By testing all the values in a given range it is possible to determine where the maximum lies.
+Although this method is crude, it is helpful for gaining an indication towards what values are best or what values need more testing.
+The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum. 
 
 \subsection{Bandit approach}
 
@@ -24,7 +23,15 @@ stochastic function, it fits perfectly to the task of finding the best
 observation noise for a multi-armed bandit employing the local Thompson
 sampling strategy.
 
-\subsection{Instant rewards}
+\subsection{Measuring performance}
+
+There are several ways to keep score and look at data from a bandit simulation.
+First, one can look at the cumulative reward recieved by the player.
+Second, there is the instant rewards, that is, the reward received by the player at a given time $t$.
+By logging this one can easily see how the player increases its performance over time.
+Third, a much used approach is to calculate regret.
+In fact, the multi-armed bandit problem is often stated as a minimisation problem with respect to regret.
+Last, the number of times the best arm is selected at any given time can be an interesting metric.
 
 
 \section{Solution for Goore Game}
