@@ -24,7 +24,15 @@ stochastic function, it fits perfectly to the task of finding the best
 observation noise for a multi-armed bandit employing the local Thompson
 sampling strategy.
 
-\subsection{Instant rewards}
+\subsection{Measuring performance}
+
+There are several ways to keep score and look at data from a bandit simulation.
+First, one can look at the cumulative reward recieved by the player.
+Second, there is the instant rewards, that is, the reward received by the player at a given time $t$.
+By logging this one can easily see how the player increases its performance over time.
+Third, a much used approach is to calculate regret.
+In fact, the multi-armed bandit problem is often stated as a minimisation problem with respect to regret.
+Last, the number of times the best arm is selected at any given time can be an interesting metric.
 
 
 \section{Solution for Goore Game}
