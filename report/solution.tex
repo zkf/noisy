@@ -12,10 +12,9 @@ rewards at log-scale timesteps given the simulation parameters.
 
 \subsection{Brute force solution}
 
-By testing all the values we can examine the results afterwards and determine what
-values are the best or what values that need more testing. The downside with this solution
-is that you need to run a lot of tests to maybe find the best values for your
-parameters.
+By testing all the values in a given range it is possible to determine where the maximum lies.
+Although this method is crude, it is helpful for gaining an indication towards what values are best or what values need more testing.
+The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum. 
 
 \subsection{Bandit approach}
 
