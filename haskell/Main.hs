@@ -46,10 +46,14 @@ runMode opts@Bandit{..} = do
                        ,[badArm]
                        ,[numArms])
                  _ -> ([bestArm], [badArm], [numArms])
+        strat = case algo of
+            LTS -> StratLTS
+            UCB1 -> StratUCB1
+            Poker -> error "Poker is not available."
         paramLength = length bestArmList * length badArmList * length numArmsList
     gs <- replicateM (paramLength * length roundsList)
                      $ pureMT `fmap` getOpenSSLRand
-    let results = parMap' threads id . getZipList $ ZipList (evalState <$> (findOB <$> roundsList <*> bestArmList <*> badArmList <*> [armEstimate] <*> numArmsList)) <*> ZipList gs
+    let results = parMap' threads id . getZipList $ ZipList (evalState <$> (findOB <$> roundsList <*> bestArmList <*> badArmList <*> [armEstimate] <*> numArmsList <*> [strat])) <*> ZipList gs
     showProgress results
     writeResults opts $ chunk paramLength results
   where parMap' n f = withStrategy (parBuffer n rseq) . map f
@@ -150,7 +154,8 @@ data Args = BruteForce
         , armEstimate  :: (Double, Double)
         , numArms  :: Int
         , vary  :: Maybe WhatRange
-        , stepEnd  :: Maybe (Double, Double)}
+        , stepEnd  :: Maybe (Double, Double)
+        , algo     :: Algorithm}
         | InstantRewards
         { obNoise :: Double 
         , rounds  :: Int
@@ -185,6 +190,7 @@ bandit = Bandit
     ,numArms     = def
     ,vary        = def
     ,stepEnd     = def
+    ,algo        = LTS
     } &= help "Use an LTS bandit solver to find the best observation noise\
              \ for the specified scenario."
 
@@ -241,6 +247,7 @@ filename Bandit{..} = concat
     ,"_est-", showDouble $ fst armEstimate, ",", showDouble $ snd armEstimate
     ,"_num-", show numArms
     ,"_rounds-", show rounds
+    ,"_algo-",   show algo
     ,".data"
     ]
   where

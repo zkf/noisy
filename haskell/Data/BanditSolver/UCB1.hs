@@ -1,7 +1,8 @@
 {-# LANGUAGE BangPatterns #-}
 module Data.BanditSolver.UCB1
-(
-runAveragedInstantRewards 
+( runAveragedInstantRewards 
+, makeUCB1
+, UCB1(..)
 )
 where
 
