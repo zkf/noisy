@@ -58,8 +58,6 @@ runMode opts@BruteForce{..}  = do
     let obNoiseRange = [obStart
                        ,obStart + obStep
                        .. obEnd]
---    gens <- map pureMT `fmap` replicateM (length obNoiseRange) getOpenSSLRand
---    let results = parMap' cores rseq id . getZipList $ 
     results <- mapM (execWriterT . LTS.runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions)
                                  obNoiseRange
     let resultsTr = transpose results -- rows: rounds, columns: ob
