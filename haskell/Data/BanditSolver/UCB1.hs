@@ -19,12 +19,12 @@ data UCB1 = UCB1
                 !(V.Vector Int)     -- number of pulls
                 Bool                -- Are we in the init phase?
 
-makeUCB1 :: (Environment e) => e -> Int -> State PureMT UCB1
-makeUCB1 env numArms = do
+makeUCB1 :: Int -> UCB1
+makeUCB1 numArms =
     let counts = V.replicate numArms 0
         rewards = V.replicate numArms 0
-    let !ucb1 = UCB1 rewards counts True
-    return ucb1
+        !ucb1 = UCB1 rewards counts True
+    in ucb1
 
 instance Solver UCB1 where
     {-# INLINE select #-}
@@ -57,6 +57,6 @@ runAveragedInstantRewards bestArm badArm numArms rounds repetitions gen =
         myBadArm  = makeGaussianArm badArm
         badArms = replicate (numArms - 1) myBadArm
         realArms = V.fromList $ myBestArm : badArms
-        (agents, gen') = runState (replicateM repetitions (makeUCB1 realArms numArms)) gen 
-    in  evalState (execWriterT $ runInstantRewards realArms agents rounds) gen'
+        agents = replicate repetitions (makeUCB1 numArms)
+    in  evalState (execWriterT $ runInstantRewards realArms agents rounds) gen
 
