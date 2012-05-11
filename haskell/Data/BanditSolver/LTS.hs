@@ -11,9 +11,7 @@ import Control.Concurrent (forkIO, getNumCapabilities)
 import Control.Concurrent.Chan.Strict
 import Control.Monad.State
 import Control.Monad.Writer
-import Data.RVar (sampleRVar)
 import Data.Random (MonadRandom)
-import Data.Random (normal)
 import Data.Vector ((!))
 import Data.Vector.Generic.Mutable (write)
 import System.Random.Mersenne.Pure64 (PureMT, newPureMT)
@@ -42,14 +40,19 @@ runAveragedLTS :: GA -> GA -> GA ->  Int
     -> Int -> Int -> Double -> WriterT [String] IO () -- Checkpoint, ob, mean of cumulative reward
 runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions ob = do
     threads <- lift getNumCapabilities
-    let chunk = repetitions `div` threads
+    let chunks = evenlyDistribute repetitions threads
     chans <- lift $ replicateM threads newChan
-    _ <- lift $ mapM (forkIO . runAveragedLTSIO bestArm badArm armEstimate numArms rounds chunk ob) chans
+    _ <- lift $ zipWithM (\chan reps -> forkIO $ runAveragedLTSIO bestArm badArm armEstimate numArms rounds reps ob chan) chans chunks
     forM_ (makeCheckpoints rounds) $ \n -> do
         results <- liftIO $ mapM readChan chans
         let m = sum results / fromIntegral repetitions
         tell [ unwords [show n, showDouble ob, showDouble m]]
     return ()
+
+evenlyDistribute :: Int -> Int -> [Int]
+evenlyDistribute tasks threads = 
+    let (chunk, rest) = tasks `divMod` threads
+    in  zipWith (+) (replicate threads chunk) (replicate rest 1 ++ repeat 0)
 
 showDouble :: Double -> String
 showDouble = printf "%f" 
@@ -100,8 +103,6 @@ selectArm (LTS arms _ _) = do
 --      V.maxIndex `fmap` V.mapM gaussian arms
 -- The downside is that it is much slower.
 
-
-{-# SPECIALIZE INLINE updateLTS :: LTS -> ActionId -> Reward -> LTS #-}
 {-# INLINE updateLTS #-}
 updateLTS :: LTS -> ActionId -> Reward -> LTS
 updateLTS (LTS arms creward ob) !index !reward = 
