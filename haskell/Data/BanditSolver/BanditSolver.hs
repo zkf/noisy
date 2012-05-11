@@ -117,6 +117,8 @@ showDouble :: Double -> String
 showDouble = printf "%f" 
 
 
+{-# SPECIALIZE INLINE oneRound :: (Environment e, Solver s) => e -> s -> RandomStateIO (s, Reward) #-}
+{-# SPECIALIZE INLINE oneRound :: (Environment e, Solver s) => e -> s -> RandomState (s, Reward) #-}
 {-# INLINE oneRound #-}
 oneRound :: (MonadRandom m, Environment e, Solver s) => e -> s -> m (s, Reward)
 oneRound env solver = do

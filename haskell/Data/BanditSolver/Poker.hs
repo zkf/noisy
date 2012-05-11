@@ -1,6 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
 module Data.BanditSolver.Poker where
-import Data.List (foldl')
 import Data.Number.Erf (normcdf)
 import Data.Vector ((!))
 import Data.Vector.Generic.Mutable (write)
@@ -35,25 +34,31 @@ makePoker rounds numArms environment = do
     !δ     = x0 - x1
     μstar = mean r n i0  -- XXX ?
   return $ Poker (rounds - 1) n r r2 δ μstar
-    
 
 {-# INLINE pickedMoreThan #-}
+pickedMoreThan :: Ord a => a -> V.Vector a -> V.Vector Int
 pickedMoreThan k = V.findIndices ( > k)
 
+estimateMu :: (Fractional a1, Integral a) => V.Vector a1 -> V.Vector a -> a1
 estimateMu r n = if elemCount == 0 then 0 else meanSum / fromIntegral elemCount
   where 
     elemCount = V.length which
     which      = pickedMoreThan 0 n
     meanSum   = V.foldl' (\acc i -> acc + mean r n i) 0 which
 
+estimateSigma :: (Floating a1, Integral a) =>
+    V.Vector a1 -> V.Vector a1 -> V.Vector a -> a1
 estimateSigma r r2 n = if elemCount == 0 then 0 else devSum / fromIntegral elemCount
   where
     elemCount = V.length which
     which     = pickedMoreThan 1 n
     devSum    = V.foldl' (\acc i -> acc + dev r r2 n i) 0 which
 
+mean :: (Fractional a, Integral a1) => V.Vector a -> V.Vector a1 -> Int -> a
 mean r n i = (r ! i) / fromIntegral (n ! i)
 
+dev :: (Floating a1, Integral a) =>
+    V.Vector a1 -> V.Vector a1 -> V.Vector a -> Int -> a1
 dev  r r2 n i =
     let ns = fromIntegral (n ! i)
     in  sqrt $ (r2 ! i) / ns - (square (r ! i)) / (square ns)
@@ -94,7 +99,8 @@ instance Solver Poker where
 
     getCumulativeReward (Poker _ _ r _ _ _) = V.sum r
 
-modifyVector index elem = V.modify (\v -> write v index elem)
+modifyVector :: Int -> a -> V.Vector a -> V.Vector a
+modifyVector index el = V.modify (\v -> write v index el)
 
 runAveragedInstantRewards :: GA -> GA -> Int
     -> Int -> Int -> PureMT -> [String]

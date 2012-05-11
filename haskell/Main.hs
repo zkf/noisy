@@ -27,7 +27,7 @@ import qualified Data.BanditSolver.UCB1 as UCB1
 
 main :: IO ()
 main = do
-    opts <- cmdArgs mode
+    opts <- cmdArgs prgMode
     checkOpts opts
     runMode opts
 
@@ -38,13 +38,14 @@ runMode opts@Bandit{..} = do
     let roundsList = takeWhile (< rounds) [10 * 2^y | y <- [(0::Int)..]] ++ [rounds]
         (bestArmList, badArmList, numArmsList) = 
             case vary of 
-                 Nothing           -> ([bestArm], [badArm], [numArms])
-                 Just BestArmMean -> ([(m, snd bestArm) | let start = fst bestArm
-                                                   , let step = fst $ fromJust stepEnd
-                                                   , let stop = snd $ fromJust stepEnd
-                                                   , m <- [start, start + step .. stop]]
-                                 , [badArm], [numArms])
-                 -- BestArmStdDev -> 
+                 Just BestArmMean ->
+                      ([(m, snd bestArm) | let start = fst bestArm
+                                         , let step = fst $ fromJust stepEnd
+                                         , let stop = snd $ fromJust stepEnd
+                                         , m <- [start, start + step .. stop]]
+                       ,[badArm]
+                       ,[numArms])
+                 _ -> ([bestArm], [badArm], [numArms])
         paramLength = length bestArmList * length badArmList * length numArmsList
     gs <- replicateM (paramLength * length roundsList)
                      $ pureMT `fmap` getOpenSSLRand
@@ -82,8 +83,7 @@ writeResults mode resultlist = do
                 BruteForce{} -> "bruteforce"
                 InstantRewards{} -> "instantrewards"
                 Bandit{} -> "bandit"
-        name = filename mode
-        file = dir ++ "/" ++ name
+        file = dir ++ "/" ++ filename mode
         hdr = header mode
     createDirectoryIfMissing True dir
     h <- openFile file WriteMode
@@ -263,8 +263,8 @@ header Bandit{..} =
             \ | bad arm mean | bad arm standard deviation\
             \ | arm count | rounds | best observation noise"
 
-mode :: Args
-mode = modes [bandit &= auto, bruteforce, instant] 
+prgMode :: Args
+prgMode = modes [bandit &= auto, bruteforce, instant] 
         &= help "Find the best observation noise for LTS."
         &= program "Noisy" &= summary "Noisy v0.2"
 

@@ -32,8 +32,6 @@ instance Solver LTS where
     update = updateLTS
     getCumulativeReward (LTS _ r _) = r
 
-{-# SPECIALIZE INLINE oneRound :: GaussianArms -> LTS -> RandomStateIO (LTS, Reward) #-}
-{-# SPECIALIZE INLINE oneRound :: GaussianArms -> LTS -> RandomState (LTS, Reward) #-}
 
 
 runAveragedLTS :: GA -> GA -> GA ->  Int

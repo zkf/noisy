@@ -30,9 +30,8 @@ findOB rounds bestArm badArm armEstimate numArms = do
     (LTS arms _ _) <- runOne env obFinderRounds obSolver
     let zipFun (GaussianArm m s) ob = (ob, m, s)
         leastSigma (_, _, s1) (_, _, s2) = s1 `compare` s2
-        biggestMean (_, m1, _) (_, m2, _) = m2 `compare` m1
+        -- biggestMean (_, m1, _) (_, m2, _) = m2 `compare` m1
         fst' (x,_,_) = x
-        -- ppObnoises = map fromRational actions :: [Double]
         bestOB n = take n
                      . sortBy leastSigma
                      . V.toList
