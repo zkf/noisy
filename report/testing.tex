@@ -1,12 +1,19 @@
 \chapter{Results}
+\label{ch:results}
 
 \section{Multiarmed Bandit}
 
+\begin{figure}[htbp]
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+    set style data lines
+    set grid
+    set xlabel "Observation noise"
+    set ylabel "Normalised cumulative reward"
+    set key bottom
+    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==10000?(column(3)/50000):(1/0)) title ""
+\end{gnuplot}
+\caption{Resulting reward from varying observation noise.}
+\end{figure}
 
 
 \section{Goore Game}
-
-
-
-
-\label{ch:results}
