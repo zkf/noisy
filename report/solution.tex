@@ -2,28 +2,43 @@
 \label{ch:solution}
 Approx. 10 pages
 
-\section{Solution for single bandit}
+\section{Multi-armed bandit}
 
-We developed several ways to compute and visualise the needed data. A brute
-force method calculating cumulative rewards for all given observation noises, a
-method that, given the simulation parameters, employs a bandit approach to
-calculating the best observation noise, and a method calculating instant
-rewards at log-scale timesteps given the simulation parameters.
+The multi-armed bandits in our trials have one uniquely best arm, and all other arms are identically distributed.
+Following is a definition of parameters used for the multi-armed bandits.
+\begin{itemize}
+    \item Mean of the best arm
+    \item Standard deviation of the best arm
+    \item Mean of the bad arms
+    \item Standard deviation of the bad arms
+    \item Estimate mean
+    \item Estimate standard deviation
+    \item Number of arms
+    \item Observation noise
+\end{itemize}
+All parameters for normal distributions are kept between $0.0$ and $10.0$.
 
-\subsection{Brute force solution}
+\subsection{Solution strategy}
+
+We developed a couple of ways to compute and visualise the needed data.
+A brute force method calculating cumulative rewards for all given observation noises, and a method that, given the simulation parameters, employs a bandit approach to calculating the best observation noise.
+
+In addition we calculate instant rewards at log-scale timesteps given the simulation parameters, for verifying that the solution found is in fact the best one.
+
+\subsubsection{Brute force solution}
 
 By testing all the values in a given range it is possible to determine where the maximum lies.
 Although this method is crude, it is helpful for gaining an indication towards what values are best or what values need more testing.
 The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum. 
 
-\subsection{Bandit approach}
+\subsubsection{Bandit approach}
 
 As the multi-armed bandit approach can be used to find the maximum of a
 stochastic function, it fits perfectly to the task of finding the best
 observation noise for a multi-armed bandit employing the local Thompson
 sampling strategy.
 
-\subsection{Measuring performance}
+\subsubsection{Measuring performance}
 
 There are several ways to keep score and look at data from a bandit simulation.
 First, one can look at the cumulative reward recieved by the player.
@@ -34,28 +49,27 @@ In fact, the multi-armed bandit problem is often stated as a minimisation proble
 Last, the number of times the best arm is selected at any given time can be an interesting metric.
 
 
-\section{Solution for Goore Game}
+\section{Goore Game}
 
 
 
-
-\section{Proposed solution / algorithm}
-
-\subsection{The basic algorithm}
-
-\subsection{Discussion of design issues}
-
-
-\subsection{Algorithmic Enhancements}
-
-
-\subsection{Discussion of the Parameter Space}
-
-
-\section{Prototype}
-
-\section{Justification of Claim to Originality}
-
-\section{Valuation of Contribution}
-
-\section{Alternatives}
+% \section{Proposed solution / algorithm}
+% 
+% \subsection{The basic algorithm}
+% 
+% \subsection{Discussion of design issues}
+% 
+% 
+% \subsection{Algorithmic Enhancements}
+% 
+% 
+% \subsection{Discussion of the Parameter Space}
+% 
+% 
+% \section{Prototype}
+% 
+% \section{Justification of Claim to Originality}
+% 
+% \section{Valuation of Contribution}
+% 
+% \section{Alternatives}
