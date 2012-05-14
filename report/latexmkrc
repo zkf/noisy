@@ -1,0 +1,2 @@
+$hash_calc_ignore_pattern{'eps'} = '^%%CreationDate: |^  \/CreationDate ';
+$pdflatex='pdflatex --shell-escape %O %S'
