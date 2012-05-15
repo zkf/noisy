@@ -1,10 +1,15 @@
-module Data.BanditSolver.OBFinder (findOB) where
+module Data.BanditSolver.OBFinder (findOB, Strategy(..)) where
 
-import Data.BanditSolver.LTS
-import Data.List (sortBy)
 import Control.Monad.State
 import System.Random.Mersenne.Pure64
 import qualified Data.Vector as V
+import Data.Vector ((!))
+import Data.BanditSolver.BanditSolver
+import Data.BanditSolver.LTS
+import Data.BanditSolver.UCB1
+import Text.Printf
+
+data Strategy = StratLTS | StratUCB1
     
 -- testing
 -- muStartEstimate = muBestArm * 2.0
@@ -12,28 +17,47 @@ import qualified Data.Vector as V
 obFinderRounds :: Int
 obFinderRounds = 10000
 
-findOB :: Int -> GA -> GA -> GA -> Int
-    -> State PureMT [(Double, Double, Double)]
-findOB rounds bestArm badArm armEstimate numArms = do
+findOB :: Int -> GA -> GA -> GA -> Int -> Strategy
+    -> State PureMT String
+findOB rounds bestArm badArm armEstimate numArms strat = do
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm
         myArmEstimate = makeGaussianArm armEstimate
         actions = V.fromList [0.01,0.02..5.0] :: V.Vector Double -- Observation noises to choose from
         numActions = V.length actions
-        obEstMu     = 2.0 -- Twice the scaled expected reward from best arm
-        obEstSigma  = 0.1
-        obOb        = 0.00001
-        obSolver = makeLTS (GaussianArm obEstMu obEstSigma) numActions obOb
         env = makeEnv rounds myBestArm myBadArm myArmEstimate numArms actions
+    bestIndex <- case strat of
+                      StratLTS -> useLTS numActions env 
+                      StratUCB1 -> useUCB1 numActions env
+    let bestOB = actions ! bestIndex
+    return $
+        unwords [unwords $ map showDouble [fst bestArm, snd bestArm, fst badArm, snd badArm]
+               ,show numArms, show rounds, showDouble bestOB]
+
+useLTS :: Int -> Env -> State PureMT Int
+useLTS numActions env = do
+    let obEstMu     = 1.0 -- Twice the scaled expected reward from best arm
+        obEstSigma  = 0.5
+        obOb        = 0.000003
+        obSolver = makeLTS (GaussianArm obEstMu obEstSigma) numActions obOb
     (LTS arms _ _) <- runOne env obFinderRounds obSolver
-    let zipFun (GaussianArm m s) ob = (ob, m, s)
-        leastSigma (_, _, s1) (_, _, s2) = s1 `compare` s2
-        -- ppObnoises = map fromRational actions :: [Double]
-        bestOB n = take n
-                     . sortBy leastSigma 
-                     . V.toList
-                     $ V.zipWith zipFun arms actions
-    return $ bestOB 10
+    let compSigma (GaussianArm _ s1) (GaussianArm _ s2) = s1 `compare` s2
+        -- biggestMean (_, m1, _) (_, m2, _) = m2 `compare` m1
+        bestOB = V.minIndexBy compSigma arms
+    return bestOB
+
+useUCB1 :: Int -> Env -> State PureMT Int
+useUCB1 numActions env =  do
+    let obSolver      = makeUCB1 numActions
+    (UCB1 _ counts _) <- runOne env obFinderRounds obSolver
+    let bestOB        = V.maxIndex counts
+    return  bestOB
+
+
+
+showDouble :: Double -> String
+showDouble = printf "%f" 
+
 
 makeEnv :: Int -> GaussianArm -> GaussianArm -> GaussianArm -> Int
     -> V.Vector Double -> Env
@@ -50,14 +74,20 @@ newtype Env = Env (GaussianArms -- real arms
                   deriving (Show)
 
 instance Environment Env where
-    -- Reward is scaled towards 1.0
+    -- Reward is scaled with (reward - mean reward)/(max reward - min reward)
+    {-# SPECIALIZE INLINE getReward :: Env -> ActionId -> RandomState Reward #-}
     getReward (Env (realArms, startEstimates, rounds, actions)) index = do
-        let ob = actions V.! index
+        let ob = actions ! index
             solver = LTS startEstimates 0 ob
-            repetitions = 5 * (10000 `div` rounds)
-            bestReward = let (GaussianArm m _) = realArms V.! 0 -- the first arm must be the best one
-                         in  m * fromIntegral rounds
+            repetitions = max 50 (5 * (10000 `div` rounds))
+            bestReward =
+                let (GaussianArm gm _) = realArms ! 0 -- the first arm must be the best one
+                in  gm * fromIntegral rounds
+            worstReward = 
+                let (GaussianArm bm _) = realArms ! 1
+                in bm * fromIntegral rounds
+            meanReward = (bestReward + worstReward) / 2
         unscaledReward <- runAvg realArms repetitions rounds solver
-        return $ unscaledReward / bestReward
+        return $ (unscaledReward - meanReward) / (bestReward - worstReward)
 
 
