@@ -1,48 +1,64 @@
 \chapter{Introduction}
 \label{ch:introduction}
 
-\textit{Approx. 10 pages}
-
-This document forms a general structure for a thesis. Normally, background, and
-solution chapter may be split into several different chapters!
-
 \section{Introduction}
+The purpose of this project was to determine the optimal observation noise for different 
+configurations in the multi-armed bandit problem and in the Goore game using local
+Thompson sampling. The multi-armed bandit problem gives a gambler the option to pull one
+out of several arms. Each arm will return a reward based on a distribution that may or may not be
+unique to that arm. The gambler will have to decide which arm is the better one to maximize his
+reward.
 
-In this report we investigated what might be are the best observation noise for
-different types of bandits and Goore games. By changing the bandits with adding
-more arms or changing the values of the arms, then recorded the simulations to
-see what difference it made to the simulation. Then check what are the best
-possible observation noise are in that case.
+The Goore game builds on the same principles. However in this game there are several players
+but a maximum of two arms for each player to chose from. To maximize the reward the different
+players need to obtain a certian distribution of arms pulled, for example 70 percent of the players chose
+arm number one while the remaining 30 percent chose arm number 2. Thompson sampling aims to solve
+this problem by chosing an armed based on its probability of returning the highest reward. William R.
+Thompson wrote about Thompson sampling in an article from 1933 and it has not seen much use since.
 
-\section{Motivation}
-We wanted to better understand these types of problems and see if there was
-any formula that you may use to check what kind of values the variables should have
-for best performance.
+Multi-armed bandit approaches have real life applications as they have been used to manage multiple
+projects in large corporations. Money and manpower would be distributed based on the expected
+return of investment. As time passed resources could then be redistributed as it became more apperant
+which projects were the lucerative ones. In addition, multi-armed bandit approaches have been used
+in clinical trials and to solve scheduling problems.
 
-\section{Goal} 
-To determine the best choice for observation noise given a
-specific multi-armed bandit setting or a Goore game.
+\section{Problem Solution}
+The goal of the project was to evaluate and map the observation noise to its expected performance using
+a Gaussian Process; and using this information to create a model for inferring the optimal observation noise 
+for a realistic subset of possible configurations. The problem definition was faily open throughout the entire
+project period and there were always alternative solutions to chose from. 
 
-\subsection{Field of research}
-
-\section{Thesis definition/objective / Statement of the Problem}
-Find the best values for the variables in Multi armed bandit and Goore game, so you
-get the best results with in reasonable time. 
+Originally the project definition asserted that the solution would use Gaussian Processes it quickly got down-prioritized.
+The focus was shifted towards the core of the problem, determining the optimal observation noise. While
+the project initially were limited to Thompson sampling we briefly investigated other algorithms to compare
+and contrast. 
 
 \section{Contributions}
-Our supervisor guided us in the right directions and gave good advice on the coding.
- 
-\section{Target audience}
-People that use multi amred bandits or goore games to solve problems. It may also be 
-good read for people that do research on these types of problems, as it may give them
-better understanding on how they work.
+We would like to thank our supervisor Sondre Glimsdal for his help throughout the project. In addition to
+being the project supervisor Mr. Glimsdal was also the project sponsor. He provided us with a simple
+implementation of local thompson sampling to solve the multi-armed bandit problem. Additionally, at the 
+start of the project he gave us an overview of the problems and thoughts on 
+how to solve them. Finally there were biweekly meetings where we would discuss ideas and he would 
+provide insight and help.
 
-\section{Report outline / Thesis Organization}
+\section{Report outline}
+The rest of this report is structured as follows: Chapter
+\ref{ch:background} presents an overview of the background for our research.
+Specifically, it describes in greater detail the multi-armed bandit problem, the Goore game, the
+technique known as Thompson sampling, (*and GP*). Additionally, the coding languages chosen and any 
+tools used are introduced. Finally, other algorithms are explained as Thompson sampling have been compared 
+to various other algorithms.
 
-The rest of this report is structured as follows: In chapter
-\ref{ch:background} we present an overview of the background for our research.
-Specifically, we define the multi-armed bandit problem, the Goore game, the
-technique known as Thompson sampling, (and GP). Subsequently, in chapter
-\ref{ch:solution}, we describe the methods we used. The next chapter discusses
-our results, and finally we conclude with a summary and suggestions for future
-work.
+Subsequently, chapter \ref{ch:solution} describes the different solutions that were used, for both the Goore game
+and the multi-armed banditproblem, and the reasoning behind the choices of solutions. Moreover, it provides 
+alternative approaches and justifications for not selecting them. The chapter also covers what the project
+and its results contributes to the field of research and why the project itself is original. 
+
+Chapter \ref{ch:results} discusses the results. The Goore game and the multi-armed bandit problem have some
+identical parameters and some distinct ones. The results are presented as graphs or tables. As there is a significant
+amount of data and several parameters the focus is on why the optimal observation noise is optimal, how changes
+in different parameters affects the observation noise and how Thompson sampling compares to other options.
+
+Finally, chapter \ref{ch:conclusion} rounds off the paper by summarizing the problem, solution and result. It then goes
+on to describe the new benefits the solution brings and why it is superior to existing solutions. Finally, it has a few 
+suggestions for future work. 
