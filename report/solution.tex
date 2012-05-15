@@ -19,13 +19,10 @@ Following is a list of parameters used for the multi-armed bandits.
     \item Observation noise
 \end{itemize}
 
-To avoid unnessecary simulations, the mean of the best arm is kept at 0 and the means of the other arms are shifted accordingly.
-Any bandit setup where the means are known can be treated in this way.
-As an example, consider a multi-armed bandit where the best arm is defined by $\mathcal{N}(5.0, 0.5)$ and the other arms have distributions $\mathcal{N}(4.0,0.5)$.
-Then this bandit can be represented with the best arm $\sim\mathcal{N}(0.0, 0.5)$ and the other arms as $\mathcal{N}(-1.0, 0.5)$.
-We have experimentally verified that this procedure does not change the results.
-
-The standard deviation of both the best arm and the other arms is kept the same.
+The means are kept in (0,10), and the standard deviation on all arms is kept the same value well below the mean.
+The number of arms we test lies between 2 and 50.
+Estimate mean and standard deviation are specific for the local Thompson sampling strategy, and are kept at twice the mean of the best arm and 2, respectively.
+We calculate the best observation noise for a range of different timesteps up to 1000.
 
 \subsection{Solution strategy}
 
