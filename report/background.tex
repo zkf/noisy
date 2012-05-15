@@ -91,7 +91,7 @@ is assigned a value based on how much new information is to be trusted. A low
 observation noise signifies that new information should be considered 
 trustworthy, while a high value means that observations are insecure. 
 
-\subsection{UCB1}
+\subsection{UCB1-Tuned}
 
 
 UCB1 \cite{Auer02UCB1} (Upper Confidence Bound) is a well-known algorithm for multi-armed bandits.
@@ -100,16 +100,22 @@ to LTS, it does not require any constant parameters, and in place of a given
 start estimate for the available arms the fist $K$ rounds are dedicated to 
 initialising the arm estimates by playing every arm once.
 
-The UCB1 strategy is simply to play the the arm with index $i$ such that
+UCB1-Tuned is a version of UCB1 that takes into consideration the estimate variance in addition to the estimate mean. This should cause it to work better in practice.
+
+The UCB1-Tuned strategy is simply to play the arm with index $i$ such that
 \begin{displaymath}
-    i = \operatorname*{argmax}_{j \in \{ 1..K \}} \left[ \bar{x}_j + 
-    \sqrt{\frac{2 \ln{n}}{n_j}} \right]
+    i = \operatorname*{argmax}_{j \in \{ 1..K \}} \left(\hat{\mu}_j + 
+    \sqrt{\frac{\ln{n}}{n_j} \min(\frac{1}{4},\hat{V}_j)}\right)
 \end{displaymath}
-where $K$ is the number of available arms, $n_j$ the numer of times arm $j$ has 
-been played, $n$ is the total number of plays, and $\bar{x}_j 
+where 
+\begin{displaymath}
+    \hat{V}_j = \hat{\sigma}_j^2 + \sqrt{\frac{2\ln{n}}{n_j}}\text{.}
+\end{displaymath}
+
+$K$ is the number of available arms, $n_j$ the numer of times arm $j$ has 
+been played, $n$ is the total number of plays, and $\hat{\mu}_j 
 =\frac{(\text{cumulative reward for arm j})}{n_j}$.
 
-\subsection{\textsc{Poker}}
 
 % \section{Sample stuff}
 % Some simple and useful latex formatting.
