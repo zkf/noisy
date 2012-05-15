@@ -7,18 +7,25 @@ The solution produces machine-readable result files suitable for input to a prog
 \section{Multi-armed bandit}
 
 The multi-armed bandits in our trials have one uniquely best arm, and all other arms are identically distributed.
-Following is a definition of parameters used for the multi-armed bandits.
+Following is a list of parameters used for the multi-armed bandits.
 \begin{itemize}
     \item Mean of the best arm
     \item Standard deviation of the best arm
     \item Mean of the bad arms
     \item Standard deviation of the bad arms
+    \item Number of arms
     \item Estimate mean
     \item Estimate standard deviation
-    \item Number of arms
     \item Observation noise
 \end{itemize}
-All parameters for normal distributions are kept between $0.0$ and $10.0$.
+
+To avoid unnessecary simulations, the mean of the best arm is kept at 0 and the means of the other arms are shifted accordingly.
+Any bandit setup where the means are known can be treated in this way.
+As an example, consider a multi-armed bandit where the best arm is defined by $\mathcal{N}(5.0, 0.5)$ and the other arms have distributions $\mathcal{N}(4.0,0.5)$.
+Then this bandit can be represented with the best arm $\sim\mathcal{N}(0.0, 0.5)$ and the other arms as $\mathcal{N}(-1.0, 0.5)$.
+We have experimentally verified that this procedure does not change the results.
+
+The standard deviation of both the best arm and the other arms is kept the same.
 
 \subsection{Solution strategy}
 
@@ -31,7 +38,7 @@ In addition we calculate instant rewards at log-scale timesteps given the simula
 
 By testing all the values in a given range it is possible to determine where the maximum lies.
 Although this method is crude, it is helpful for gaining an indication towards what values are best or what values need more testing.
-The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum. 
+The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum.
 
 \subsubsection{Bandit approach}
 
