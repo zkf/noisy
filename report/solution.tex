@@ -50,7 +50,18 @@ Last, the number of times the best arm is selected at any given time can be an i
 
 
 \section{Goore Game}
+The players in our Goore Game is Multi-armed bandits with only two arms each one for no and one for yes.
+We tested several parameters to determine where the maximum lies. The observation noise, mean, the mean
+and standard deviation of the bandits. Also how many players the Goore Game had. We did this over few different
+ratios, since most of the ratios are duplicates. 
 
+\subsubsection{Brute force solution}
+By testing all the values in a given range to determine where the maximum lies under different
+circumstances. A downside to this menthod is that it will generate some use full data and some not so
+use full data. For example, on a ratio 50/50, with 5 players is it hard for the  odd player to 
+determine whether yes or no is the best answer. However this method do gives some use full inn-site on
+how Goore Game works under strange circumstances that are nod ideal. As this solution is easy to set
+up and start, it is however needed to take many more tests and more time.
 
 
 % \section{Proposed solution / algorithm}
