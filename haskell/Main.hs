@@ -35,36 +35,39 @@ runMode :: Args -> IO ()
 runMode opts@Bandit{..} = do
     print opts
     threads <- getNumCapabilities
-    let roundsList = takeWhile (< rounds) [10 * 2^y | y <- [(0::Int)..]] ++ [rounds]
-        (bestArmList, badArmList, numArmsList) = 
-            case vary of 
-                 Just BestArmMean ->
-                      ([(m, snd bestArm) | let start = fst bestArm
-                                         , let step = fst $ fromJust stepEnd
-                                         , let stop = snd $ fromJust stepEnd
-                                         , m <- [start, start + step .. stop]]
-                       ,[badArm]
-                       ,[numArms])
-                 _ -> ([bestArm], [badArm], [numArms])
+    let roundsList = takeWhile (< rounds) [ 2^y | y <- [(3::Int)..]] ++ [rounds]
+        (bestArmList, badArmList, numArmsList) = makeParamLists opts
         strat = case algo of
             LTS -> StratLTS
             UCB1 -> StratUCB1
             Poker -> error "Poker is not available."
-        paramLength = length bestArmList * length badArmList * length numArmsList
+        paramLength = length bestArmList 
+                        * length badArmList 
+                        * length numArmsList
     gs <- replicateM (paramLength * length roundsList)
                      $ pureMT `fmap` getOpenSSLRand
-    let results = parMap' threads id . getZipList $ ZipList (evalState <$> (findOB <$> roundsList <*> bestArmList <*> badArmList <*> [armEstimate] <*> numArmsList <*> [strat])) <*> ZipList gs
+    let results = parMap' threads id . getZipList 
+          $ ZipList (evalState <$> (findOB 
+                                    <$> roundsList
+                                    <*> bestArmList
+                                    <*> badArmList
+                                    <*> [armEstimate]
+                                    <*> numArmsList 
+                                    <*> [strat])
+                    ) <*> ZipList gs
     showProgress results
     writeResults opts $ chunk paramLength results
   where parMap' n f = withStrategy (parBuffer n rseq) . map f
+        -- deepid e = e `deepseq` e
 
 runMode opts@BruteForce{..}  = do
     print opts
     let obNoiseRange = [obStart
                        ,obStart + obStep
                        .. obEnd]
-    results <- mapM (execWriterT . LTS.runAveragedLTS bestArm badArm armEstimate numArms rounds repetitions)
-                                 obNoiseRange
+    results <- mapM (execWriterT . LTS.runAveragedLTS bestArm badArm 
+                                        armEstimate numArms rounds repetitions)
+                    obNoiseRange
     let resultsTr = transpose results -- rows: rounds, columns: ob
     showProgress results
     writeResults opts resultsTr
@@ -74,12 +77,54 @@ runMode opts@InstantRewards{..} = do
     gen <- pureMT `fmap` getOpenSSLRand
     let result = 
             case algo of
-                 LTS -> LTS.runAveragedInstantRewards bestArm badArm armEstimate numArms
-                            rounds repetitions obNoise gen
-                 UCB1 -> UCB1.runAveragedInstantRewards bestArm badArm numArms rounds repetitions gen
-                 Poker -> Poker.runAveragedInstantRewards bestArm badArm numArms rounds repetitions gen
+                 LTS -> LTS.runAveragedInstantRewards bestArm badArm 
+                                armEstimate numArms rounds repetitions obNoise
+                                gen
+                 UCB1 -> UCB1.runAveragedInstantRewards bestArm badArm numArms 
+                                rounds repetitions gen
+                 Poker -> Poker.runAveragedInstantRewards bestArm badArm 
+                                    numArms rounds repetitions gen
     writeResults opts [result]
 
+makeParamLists ::  Args -> ([(Double, Double)], [(Double, Double)], [Int])
+makeParamLists Bandit{..} =
+    case vary of 
+         Just BestArmMean ->
+              (makeMeanRange bestArm
+              ,[badArm]
+              ,[numArms])
+         Just BestArmStdDev -> 
+            (makeStdDevRange bestArm
+            ,[badArm]
+            ,[numArms])
+         Just BadArmMean -> 
+            ([bestArm]
+            ,makeMeanRange badArm
+            ,[numArms])
+         Just BadArmStdDev -> 
+            ([bestArm]
+            ,makeStdDevRange badArm
+            ,[numArms])
+         Just NumArms ->
+            ([bestArm]
+            ,[badArm]
+            ,[ n | let start = numArms
+                 , let step = (round.fst.fromJust) stepEnd      
+                 , let stop = (round.snd.fromJust) stepEnd      
+                 , n <- makeRange start stop step ])
+         _ -> ([bestArm], [badArm], [numArms])
+  where
+    makeRange start stop step = [start, start + step .. stop]
+    makeMeanRange arm = 
+        [(m, snd arm) | let start = fst arm
+             , let (step, stop) = fromJust stepEnd
+             , m <- makeRange start stop step ]
+    makeStdDevRange arm = 
+        [(fst arm, s ) | let start = snd arm
+             , let (step, stop) = fromJust stepEnd
+             , s <- makeRange start stop step ]
+
+makeParamLists _ = undefined
 
 writeResults :: Args -> [[String]] -> IO ()
 writeResults mode resultlist = do
@@ -128,11 +173,14 @@ showProgress xs = do
     flip evalStateT 0 $ forM_ xs $ \e -> e `seq` do
         modify (+1)
         progress <- (/len) `fmap` get
-        lift $ putProgress $ drawProgressBar 80 progress ++ " " ++ drawPercentage progress
+        lift . putProgress $ drawProgressBar 80 progress 
+                                ++ " " 
+                                ++ drawPercentage progress
     hPutStrLn stderr " Done." 
 
 
-data WhatRange = BestArmMean | BestArmStdDev
+data WhatRange = BestArmMean | BestArmStdDev | BadArmMean | BadArmStdDev
+                 | NumArms
     deriving (Eq,Show,Data,Typeable)
 data Algorithm  = LTS | UCB1 | Poker
     deriving (Eq,Show,Data,Typeable)
@@ -190,8 +238,8 @@ bandit = Bandit
     ,numArms     = def
     ,vary        = def
     ,stepEnd     = def
-    ,algo        = LTS
-    } &= help "Use an LTS bandit solver to find the best observation noise\
+    ,algo        = UCB1
+    } &= help "Use a bandit solver to find the best observation noise\
              \ for the specified scenario."
 
 instant :: Args
@@ -313,7 +361,7 @@ checkOpts opts =
                     "Bad arm has default value (0.0, 0.0).", False)
                 ,(bestArm opts == (0.0,0.0),
                     "Best arm has default value (0.0, 0.0).", False)
-                ,((fst $ badArm opts) > (fst $ bestArm opts),
+                ,((fst.badArm) opts > (fst.bestArm) opts,
                     "Bad arm must be worse than best arm.", True)
                 ]
     in mapM_ handle requirements
