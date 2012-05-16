@@ -3,6 +3,7 @@
 module Main where
 import Control.Applicative
 import Control.Concurrent (getNumCapabilities)
+import Control.DeepSeq
 import Control.Monad 
 import Control.Monad.State
 import Control.Monad.Writer
@@ -46,7 +47,7 @@ runMode opts@Bandit{..} = do
                         * length numArmsList
     gs <- replicateM (paramLength * length roundsList)
                      $ pureMT `fmap` getOpenSSLRand
-    let results = parMap' threads id . getZipList 
+    let results = parMap' threads deepid . getZipList 
           $ ZipList (evalState <$> (findOB 
                                     <$> roundsList
                                     <*> bestArmList
@@ -58,7 +59,7 @@ runMode opts@Bandit{..} = do
     showProgress results
     writeResults opts $ chunk paramLength results
   where parMap' n f = withStrategy (parBuffer n rseq) . map f
-        -- deepid e = e `deepseq` e
+        deepid e = e `deepseq` e
 
 runMode opts@BruteForce{..}  = do
     print opts

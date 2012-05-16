@@ -55,7 +55,7 @@ Executable noisy
   Build-depends:   base, mtl, random-fu, rvar, mersenne-random-pure64,
                     binary-strict, HsOpenSSL, vector, statistics, parallel,
                     split, directory, cmdargs, mwc-random, strict-concurrency,
-                    erf, list-extras
+                    erf, list-extras, deepseq
   extra-libraries: crypto
   
   -- Modules not exported by this package.
