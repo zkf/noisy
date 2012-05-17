@@ -1,6 +1,22 @@
 \chapter{Results}
 \label{ch:results}
 
+\newcommand{\exsetup}[6]{%
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lll}
+        \toprule
+        \multirow{2}{*}{Best arm}   & $\mu$    & #1 \\
+                                    & $\sigma$ & #2 \\
+        \multirow{2}{*}{Other arms} & $\mu$    & #3 \\
+                                    & $\sigma$ & #4 \\
+        \multicolumn{2}{l}{Number of arms}     & #5 \\
+        \bottomrule
+    \end{tabular}
+    %\label{tab:#6}
+    \caption{Simulation settings for~\ref{#6}}
+\end{table}} 
+
 \section{Multiarmed Bandit}
 
 \begin{figure}[htbp]
@@ -8,12 +24,74 @@
     set style data lines
     set grid
     set xlabel "Observation noise"
-    set ylabel "Normalised cumulative reward"
+    set ylabel "Total regret"
     set key bottom
-    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==10000?(column(3)/50000):(1/0)) title ""
+    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==10000?(50000-column(3)):(1/0)) title ""
 \end{gnuplot}
 \caption{Resulting reward from varying observation noise.}
+\label{fig:ex2}
 \end{figure}
+
+
+\begin{figure}[hbtp]
+    \centering
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+    set style data lines
+    set grid
+    set hidden3d
+    set pm3d
+    set xlabel "Arms" rotate
+    set ylabel "Rounds" rotate
+    set zlabel "Observation noise" rotate
+    set log xy
+    set xyplane 0
+    set xtics 2
+    set yrange [10:1000]
+    set zrange [0.01:0.25]
+    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-10.0,2.0\_num-2,5,10,50\_rounds-1000\_algo-UCB1.data" using 5:6:7 title ""
+    \end{gnuplot}
+\caption{Best observation noise varying with the number of arms. Values for when the number of arms is greater than rounds are not included.}
+\label{fig:ex1}
+\end{figure}
+
+\exsetup{5.0}{0.5}{4.0}{0.5}{Variable}{fig:ex1}
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+    set style data lines
+    set grid
+    set hidden3d
+    set pm3d
+    set xlabel "Bad arm mean" rotate
+    set ylabel "Rounds" rotate
+    set zlabel "Observation noise" rotate
+    set log y
+    set xyplane 0
+    set xtics 0.5
+    set yrange [100:1000]
+    set xrange [0.5:4.5]
+    set view 40,306
+    splot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using 3:6:7 title ""
+    \end{gnuplot}
+\caption{Best observation noise varying with the mean on the suboptimal arms. As the mean is lowered past 3 or so we see that changing observation noise stops having an effect?}
+\label{fig:ex3}
+\end{figure}
+\exsetup{5.0}{0.5}{Varying}{0.5}{5}{fig:ex3}
+
+\begin{figure}[htbp]
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+    set style data lines
+    set grid
+    set xlabel "Observation noise"
+    set ylabel "Total regret"
+    plot "../data/bruteforce/good-5.0,0.5\_bad-1.5,0.5\_est-10.0,2.0\_num-5\_obnoise-(0.01,0.4,0.01)\_rounds-1000\_reps-100000.data" using (column(1)==1000?column(2):1/0):(5000-column(3)) title ""
+\end{gnuplot}
+\caption{Sample from~\ref{fig:ex3}. This is the result of averaging over 100,000 runs.}
+\label{fig:ex4}
+\end{figure}
+\exsetup{5.0}{0.5}{1.5}{0.5}{5}{fig:ex4}
 
 
 \section{Goore Game}
