@@ -36,7 +36,7 @@ runMode :: Args -> IO ()
 runMode opts@Bandit{..} = do
     print opts
     threads <- getNumCapabilities
-    let roundsList = takeWhile (< rounds) [ 2^y | y <- [(3::Int)..]] ++ [rounds]
+    let roundsList = takeWhile (< rounds) ([10,20..90]++[100,200..900]++[1000,2000..9000]) ++ [rounds]
         (bestArmList, badArmList, numArmsList) = makeParamLists opts
         strat = case algo of
             LTS -> StratLTS
@@ -160,7 +160,7 @@ putProgress s = hPutStr stderr $ '\r' : s
 
 drawProgressBar :: Int -> Rational -> String
 drawProgressBar width progress = 
-    "[" ++ replicate bars '=' ++ replicate spaces ' ' ++ "]"
+    "[" ++ replicate bars '×' ++ replicate spaces '·' ++ "]"
     where bars   = round (progress * fromIntegral width)
           spaces = width - bars
           
@@ -292,9 +292,9 @@ filename InstantRewards{..} = concat
  
 filename Bandit{..} = concat 
     ["good-", good
-    ,"_bad-", showDouble $ fst badArm, ",", showDouble $ snd badArm
+    ,"_bad-", bad
     ,"_est-", showDouble $ fst armEstimate, ",", showDouble $ snd armEstimate
-    ,"_num-", show numArms
+    ,"_num-", num
     ,"_rounds-", show rounds
     ,"_algo-",   show algo
     ,".data"
@@ -304,10 +304,19 @@ filename Bandit{..} = concat
         Just BestArmMean   -> concat [vari $ fst bestArm, ",", showDouble $ snd bestArm] 
         Just BestArmStdDev -> concat [showDouble $ fst bestArm, ",", vari $ snd bestArm] 
         _                  -> concat [showDouble $ fst bestArm, ",", showDouble $ snd bestArm]
+    bad = case vary of
+        Just BadArmMean   -> concat [vari $ fst badArm, ",", showDouble $ snd badArm] 
+        Just BadArmStdDev -> concat [showDouble $ fst badArm, ",", vari $ snd badArm] 
+        _                  -> concat [showDouble $ fst badArm, ",", showDouble $ snd badArm]
     vari x =
         let step = fst . fromJust $ stepEnd
             end  = snd . fromJust $ stepEnd
         in  concat ["(", showDouble x, ",", showDouble end, ",", showDouble step, ")"]
+    num = case vary of
+        Just NumArms -> let step = fst . fromJust $ stepEnd
+                            end  = snd . fromJust $ stepEnd
+                        in concat ["(", show numArms, "," , show end, ",", show step, ")"]
+        _            -> show numArms
 
 header :: Args -> String
 header BruteForce{..} =
