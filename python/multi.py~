@@ -163,9 +163,9 @@ def calc(noise, banditsNr, meanGfunc, obs):
     return resultlist
 
 # Iterations, bandits, rounds
-I = 100
+I = 1000
 #banditsNr = 5
-T = 1000
+T = 10000
 init_mean_for_bandits = 3.5
 init_sd_for_bandits = 3.0
 #meanGfunc = 0.5

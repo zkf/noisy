@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import numpypy as np
+#import numpypy as np
 import math
 import random
 #from scipy.stats import norm
