@@ -1,6 +1,3 @@
-\chapter{Results}
-\label{ch:results}
-
 \newcommand{\exsetup}[6]{%
 \begin{table}[htbp]
     \centering
@@ -13,12 +10,24 @@
         \multicolumn{2}{l}{Number of arms}     & #5 \\
         \bottomrule
     \end{tabular}
-    %\label{tab:#6}
-    \caption{Simulation settings for~\ref{#6}}
+    \caption{Simulation settings for figure~\ref{#6}}
 \end{table}} 
 
-\section{Multiarmed Bandit}
+\newcommand{\ob}{$\sigma_{ob}$}
 
+\chapter{Results}
+\label{ch:results}
+
+Here we present a representative subset of the obtained results.
+We provide graphs to visualise how different parameters influence the results.
+
+Parameter values are likely to interact and impact the end result in different ways, and it may be difficult to capture these interactions directly.
+By fixing all but one parameter and testing for a range of values for this parameter, we capture different aspects of how the optimal observation noise changes.
+
+\section{Multiarmed Bandit}
+Figure~\ref{fig:ex1} illustrates why, when using LTS, it is important to make a good choice of observation noise.
+In this case we see that the total regret achieved increases rapidly when the value is set too low, while it increases slightly as we move past the optimum.
+With different setups we see similar results, although the slope after the optimum may be steeper or closer to zero.
 \begin{figure}[htbp]
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
     set style data lines
@@ -26,12 +35,32 @@
     set xlabel "Observation noise"
     set ylabel "Total regret"
     set key bottom
-    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==10000?(50000-column(3)):(1/0)) title ""
+    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==1000?(5000-column(3)):(1/0)) title ""
 \end{gnuplot}
-\caption{Resulting reward from varying observation noise.}
+\caption{Resulting total regret from varying observation noise.}
+\label{fig:ex1}
+\end{figure}
+\exsetup{5.0}{2.0}{4.0}{4.0}{2}{fig:ex1}
+
+\begin{figure}[htbp]
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+    set style data lines
+    set grid
+    set xlabel "Observation noise"
+    set ylabel "Total regret"
+    set log x
+    set xrange [4:1000]
+    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS.data" using 1:(5-column(2)) title "\\textsc{lts: 0.51}", "../data/instantrewards/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obnoise-0.6\_rounds-1000\_reps-100000\_algo-LTS.data" using 1:(5-column(2)) title "\\textsc{lts: 0.60}", "../data/instantrewards/good-5.0,2.0\_bad-4.0,4.0\_num-2\_rounds-1000\_reps-100000\_algo-UCB1.data" using 1:(5-column(2)) title "\\textsc{ucb1}"
+\end{gnuplot}
+\caption{Instant regret for UCB1 and LTS.}
 \label{fig:ex2}
 \end{figure}
+\exsetup{5.0}{2.0}{4.0}{4.0}{2}{fig:ex2}
 
+LTS is superior to UCB1, when the appropriate observation noise is selected.
+In figure~\ref{fig:ex2} this superiority is clearly demonstrated:
+Even though UCB1 performs quite good from the start it seems to stop reducing its regret after a while, whereas LTS converges towards zero regret.
+The figure also illustrates how a suboptimal choice of \ob{} causes the algorithm to perform worse.
 
 \begin{figure}[hbtp]
     \centering
@@ -48,14 +77,18 @@
     set xtics 2
     set yrange [10:1000]
     set zrange [0.01:0.25]
+    set palette rgbformulae 23,28,3
     splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-10.0,2.0\_num-2,5,10,50\_rounds-1000\_algo-UCB1.data" using 5:6:7 title ""
     \end{gnuplot}
 \caption{Best observation noise varying with the number of arms. Values for when the number of arms is greater than rounds are not included.}
-\label{fig:ex1}
+\label{fig:ex3}
 \end{figure}
+\exsetup{5.0}{0.5}{4.0}{0.5}{Variable}{fig:ex3}
 
-\exsetup{5.0}{0.5}{4.0}{0.5}{Variable}{fig:ex1}
-
+We see generally that as the number of rounds increases, so does the optimal \ob{}.
+This is especially apparent in figure~\ref{fig:ex3}, where we have varied the number of arms available to the player.
+As the numer of possible actions increases, the optimal \ob{} decreases.
+It makes intuitive sense because if there is a large number of arms then we need to be more greedy in our choice of arms, as most of the arms pulled for exploration’s sake will be suboptimal.
 
 \begin{figure}[htbp]
     \centering
@@ -64,21 +97,24 @@
     set grid
     set hidden3d
     set pm3d
-    set xlabel "Bad arm mean" rotate
-    set ylabel "Rounds" rotate
+    set ylabel "Bad arm mean" rotate
+    set xlabel "Rounds" rotate
     set zlabel "Observation noise" rotate
-    set log y
+    set log x
     set xyplane 0
-    set xtics 0.5
-    set yrange [100:1000]
-    set xrange [0.5:4.5]
-    set view 40,306
-    splot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using 3:6:7 title ""
+    set ytics 0.5
+    set xrange [100:1000]
+    set yrange [3:4.5]
+    set view 40,36
+    set palette rgbformulae 23,28,3
+    splot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:3:7 title ""
     \end{gnuplot}
-\caption{Best observation noise varying with the mean on the suboptimal arms. As the mean is lowered past 3 or so we see that changing observation noise stops having an effect?}
-\label{fig:ex3}
+\caption{Best observation noise varying with the mean on the suboptimal arms. As the mean is lowered past 3 or so changing observation noise stops having an effect, so these numbers are excluded from this figure.}
+\label{fig:ex4}
 \end{figure}
-\exsetup{5.0}{0.5}{Varying}{0.5}{5}{fig:ex3}
+\exsetup{5.0}{0.5}{Varying}{0.5}{5}{fig:ex4}
+As the mean of the suboptimal arms get closer to $\mu^*$, more exploration can be afforded due to the small difference in payoffs.
+This effect is illustrated in figure~\ref{fig:ex4}, where the optimal \ob{} increases along with the mean of the bad arms.
 
 \begin{figure}[htbp]
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
@@ -86,12 +122,42 @@
     set grid
     set xlabel "Observation noise"
     set ylabel "Total regret"
+    set yrange [13:15]
+    set xrange [0.1:0.4]
     plot "../data/bruteforce/good-5.0,0.5\_bad-1.5,0.5\_est-10.0,2.0\_num-5\_obnoise-(0.01,0.4,0.01)\_rounds-1000\_reps-100000.data" using (column(1)==1000?column(2):1/0):(5000-column(3)) title ""
 \end{gnuplot}
-\caption{Sample from~\ref{fig:ex3}. This is the result of averaging over 100,000 runs.}
-\label{fig:ex4}
+\caption{Sample from~\ref{fig:ex4}, with mean 1.5. This is the result of averaging over 100,000 runs.}
+\label{fig:ex5}
 \end{figure}
-\exsetup{5.0}{0.5}{1.5}{0.5}{5}{fig:ex4}
+\exsetup{5.0}{0.5}{1.5}{0.5}{5}{fig:ex5}
 
+In figure~\ref{fig:ex6} we see that changing the standard deviation of the suboptimal arms does not influence the best choice of observation noise, except for when the number of rounds is very low.
+In fact, this seems to hold as long as the standard deviation is kept within reasonable limits.
+
+\begin{figure}[hbtp]
+    \centering
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+    set style data lines
+    set grid
+    set hidden3d
+    set pm3d
+    set xlabel "[r]{\\shortstack{Bad arm \\\\ standard deviation}}"
+    set ylabel "Rounds" rotate
+    set zlabel "Observation noise" rotate
+    set xyplane 0
+    set xtics 0.5
+    set ytics 200
+    set cbtics 0.03
+    set yrange [100:1000]
+    set xrange [0:3.5]
+    set zrange [0:0.6]
+    set palette rgbformulae 23,28,3
+    splot "../data/bandit/good-5.0,0.5\_bad-4.0,(0.1,3.5,0.2)\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using 4:(column(6)>99?column(6):1/0):7 title ""
+    \end{gnuplot}
+\caption{Varying standard deviation of the bad arms}
+\label{fig:ex6}
+\end{figure}
+\exsetup{5.0}{0.5}{4.0}{Variable}{5}{fig:ex6}
 
 \section{Goore Game}
+
