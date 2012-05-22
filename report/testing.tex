@@ -185,3 +185,12 @@ In contrast, the standard deviation of the best arm has a large influence on \ob
 
 \section{Goore Game}
 
+As seen in Figure(Incoming), the higher white noise you have the higher observation noise is needed to achieve
+the optimal reward. Also the number of rounds the Goore game is going to be runned(?) also plays into what is
+the optimal choice of observation noise. The more rounds it is going to run the higher the observation noise 
+is recommended. This increase is not linear but slows down the more rounds you run. 
+
+The ratio of yes and no may also impact the optimal observation noise to some degree.
+The more the ratio goes towards 0 or 1, the optimal observation noise rises. However the number of bandits
+do not seam to impact the optimal observation noise unless the number of bandits are not optimal for the ratio.
+For example having 5 bandits and ratio of 50/50. 
