@@ -104,6 +104,38 @@ is calculated as follows:
 Where $\sigma_i^2 [t + 1]$ and $\mu_i [t + 1]$ is the variance and mean of the updated arm and
 $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its previous state.
 
+\begin{figure}[htbp]
+    \centering
+% Haskell code to generate data:
+% let ppB b = unlines $ map ppL b
+% let ppL (t,a,b,c) = show t ++ " " ++ show a ++ " " ++ show b ++ " " ++ show c
+% writeFile "est.txt" . unlines . map ppB . transpose 
+%   $ map (\(est, ob) -> (zip4 (var2 est ob) ([1..10000]) (repeat est) (repeat ob)))
+%         [(est, ob) | est <- [2500],
+%                      ob <- ([0.001,0.002, 0.003, 0.006, 0.01, 0.03,0.06] ++ [0.1,0.2..3.0])]
+
+%    Let's not recompile this thing all the time.
+%    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
+%    set grid
+%    set ylabel "[r]{\\shortstack{Observation noise \\\\ ($\\sigma_{ob}^2$)}}" offset 6,-2
+%    set xlabel 'Rounds' offset 0,-0.5
+%    set zlabel 'Variance estimate ($\hat{\sigma}^2$)' rotate offset -0.5,0
+%    set xyplane 0
+%    set log z; set log cb
+%    set xrange [0:1000]
+%    set zrange [1e-06:3]
+%    set ytics 0.4 offset 0,-0.5
+%    set xtics offset 0,-0.5
+%    set palette rgbformulae 23,28,3
+%    splot 'est.txt' using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every :::::1000 with pm3d title "" \
+%    ,'est.txt' using 2:(column(4)<1.5?column(4):1/0):(column(3)==2500.0?column(1):1/0) every 2:100::50::1001 with line lt -1 lw 1 title "" \
+%    ,'est.txt'       using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every 2:10::::70  with line lt -1 lw 1 title ""
+%    \end{gnuplot}
+    \input{ob-var-fig1.tex}
+\caption{Variance}
+\label{fig:variance}
+\end{figure}
+
 \subsection{UCB1-Tuned}
 UCB1 \cite{Auer02UCB1} (Upper Confidence Bound) is a well-known algorithm for multi-armed bandits.
 It is popular due to being very simple and reasonably performant. In comparison 
