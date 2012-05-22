@@ -1,11 +1,10 @@
 \chapter{Solution}
 \label{ch:solution}
 
-The solution consists of several parts, as we have worked on both a single bandit scenario and multiple bandits playing the Goore Game.
+The solution consists of several parts, as we have worked on both a single multi-armed bandit scenario, and multiple bandits playing the Goore Game.
 The solution produces machine-readable result files suitable for input to a programme which can infer the best observation noise to use through the use of a Gaussian process.
 
 \section{Multi-armed bandit}
-
 The multi-armed bandits in our trials have one uniquely best arm, and all other arms are identically distributed.
 Following is a list of parameters used for the multi-armed bandits.
 \begin{itemize}
@@ -25,27 +24,23 @@ Estimate mean and standard deviation are specific for the local Thompson samplin
 We calculate the best observation noise for a range of different timesteps up to 1000.
 
 \subsection{Solution strategy}
-
 We developed a couple of ways to compute and visualise the needed data.
 A brute force method calculating cumulative rewards for all given observation noises, and a method that, given the simulation parameters, employs a bandit approach to calculating the best observation noise.
 
 In addition we calculate instant rewards at log-scale timesteps given the simulation parameters, for verifying that the solution found is in fact the best one.
 
 \subsubsection{Brute force solution}
-
 By testing all the values in a given range it is possible to determine where the maximum lies.
 Although this method is crude, it is helpful for gaining an indication towards what values are best or what values need more testing.
 The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum.
 
 \subsubsection{Bandit approach}
-
 As the multi-armed bandit approach can be used to find the maximum of a
 stochastic function, it fits perfectly to the task of finding the best
 observation noise for a multi-armed bandit employing the local Thompson
 sampling strategy.
 
 \subsubsection{Measuring performance}
-
 There are several ways to keep score and look at data from a bandit simulation.
 First, one can look at the cumulative reward recieved by the player.
 Second, there is the instant rewards, that is, the reward received by the player at a given time $t$.
@@ -54,20 +49,30 @@ Third, a much used approach is to calculate regret.
 In fact, the multi-armed bandit problem is often stated as a minimisation problem with respect to regret.
 Last, the number of times the best arm is selected at any given time can be an interesting metric.
 
-
 \section{Goore Game}
-The players in our Goore Game is Multi-armed bandits with only two arms each one for no and one for yes.
-We tested several parameters to determine where the maximum lies. The observation noise, mean, the mean
-and standard deviation of the bandits. Also how many players the Goore Game had. We did this over few different
-ratios, since most of the ratios are duplicates. 
+Contrary to the multi-armed bandit scenario the bandits in the Goore game have identical starting
+values on both their arms. Following is a list of all parameters used for the Goore game:
+\begin{itemize}
+\item Initial mean of both arms
+\item Initial standard deviation of both arms
+\item Number of bandits
+\item Unimodal performance function
+\item Gaussian white noise
+\end{itemize}
 
-\subsubsection{Brute force solution}
-By testing all the values in a given range to determine where the maximum lies under different
-circumstances. A downside to this menthod is that it will generate some use full data and some not so
-use full data. For example, on a ratio 50/50, with 5 players is it hard for the  odd player to 
-determine whether yes or no is the best answer. However this method do gives some use full inn-site on
-how Goore Game works under strange circumstances that are nod ideal. As this solution is easy to set
-up and start, it is however needed to take many more tests and more time.
+The mean and standard deviation on the arms are fairly insignificant as long as the mean or the standard deviation
+is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 10 bandits to understand how
+the increase in players affected the observation noise. Additionally we tested different unimodal performance functions
+to see wether certian target values were more difficult hit. Finally by varying the gaussian white noise we observed how
+the higher standard deviation in reward affected the players.
+
+
+%By testing all the values in a given range to determine where the maximum lies under different
+%circumstances. A downside to this menthod is that it will generate some use full data and some not so
+%use full data. For example, on a ratio 50/50, with 5 players is it hard for the  odd player to 
+%determine whether yes or no is the best answer. However this method do gives some use full inn-site on
+%how Goore Game works under strange circumstances that are nod ideal. As this solution is easy to set
+%up and start, it is however needed to take many more tests and more time.
 
 
 % \section{Proposed solution / algorithm}
