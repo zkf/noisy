@@ -11,7 +11,7 @@
 
 
 \newcommand{\ob}{$\sigma_{ob}$}
-\newcommand{\obstar}{$\sigma_{ob}*$}
+\newcommand{\obstar}{$\sigma^*_{ob}$}
 
 \chapter{Results}
 \label{ch:results}
@@ -29,22 +29,23 @@ By fixing all but one parameter and testing for a range of values for this param
 \begin{figure}[hbtp]
     \hspace*{-2.5cm}
     \begin{minipage}[c]{0.39\textwidth}
-    \begin{gnuplot}[terminal=epslatex,terminaloptions=color]
-    set style data lines
-    set grid
-    set hidden3d
-    set pm3d
-    set xlabel "Arms" rotate
-    set ylabel "Rounds" rotate
-    set zlabel "Observation noise" rotate
-    set log xy
-    set xyplane 0
-    set xtics 2
-    set xrange [2:64]
-    set yrange [10:1000]
-    set zrange [0:0.3]
-    set palette rgbformulae 23,28,3
-    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title ""
+        \begin{gnuplot}[terminal=epslatex,terminaloptions={color palfuncparam "500,0.03"}]
+            set style data lines
+            set grid
+            set xlabel "Arms" rotate
+            set ylabel "Rounds" rotate
+            set zlabel "Observation noise" rotate
+            set log xy
+            set xyplane 0
+            set xtics 2
+            set xrange [2:64]
+            set yrange [10:1000]
+            set zrange [0:0.3]
+            set palette rgbformulae 23,28,3
+            set pm3d interpolate 3,3
+            unset hidden3d
+    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with pm3d, \
+      "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with line lt -1 lw 1
     \end{gnuplot}
     \end{minipage}
     \hspace*{7.5cm}
@@ -58,9 +59,10 @@ By fixing all but one parameter and testing for a range of values for this param
 As the horizon is extended, the overall trend is for \obstar{} to increase (but see figure~\ref{fig:gooddev}). 
 \textbf{Why}
 
-We first look at the case where the number of arms is changed, from the simplest case with 2 arms to a relatively hard problem with 64 arms.
-This corresponds directly to increasing the complexity of the environment, and so we get the first indication that observation noise can be used as a complexity measure; a low \obstar{} indicates a complex environment, and as the observation noise increases the complexity of the environment decreases.
+We first look at the case where the number of arms is changed, from the simplest case with 2 arms to a comparatively hard problem with 64 arms.
+This corresponds directly to increasing the complexity of the environment, and so we get the first indication that observation noise can be used as a complexity measure; a low \obstar{} indicates a complex environment, and as the best observation noise increases the environment gradually becomes simpler.
 This effect is nicely illustrated in figure~\ref{fig:numarms}, where we have varied the number of arms available to the player in a specific setting.
+The rate of change in \obstar{} decreases rapidly -- note the logarithmic scales on the \emph{Arms} and \emph{Rounds} axes.
 Intuitively, in a complex environment we need to limit exploration by being more greedy in our choice of arms, as most of the arms pulled for exploration’s sake will be suboptimal.
 
 \begin{figure}[htbp]
@@ -232,3 +234,4 @@ The ratio of yes and no may also impact the optimal observation noise to some de
 The more the ratio goes towards 0 or 1, the optimal observation noise rises. However the number of bandits
 do not seam to impact the optimal observation noise unless the number of bandits are not optimal for the ratio.
 For example having 5 bandits and ratio of 50/50. 
+
