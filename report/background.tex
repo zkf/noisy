@@ -79,6 +79,7 @@ receive a reward and thus it takes some time to explore all options before the p
 converge on the ideal solution.
 
 \section{Algorithms for solving the multi-armed bandit problem}
+\textbf{Define regret (total and instant)}
 In addition to local Thompson sampling, we implemented the UCB1 algorithm for 
 comparing optimised Thompson samplers. Both algorithms are described in the next 
 subsections.
@@ -107,10 +108,11 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
 \begin{figure}[htbp]
     \centering
 % Haskell code to generate data:
+% let var v ob = let vv = (v*ob)/(v+ob) in vv : var vv ob
 % let ppB b = unlines $ map ppL b
 % let ppL (t,a,b,c) = show t ++ " " ++ show a ++ " " ++ show b ++ " " ++ show c
 % writeFile "est.txt" . unlines . map ppB . transpose 
-%   $ map (\(est, ob) -> (zip4 (var2 est ob) ([1..10000]) (repeat est) (repeat ob)))
+%   $ map (\(est, ob) -> (zip4 (var est ob) ([1..10000]) (repeat est) (repeat ob)))
 %         [(est, ob) | est <- [2500],
 %                      ob <- ([0.001,0.002, 0.003, 0.006, 0.01, 0.03,0.06] ++ [0.1,0.2..3.0])]
 
