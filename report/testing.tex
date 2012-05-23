@@ -11,6 +11,7 @@
 
 
 \newcommand{\ob}{$\sigma_{ob}$}
+\newcommand{\obstar}{$\sigma_{ob}*$}
 
 \chapter{Results}
 \label{ch:results}
@@ -51,10 +52,12 @@ By fixing all but one parameter and testing for a range of values for this param
 \label{fig:numarms}
 \end{figure}
 
-We see generally that as the number of rounds increases, so does the optimal \ob{}.
-This is especially apparent in figure~\ref{fig:numarms}, where we have varied the number of arms available to the player.
-As the numer of possible actions increases, the optimal \ob{} decreases.
-It makes intuitive sense because if there is a large number of arms then we need to be more greedy in our choice of arms, as most of the arms pulled for exploration’s sake will be suboptimal.
+As the horizon is extended, the overall trend is for the optimal \ob{} to increase (but see figure~\ref{fig:gooddev}). WHY?!
+
+We first look at the case where the number of arms is changed, from the simplest case with 2 arms to a relatively hard problem with 64 arms.
+This corresponds directly to increasing the complexity of the environment, and so we get the first indication that observation noise can be used as a complexity measure; a low \obstar{} indicates a complex environment, and as the observation noise increases the complexity of the environment decreases.
+This effect is nicely illustrated in figure~\ref{fig:numarms}, where we have varied the number of arms available to the player in a specific setting.
+Intuitively, in a complex environment we need to limit exploration by beeing more greedy in our choice of arms, as most of the arms pulled for exploration’s sake will be suboptimal.
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
