@@ -1,22 +1,22 @@
 \chapter{Background}
 \label{ch:background}
 
-\section{Learning automata}
-Given uncertian and possibly varying parameters a learning automaton choses
+\section{Reinforcement learning}
+Given uncertian and possibly varying parameters an agent choses
 its actions based on prior knowledge and by repeated trials. The very first action
-will be chosen by random and the learning automaton will then recieve a reward or
+will be chosen by random and the agent will then recieve a reward or
 penalty from the environment. This feedback will then be used to update the expected reward
 from that perticular action. By repeatedly chosing the actions and receiving feedback
-from the environment, as pictured in figure~\ref{fig:la}, the learning automaton is able to
+from the environment, as pictured in figure~\ref{fig:la}, the agent is able to
 decide which action is the most profitable. 
 
 If the environment does in fact have varying parameters, meaning that the reward
-is normally distributed, the learning automaton have to weigh exploration against
-explotation. If the learning automaton choses arm A and then arm B one time each and
-arm A gives a higher reward it does not necessarily mean that arm A gives the highest
-reward over time. Thus the learning automaton have to decide on wether to continue
-to test both arms, to get a clearer picture of which arm is the better one, or to repeatedly
-select the arm it believes is the best one to maximize profit. 
+is normally distributed, the agent have to weigh exploration against
+explotation. Given two choices, if the agent choses option A and then option B one time each and
+option A gives a higher reward it does not necessarily mean that option A gives the highest
+reward over time. Thus the agent have to decide on wether to continue
+to test both options, to get a clearer picture of which option is the better one, or to repeatedly
+select the option it believes is the best one to maximize profit. 
 
 \begin{figure}[ht]
         \begin{verbatim}
@@ -25,7 +25,7 @@ select the arm it believes is the best one to maximize profit.
               |    |-------------|    |
               |                       | 
               | a  |-------------|    |
-              |----|   Learner   |<---|
+              |----|   Agent   |<---|
                    |-------------|
          
                      a: action
