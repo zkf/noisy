@@ -33,7 +33,7 @@ With different setups we see similar results, although the slope after the optim
     set grid
     set xlabel "Observation noise"
     set ylabel "Total regret"
-    set key bottom
+    set xrange [0.15:0.95]
     plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==1000?(5000-column(3)):(1/0)) title ""
     \end{gnuplot}
     \end{minipage}
@@ -96,7 +96,7 @@ The figure also illustrates how a suboptimal choice of \ob{} causes the algorith
     \begin{minipage}[c]{0.49\textwidth}
     \exsetup{5.0}{0.5}{4.0}{0.5}{2 -- 64}
     \end{minipage}
-\caption{Best observation noise varying with the number of arms. Values for when the number of arms is greater than rounds are not included.}
+\caption{Best observation noise varying with the number of arms.}
 \label{fig:ex3}
 \end{figure}
 
