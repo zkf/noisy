@@ -1,7 +1,7 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: report-gnuplottex-fig1.tex
 %%Creator: gnuplot 4.6 patchlevel 0
-%%CreationDate: Tue May 22 12:25:25 2012
+%%CreationDate: Thu May 24 12:56:57 2012
 %%DocumentFonts: 
 %%BoundingBox: 50 50 410 302
 %%EndComments
@@ -432,7 +432,7 @@ SDict begin [
   /Author (anachron)
 %  /Producer (gnuplot)
 %  /Keywords ()
-  /CreationDate (Tue May 22 12:25:25 2012)
+  /CreationDate (Thu May 24 12:56:57 2012)
   /DOCINFO pdfmark
 end
 } ifelse
@@ -473,19 +473,19 @@ gsave % colour palette begin
   XYZ2RGB}{ColorSpace (CMY) eq {CMY2RGB}{ColorSpace (YIQ) eq {YIQ2RGB}
   if} ifelse} ifelse} ifelse} def
 /InterpolatedColor false def
-/cF23 {3 mul 2 sub} bind def	% 3x-2
-/cF28 {1.5 mul .5 sub abs} bind def	% |(3x-1)/2|
-/cF3 { } bind def	% x
+/cF7 {sqrt} bind def	% sqrt(x)
+/cF5 {dup dup mul mul} bind def	% x^3
+/cF15 {360 mul sin} bind def	% sin(360x)
 /pm3dround {maxcolors 0 gt {dup 1 ge
 	{pop 1} {maxcolors mul floor maxcolors 1 sub div} ifelse} if} def
 /pm3dGamma 1.0 1.5 Gamma mul div def
-/ColorSpace (RGB) def
+/ColorSpace (CMY) def
 Color InterpolatedColor or { % COLOUR vs. GRAY map
   InterpolatedColor { %% Interpolation vs. RGB-Formula
     /g {stroke pm3dround /grayv exch def interpolate
         SelectSpace setrgbcolor} bind def
   }{
-  /g {stroke pm3dround dup cF23 Constrain exch dup cF28 Constrain exch cF3 Constrain 
+  /g {stroke pm3dround dup cF7 Constrain exch dup cF5 Constrain exch cF15 Constrain 
        SelectSpace setrgbcolor} bind def
   } ifelse
 }{
