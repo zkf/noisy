@@ -50,7 +50,7 @@ By fixing all but one parameter and testing for a range of values for this param
             set xrange [2:64]
             set yrange [10:1000]
             set zrange [0:0.3]
-            set palette rgbformulae 23,28,3
+            set palette model CMY rgbformulae 7,5,15
             set pm3d interpolate 3,3
             unset hidden3d
     splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with pm3d, \
@@ -91,7 +91,7 @@ Intuitively, in a complex environment we need to limit exploration by being more
     set xrange [100:1000]
     set yrange [3:4.5]
     set view 40,36
-    set palette rgbformulae 23,28,3
+    set palette model CMY rgbformulae 7,5,15
     splot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:3:7 title ""
     \end{gnuplot}
     \end{minipage}
@@ -116,7 +116,7 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     set xlabel "Rounds"
     set zlabel "Observation noise" rotate
     set xyplane 0
-    set palette rgbformulae 23,28,3
+    set palette model CMY rgbformulae 7,5,15
     set view 65,312
     set xtics 200
     set ytics 1
@@ -219,7 +219,7 @@ In contrast, the standard deviation of the best arm has a large influence on \ob
     set ytics 0.1
     set xrange [0:3.5]
     set yrange [0:0.4]
-    set palette rgbformulae 23,28,3
+    set palette model CMY rgbformulae 7,5,15
     plot for [t in "100 500 1000"] "../data/bandit/good-5.0,0.5\_bad-4.0,(0.1,3.5,0.2)\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using (column(6)==t?column(4):1/0):7 title t." rounds"
     \end{gnuplot}
     \end{minipage}
@@ -321,7 +321,7 @@ lower then if you have low white noise and many rounds, although variations are 
     set pm3d
     set xyplane 0
     set view 60,310
-    set palette rgbformulae 23,28,3
+    set palette model CMY rgbformulae 7,5,15
     set style data lines
     set zlabel "Observasion noise" rotate 
     set ylabel "White noise"

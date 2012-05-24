@@ -85,7 +85,7 @@ comparing optimised Thompson samplers. Both algorithms are described in the next
 subsections.
 
 \subsection{Local Thompson sampling}
-A lesser known algorithm, based on principles set forth by Thompson in 1933. 
+A lesser known algorithm, based on principles set forth by Thompson \cite{Thompson1933} in 1933. 
 For every available arm it keeps a distribution estimate, which is 
 updated based on received reward. The use of Thompson sampling in the bandit 
 setting depends on a parameter known as observation noise, $\sigma_{ob}$, which 
@@ -128,7 +128,7 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
 %    set zrange [1e-06:3]
 %    set ytics 0.4 offset 0,-0.5
 %    set xtics offset 0,-0.5
-%    set palette rgbformulae 23,28,3
+%     set palette model CMY rgbformulae 7,5,15
 %    splot 'est.txt' using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every :::::1000 with pm3d title "" \
 %    ,'est.txt' using 2:(column(4)<1.5?column(4):1/0):(column(3)==2500.0?column(1):1/0) every 2:100::50::1001 with line lt -1 lw 1 title "" \
 %    ,'est.txt'       using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every 2:10::::70  with line lt -1 lw 1 title ""
