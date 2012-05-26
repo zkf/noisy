@@ -38,41 +38,43 @@ By fixing all but one parameter and testing for a range of values for this param
 \begin{figure}[hbtp]
     \hspace*{-2.5cm}
     \begin{minipage}[c]{0.39\textwidth}
-        \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-            set style data lines
-            set grid
-            set xlabel "Arms" rotate
-            set ylabel "Rounds" rotate
-            set zlabel "Observation noise" rotate
-            set log xy
-            set xyplane 0
-            set xtics 2
-            set xrange [2:64]
-            set yrange [10:1000]
-            set zrange [0:0.3]
-            set palette model CMY rgbformulae 7,5,15
-            set pm3d interpolate 3,3
-            unset hidden3d
-    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with pm3d, \
-      "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with line lt -1 lw 1
-    \end{gnuplot}
+%        \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+%            set style data lines
+%            set grid
+%            set xlabel "Arms" rotate
+%            set ylabel "Rounds" rotate
+%            set zlabel "Observation noise" rotate
+%            set log xy
+%            set xyplane 0
+%            set xtics 2
+%            set xrange [2:64]
+%            set yrange [10:1000]
+%            set zrange [0:0.3]
+%            set palette model CMY rgbformulae 7,5,15
+%            set pm3d interpolate 0,0
+%            unset hidden3d
+%    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with pm3d, \
+%      "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with line lt -1 lw 1
+%    \end{gnuplot}
+    \input{armsplot.tex}
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
     \exsetup{5.0}{0.5}{4.0}{0.5}{2 -- 64}
     \end{minipage}
-\caption{Best observation noise varying with the number of arms.}
+    \caption{Best observation noise varying with the number of arms. Note the logarithmic scales on the \emph{Arms} and \emph{Rounds} axes.}
 \label{fig:numarms}
 \end{figure}
 
 As the horizon is extended, the overall trend is for \obstar{} to increase (but see figure~\ref{fig:gooddev}). 
 \textbf{Why}
 
+
 We first look at the case where the number of arms is changed, from the simplest case with 2 arms to a comparatively hard problem with 64 arms.
-This corresponds directly to increasing the complexity of the environment, and so we get the first indication that observation noise can be used as a complexity measure; a low \obstar{} indicates a complex environment, and as the best observation noise increases the environment gradually becomes simpler.
-This effect is nicely illustrated in figure~\ref{fig:numarms}, where we have varied the number of arms available to the player in a specific setting.
-The rate of change in \obstar{} decreases rapidly -- note the logarithmic scales on the \emph{Arms} and \emph{Rounds} axes.
+This corresponds directly to increasing the complexity of the environment, and so we get the first indication that observation noise can be used as a complexity measure: a low \obstar{} indicates a complex environment, and as the best observation noise increases the environment gradually becomes simpler.
 Intuitively, in a complex environment we need to limit exploration by being more greedy in our choice of arms, as most of the arms pulled for exploration’s sake will be suboptimal.
+This effect is nicely illustrated in figure~\ref{fig:numarms}, where we have varied the number of arms available to the player in a specific setting.
+We see that \obstar{} exhibits approximately logarithmic growth as the number of rounds increase, and exponential decay as the number of arms increase.
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
