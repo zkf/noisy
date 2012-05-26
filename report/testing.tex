@@ -119,7 +119,8 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     set palette model CMY rgbformulae 7,5,15
     set view 65,312
     set xtics 200
-    set ytics 1
+    set yrange [0.1:5]
+    set ytics 0.1,0.9
     set ytics offset 0,-0.5
     splot "../data/bandit/good-6.5,(0.1,5.0,0.9)\_bad-4.0,0.1\_est-0.0,50.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:2:7 with line lt -1 lw 2 title ""
     \end{gnuplot}
