@@ -138,6 +138,32 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
 \label{fig:variance}
 \end{figure}
 
+
+\begin{figure}[htbp]
+    \hspace*{-2.5cm}
+    \begin{minipage}[c]{0.39\textwidth}
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set style data lines
+    set grid
+    set xlabel "Observation noise"
+    set ylabel "Total regret"
+    set xrange [0.15:0.95]
+    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==1000?(5000-column(3)):(1/0)) title ""
+    \end{gnuplot}
+    \end{minipage}
+    \hspace*{7.5cm}
+    \begin{minipage}[c]{0.49\textwidth}
+    \banditsetup{5.0}{2.0}{4.0}{4.0}{2}{1000}
+    \end{minipage}
+\caption{Resulting total regret from varying observation noise.}
+\label{fig:regretob}
+\end{figure}
+
+Figure~\ref{fig:regretob} illustrates why, when using LTS, it is important to make a good choice of observation noise.
+In this case we see that the total regret achieved increases rapidly when the value is set too low, while it increases slightly as we move past the optimum.
+With different setups we see similar results, although the slope after the optimum may be steeper or closer to zero.
+
+
 \subsection{UCB1-Tuned}
 UCB1 \cite{Auer02UCB1} (Upper Confidence Bound) is a well-known algorithm for multi-armed bandits.
 It is popular due to being very simple and reasonably performant. In comparison 

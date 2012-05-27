@@ -85,6 +85,19 @@ the Goore Game }
 % cross-references intact.
 % \includeonly{background}
 
+\newcommand{\banditsetup}[6]{%
+    \begin{tabular}{lll}
+        \toprule
+        \multirow{2}{*}{Best arm}   & $\mu$    & #1 \\
+                                    & $\sigma$ & #2 \\
+        \multirow{2}{*}{Other arms} & $\mu$    & #3 \\
+                                    & $\sigma$ & #4 \\
+        \multicolumn{2}{l}{Number of arms}     & #5 \\
+        \multicolumn{2}{l}{Number of rounds}   & #6 \\
+        \bottomrule
+    \end{tabular}}
+
+
 \begin{document}
 
     \maketitle
