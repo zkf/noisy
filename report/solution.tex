@@ -56,13 +56,13 @@ values on both their arms. Following is a list of all parameters used for the Go
 \item Initial mean of both arms
 \item Initial standard deviation of both arms
 \item Number of bandits
-\item Unimodal performance function
+\item Raito for the selected arms(Yes and no)
 \item Gaussian white noise
 \end{itemize}
 
 The mean and standard deviation on the arms are fairly insignificant as long as the mean or the standard deviation
-is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 10 bandits to understand how
-the increase in players affected the observation noise. Additionally we tested different unimodal performance functions
+is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 40 bandits to understand how
+the increase in players affected the observation noise. Additionally we changed the ratio to different values
 to see wether certian target values were more difficult hit. Finally by varying the gaussian white noise we observed how
 the higher standard deviation in reward affected the players.
 
