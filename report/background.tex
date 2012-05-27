@@ -7,7 +7,7 @@ its actions based on prior knowledge and by repeated trials. The very first acti
 will be chosen by random and the agent will then recieve a reward or
 penalty from the environment. This feedback will then be used to update the expected reward
 from that perticular action. By repeatedly chosing the actions and receiving feedback
-from the environment, as pictured in figure~\ref{fig:la}, the agent is able to
+from the environment, as pictured in figure~\ref{fig:rlearn}, the agent is able to
 decide which action is the most profitable. 
 
 If the environment does in fact have varying parameters, meaning that the reward
@@ -19,23 +19,14 @@ to test both options, to get a clearer picture of which option is the better one
 select the option it believes is the best one to maximize profit. 
 
 \begin{figure}[ht]
-        \begin{verbatim}
-                   |-------------|  r
-              |--->| Environment |----|
-              |    |-------------|    |
-              |                       | 
-              | a  |-------------|    |
-              |----|   Agent   |<---|
-                   |-------------|
-         
-                     a: action
-                     r: reward
-        \end{verbatim}
-        \label{fig:la}
-    \caption{Replace with drawing}
+    \centering
+    \includegraphics[width=8cm]{images/ReinforcementLearning}
+    \label{fig:rlearn}
+    \caption{Reinforcement learning}
 \end{figure}
 
 \section{The multi-armed bandit problem}
+\textbf{Define regret (total and instant)}
 A popular and surprisingly fitting way to model stochastic optimization problems 
 is through the multi-armed bandit scenario. Imagine, if you will, the iconic 
 gambling machine to be found in any casino. Only this apparatus has not one, but 
@@ -63,38 +54,54 @@ the players cast their votes as simple ‘yes’ or ‘no’. The correct answer
 certain number of yes’s and no’s, and players are rewarded based on how close 
 they collectively are to the ideal solution.
 
-At the start of the game all participants selects an action at random. The referee
-gathers all votes and based on a unimodal performance criterion it decides on
-the probability of giving each player a reward. Meaning that there is only a single
-maximum value, or a single ideal target. If the ideal target for ten players is
-seven 'yes' and three 'no' the reward would not be guaranteed, it would however be
-optimal. 
+\begin{figure}[h]
+\centering
+\includegraphics[height=70mm,width=70mm]{images/goore_game.png}
+\caption{Eight Player Goore Game}
+\label{fig:gg}
+\end{figure}
+At the start of the game all participants selects an action at random, as seen in figure \ref{fig:gg}. The referee
+gathers all the votes and based on a unimodal performance criterion it decides on
+the amount of reward each player will receive. The players will then use the reward they received from the
+referee to decide on wether to chose another action or to stick to their previous one. As seen in figure \ref{fig:gg},
+some players receive a higher reward than other while chosing the same action and this is a part
+of the uncertainty in the Goore Game, that a player can make the correct choice and stil receive a low
+reward.
 
-Lets say that ten players all select 'no' at the first round. The probability of
-each individual player receiving a reward would be fairly low and thus most of them
-are likely to chose another action. Stil, given a low chance of reward some of them
-could receive one and thus chose to stick to their previous action. Even if the players
+Another factor that makes the game more difficult is that only the referee knows off the unimodal performance criterion.
+The players simply votes and receives a reward as feedback. As the name 'unimodal' suggest there is only a single
+amount of 'yes' and 'no' that yeilds the highest likely award. An example of such a function can be seen in figure \ref{fig:gfunc}.
+In the figure $\lambda$ is the amount of players that vote yes and $\lambda^*$ is the target value which is when the referee
+likely will provide the highest rewards. Thus, if the players reach the target value they are not ensured a high reward, however
+the players are most likely to receive a high reward by staying at this configuration.
+\begin{figure}[h]
+\centering
+\includegraphics[height=50mm,width=150mm]{images/gfunc.png}
+\caption{An unimodal performance criterion}
+\label{fig:gfunc}
+\end{figure}
+A final factor that increases the difficulty of the game is that a players choice is affected by the other
+players choices. Lets say that ten players all select 'no' at the first round and that the performance 
+criterion is as shown in figure \ref{fig:gfunc}. The probability of
+each individual player receiving a high reward would be fairly low and thus most of them
+are likely to chose another action. Nevertheless, some players  could received a decent reward
+and chosen to stick to their previous action. Even if the players
 chose the ideal solution during the first round it is likely that not all players would
 receive a reward and thus it takes some time to explore all options before the players
-converge on the ideal solution.
+converge on the ideal solution, which in this case would be seven 'yes' and three 'no' as seen in the figure.
 
-\section{Algorithms for solving the multi-armed bandit problem}
-\textbf{Define regret (total and instant)}
-In addition to local Thompson sampling, we implemented the UCB1 algorithm for 
-comparing optimised Thompson samplers. Both algorithms are described in the next 
-subsections.
-
-\subsection{Local Thompson sampling}
-A lesser known algorithm, based on principles set forth by Thompson \cite{Thompson1933} in 1933. 
+\section{Local Thompson sampling}
+Local Thompson sampling \cite{May2011} is based on a sampling technique pioneered by Thompson \cite{Thompson1933} in 1933. 
+The method is Bayesian in nature, in that it uses new information to update probability estimates, but avoids the computational intractability that is often the drawback of Bayesian methods.
 For every available arm it keeps a distribution estimate, which is 
 updated based on received reward. The use of Thompson sampling in the bandit 
 setting depends on a parameter known as observation noise, $\sigma_{ob}$, which 
 is assigned a value based on how much new information is to be trusted. A low 
 observation noise signifies that new information should be considered 
-trustworthy, while a high value means that observations are insecure. 
+trustworthy, while a high value means that observations are insecure.
 
 After receiving a reward $r_i$ by pulling arm $i$ the bandit is updated. The mean and variance
-is calculated as follows:
+is calculated as follows \cite{Murphy2007}:
 \begin{displaymath}
 \mu_i [t + 1] = \frac{\sigma_i^2 [t] \cdot r_i + \sigma_{ob}^2 \cdot \mu_i [t]}{\sigma_i^2 [t] + \sigma_{ob}^2}
 \end{displaymath}
@@ -133,19 +140,58 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
 %    ,'est.txt' using 2:(column(4)<1.5?column(4):1/0):(column(3)==2500.0?column(1):1/0) every 2:100::50::1001 with line lt -1 lw 1 title "" \
 %    ,'est.txt'       using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every 2:10::::70  with line lt -1 lw 1 title ""
 %    \end{gnuplot}
-    \input{ob-var-fig1.tex}
-\caption{Variance}
+%    \input{ob-var-fig1.tex}
+\begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set style data lines
+    set log y
+    set xlabel "Rounds"
+    set ylabel '$\hat{\sigma}^2$'
+    set xtics 1,100,1000
+    plot [1:1000] [*:1] for [o in "1.0 1.0e-3"] 'est.txt' using ($4==o?$2:NaN):1 title 'OB = '.o
+    \end{gnuplot}
+\caption{Variance as a function of time}
 \label{fig:variance}
 \end{figure}
 
-\subsection{UCB1-Tuned}
+
+\begin{figure}[htbp]
+    \hspace*{-2.5cm}
+    \begin{minipage}[c]{0.39\textwidth}
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set style data lines
+    set grid
+    set xlabel "Observation noise"
+    set ylabel "Total regret"
+    set xrange [0.15:0.95]
+    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==1000?(5000-column(3)):(1/0)) title ""
+    \end{gnuplot}
+    \end{minipage}
+    \hspace*{7.5cm}
+    \begin{minipage}[c]{0.49\textwidth}
+    \banditsetup{5.0}{2.0}{4.0}{4.0}{2}{1000}
+    \end{minipage}
+\caption{Resulting total regret from varying observation noise.}
+\label{fig:regretob}
+\end{figure}
+
+Figure~\ref{fig:regretob} illustrates why, when using LTS, it is important to make a good choice of observation noise.
+In this case we see that the total regret achieved increases rapidly when the value is set too low, while it increases slightly as we move past the optimum.
+With different setups we see similar results, although the slope after the optimum may be steeper or closer to zero.
+
+
+\section{UCB1-Tuned}
+In addition to local Thompson sampling, we implemented the UCB1 algorithm for 
+comparing optimised Thompson samplers.
+
 UCB1 \cite{Auer02UCB1} (Upper Confidence Bound) is a well-known algorithm for multi-armed bandits.
 It is popular due to being very simple and reasonably performant. In comparison 
 to LTS, it does not require any constant parameters, and in place of a given 
 start estimate for the available arms the fist $K$ rounds are dedicated to 
 initialising the arm estimates by playing every arm once.
 
-UCB1-Tuned is a version of UCB1 that takes into consideration the estimate variance in addition to the estimate mean. This should cause it to work better in practice.
+UCB1-Tuned is a version of UCB1 that takes into consideration the estimate variance in addition to the estimate mean.
+This should cause it to work better in practice.
+In the remainder of this report, UCB1 means this improved algorithm.
 
 The UCB1-Tuned strategy is simply to play the arm with index $i$ such that
 \begin{displaymath}
@@ -198,3 +244,4 @@ been played, $n$ is the total number of plays, and $\hat{\mu}_j
 % $\mathcal{X}_1, \ldots, \mathcal{X}_c$, with the samples in $\mathcal{X}_i$ 
 % belonging to $\omega_i$.
 % 
+

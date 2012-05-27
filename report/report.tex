@@ -3,7 +3,9 @@
 
 %\documentclass[12pt,letterpaper,final]{report}
 \documentclass[12pt,a4paper,final]{report}
+\usepackage[dvipdfmx]{graphicx}     % For inclusion of images
 \usepackage[utf8]{inputenc}
+\usepackage{microtype}   % document will look subtly nicer 
 \usepackage{makeidx}
 \usepackage{varioref}
 \usepackage{setspace}
@@ -15,12 +17,11 @@
 \usepackage{eucal}
 \usepackage{amsmath}     % Additional math functionality
 \usepackage{amsfonts}    %
+\usepackage{amsthm}
 \usepackage{floatflt}
 \usepackage{tocbibind}
 \usepackage{wrapfig}
 \usepackage{listings}
-\usepackage{color}
-\usepackage{amsthm}
 \usepackage{subfigure}
 \usepackage{longtable}    % Tables spanning multiple pages
 \usepackage{multicol}     % Environment for putting text in multiple columns
@@ -28,12 +29,12 @@
 \usepackage{booktabs}     % Nicer tables
 \usepackage{multirow}     % Add \multirow (anlogous to \multicolum)
 \usepackage[style=list,toc=true]{glossaries}
-\usepackage{graphicx}     % For inclusion of images
+\usepackage{color}
 \usepackage{uiafrontpage} % For UiA Style frontpage.
 \usepackage{rotating}
 \usepackage[miktex]{gnuplottex}   % Inline gnuplotting
 \usepackage[section]{placeins}     % Keep figures within their sections
-\usepackage[colorlinks]{hyperref}  % Clickable urls, within doc and to the web.
+\usepackage[colorlinks,dvipdfmx]{hyperref}  % Clickable urls, within doc and to the web.
 
 \input{colordefinitions}
 
@@ -71,7 +72,7 @@
 \parskip=0.0 true in
 
 \author{Bjørnar Hansen, Håkon Bakkevig Steinsholt and Daniel Aasen}
-\titlelogo{images/uia_logo_large} % Path to UiA logo.
+\titlelogo{images/uia_eng_logo_rgb} % Path to UiA logo.
 \title{Gaussian Processes for Analysis of Thompson Sampling Based Solutions to 
 the Goore Game }
 \reporttype{Advanced Project}
@@ -84,6 +85,19 @@ the Goore Game }
 % For draft work, select the chapters to include in the pdf but still keep all 
 % cross-references intact.
 % \includeonly{background}
+
+\newcommand{\banditsetup}[6]{%
+    \begin{tabular}{lll}
+        \toprule
+        \multirow{2}{*}{Best arm}   & $\mu$    & #1 \\
+                                    & $\sigma$ & #2 \\
+        \multirow{2}{*}{Other arms} & $\mu$    & #3 \\
+                                    & $\sigma$ & #4 \\
+        \multicolumn{2}{l}{Number of arms}     & #5 \\
+        \multicolumn{2}{l}{Number of rounds}   & #6 \\
+        \bottomrule
+    \end{tabular}}
+
 
 \begin{document}
 
