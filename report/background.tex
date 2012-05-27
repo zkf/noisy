@@ -63,20 +63,41 @@ the players cast their votes as simple ‘yes’ or ‘no’. The correct answer
 certain number of yes’s and no’s, and players are rewarded based on how close 
 they collectively are to the ideal solution.
 
-At the start of the game all participants selects an action at random. The referee
-gathers all votes and based on a unimodal performance criterion it decides on
-the probability of giving each player a reward. Meaning that there is only a single
-maximum value, or a single ideal target. If the ideal target for ten players is
-seven 'yes' and three 'no' the reward would not be guaranteed, it would however be
-optimal. 
+\begin{figure}[h]
+\centering
+\includegraphics[height=70mm,width=70mm]{images/goore_game.png}
+\caption{Eight Player Goore Game}
+\label{fig:gg}
+\end{figure}
+At the start of the game all participants selects an action at random, as seen in figure \ref{fig:gg}. The referee
+gathers all the votes and based on a unimodal performance criterion it decides on
+the amount of reward each player will receive. The players will then use the reward they received from the
+referee to decide on wether to chose another action or to stick to their previous one. As seen in figure \ref{fig:gg},
+some players receive a higher reward than other while chosing the same action and this is a part
+of the uncertainty in the Goore Game, that a player can make the correct choice and stil receive a low
+reward.
 
-Lets say that ten players all select 'no' at the first round. The probability of
-each individual player receiving a reward would be fairly low and thus most of them
-are likely to chose another action. Stil, given a low chance of reward some of them
-could receive one and thus chose to stick to their previous action. Even if the players
+Another factor that makes the game more difficult is that only the referee knows off the unimodal performance criterion.
+The players simply votes and receives a reward as feedback. As the name 'unimodal' suggest there is only a single
+amount of 'yes' and 'no' that yeilds the highest likely award. An example of such a function can be seen in figure \ref{fig:gfunc}.
+In the figure $\lambda$ is the amount of players that vote yes and $\lambda^*$ is the target value which is when the referee
+likely will provide the highest rewards. Thus, if the players reach the target value they are not ensured a high reward, however
+the players are most likely to receive a high reward by staying at this configuration.
+\begin{figure}[h]
+\centering
+\includegraphics[height=50mm,width=150mm]{images/gfunc.png}
+\caption{An unimodal performance criterion}
+\label{fig:gfunc}
+\end{figure}
+A final factor that increases the difficulty of the game is that a players choice is affected by the other
+players choices. Lets say that ten players all select 'no' at the first round and that the performance 
+criterion is as shown in figure \ref{fig:gfunc}. The probability of
+each individual player receiving a high reward would be fairly low and thus most of them
+are likely to chose another action. Nevertheless, some players  could received a decent reward
+and chosen to stick to their previous action. Even if the players
 chose the ideal solution during the first round it is likely that not all players would
 receive a reward and thus it takes some time to explore all options before the players
-converge on the ideal solution.
+converge on the ideal solution, which in this case would be seven 'yes' and three 'no' as seen in the figure.
 
 \section{Algorithms for solving the multi-armed bandit problem}
 \textbf{Define regret (total and instant)}
@@ -91,7 +112,7 @@ updated based on received reward. The use of Thompson sampling in the bandit
 setting depends on a parameter known as observation noise, $\sigma_{ob}$, which 
 is assigned a value based on how much new information is to be trusted. A low 
 observation noise signifies that new information should be considered 
-trustworthy, while a high value means that observations are insecure. 
+trustworthy, while a high value means that observations are insecure.
 
 After receiving a reward $r_i$ by pulling arm $i$ the bandit is updated. The mean and variance
 is calculated as follows:
