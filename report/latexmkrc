@@ -1,2 +1,4 @@
 $hash_calc_ignore_pattern{'eps'} = '^%%CreationDate: |^  \/CreationDate ';
-$pdflatex='pdflatex --shell-escape %O %S'
+$pdflatex='pdflatex -output-format dvi -shell-escape %O %S';
+$latex='latex %O -shell-escape %S';
+$dvipdf='xdvipdfmx %O -o %D %S';
