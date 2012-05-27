@@ -7,7 +7,7 @@ its actions based on prior knowledge and by repeated trials. The very first acti
 will be chosen by random and the agent will then recieve a reward or
 penalty from the environment. This feedback will then be used to update the expected reward
 from that perticular action. By repeatedly chosing the actions and receiving feedback
-from the environment, as pictured in figure~\ref{fig:la}, the agent is able to
+from the environment, as pictured in figure~\ref{fig:rlearn}, the agent is able to
 decide which action is the most profitable. 
 
 If the environment does in fact have varying parameters, meaning that the reward
@@ -19,23 +19,14 @@ to test both options, to get a clearer picture of which option is the better one
 select the option it believes is the best one to maximize profit. 
 
 \begin{figure}[ht]
-        \begin{verbatim}
-                   |-------------|  r
-              |--->| Environment |----|
-              |    |-------------|    |
-              |                       | 
-              | a  |-------------|    |
-              |----|   Agent   |<---|
-                   |-------------|
-         
-                     a: action
-                     r: reward
-        \end{verbatim}
-        \label{fig:la}
-    \caption{Replace with drawing}
+    \centering
+    \includegraphics[width=8cm]{images/ReinforcementLearning}
+    \label{fig:rlearn}
+    \caption{Reinforcement learning}
 \end{figure}
 
 \section{The multi-armed bandit problem}
+\textbf{Define regret (total and instant)}
 A popular and surprisingly fitting way to model stochastic optimization problems 
 is through the multi-armed bandit scenario. Imagine, if you will, the iconic 
 gambling machine to be found in any casino. Only this apparatus has not one, but 
@@ -78,14 +69,9 @@ chose the ideal solution during the first round it is likely that not all player
 receive a reward and thus it takes some time to explore all options before the players
 converge on the ideal solution.
 
-\section{Algorithms for solving the multi-armed bandit problem}
-\textbf{Define regret (total and instant)}
-In addition to local Thompson sampling, we implemented the UCB1 algorithm for 
-comparing optimised Thompson samplers. Both algorithms are described in the next 
-subsections.
-
-\subsection{Local Thompson sampling}
-A lesser known algorithm, based on principles set forth by Thompson \cite{Thompson1933} in 1933. 
+\section{Local Thompson sampling}
+Local Thompson sampling \cite{May2011} is based on a sampling technique pioneered by Thompson \cite{Thompson1933} in 1933. 
+The method is Bayesian in nature, in that it uses new information to update probability estimates, but avoids the computational intractability that is often the drawback of Bayesian methods.
 For every available arm it keeps a distribution estimate, which is 
 updated based on received reward. The use of Thompson sampling in the bandit 
 setting depends on a parameter known as observation noise, $\sigma_{ob}$, which 
@@ -94,7 +80,7 @@ observation noise signifies that new information should be considered
 trustworthy, while a high value means that observations are insecure. 
 
 After receiving a reward $r_i$ by pulling arm $i$ the bandit is updated. The mean and variance
-is calculated as follows:
+is calculated as follows \cite{Murphy2007}:
 \begin{displaymath}
 \mu_i [t + 1] = \frac{\sigma_i^2 [t] \cdot r_i + \sigma_{ob}^2 \cdot \mu_i [t]}{\sigma_i^2 [t] + \sigma_{ob}^2}
 \end{displaymath}
@@ -133,8 +119,16 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
 %    ,'est.txt' using 2:(column(4)<1.5?column(4):1/0):(column(3)==2500.0?column(1):1/0) every 2:100::50::1001 with line lt -1 lw 1 title "" \
 %    ,'est.txt'       using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every 2:10::::70  with line lt -1 lw 1 title ""
 %    \end{gnuplot}
-    \input{ob-var-fig1.tex}
-\caption{Variance}
+%    \input{ob-var-fig1.tex}
+\begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set style data lines
+    set log y
+    set xlabel "Rounds"
+    set ylabel '$\hat{\sigma}^2$'
+    set xtics 1,100,1000
+    plot [1:1000] [*:1] for [o in "1.0 1.0e-3"] 'est.txt' using ($4==o?$2:NaN):1 title 'OB = '.o
+    \end{gnuplot}
+\caption{Variance as a function of time}
 \label{fig:variance}
 \end{figure}
 
@@ -164,14 +158,19 @@ In this case we see that the total regret achieved increases rapidly when the va
 With different setups we see similar results, although the slope after the optimum may be steeper or closer to zero.
 
 
-\subsection{UCB1-Tuned}
+\section{UCB1-Tuned}
+In addition to local Thompson sampling, we implemented the UCB1 algorithm for 
+comparing optimised Thompson samplers.
+
 UCB1 \cite{Auer02UCB1} (Upper Confidence Bound) is a well-known algorithm for multi-armed bandits.
 It is popular due to being very simple and reasonably performant. In comparison 
 to LTS, it does not require any constant parameters, and in place of a given 
 start estimate for the available arms the fist $K$ rounds are dedicated to 
 initialising the arm estimates by playing every arm once.
 
-UCB1-Tuned is a version of UCB1 that takes into consideration the estimate variance in addition to the estimate mean. This should cause it to work better in practice.
+UCB1-Tuned is a version of UCB1 that takes into consideration the estimate variance in addition to the estimate mean.
+This should cause it to work better in practice.
+In the remainder of this report, UCB1 means this improved algorithm.
 
 The UCB1-Tuned strategy is simply to play the arm with index $i$ such that
 \begin{displaymath}
@@ -224,3 +223,4 @@ been played, $n$ is the total number of plays, and $\hat{\mu}_j
 % $\mathcal{X}_1, \ldots, \mathcal{X}_c$, with the samples in $\mathcal{X}_i$ 
 % belonging to $\omega_i$.
 % 
+
