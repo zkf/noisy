@@ -149,7 +149,7 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
     set ylabel "Instant regret"
     set log x
     set xrange [4:1000]
-    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_est-10.0,50.0\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS\_kind-Instant.data" using 1:(5-column(2)) title "LTS (\\ob{} = 0.51)", \
+    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_est-0.0,50.0\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS\_kind-Instant.data" using 1:(5-column(2)) title "LTS (\\ob{} = 0.51)", \
          "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_num-2\_rounds-1000\_reps-100000\_algo-UCB1\_kind-Instant.data" using 1:(5-column(2)) title "UCB1"
     \end{gnuplot}
     \end{minipage}
@@ -160,6 +160,7 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
 \caption{Instant regret for UCB1 and LTS.}
 \label{fig:ucbcomp}
 \end{figure}
+
 
 LTS is superior to UCB1 when the optimal observation noise value is selected.
 In figure~\ref{fig:ucbcomp} this is clearly demonstrated:
