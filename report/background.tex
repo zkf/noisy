@@ -93,15 +93,12 @@ converge on the ideal solution, which in this case would be seven 'yes' and thre
 \section{Local Thompson sampling}
 Local Thompson sampling \cite{May2011} is based on a sampling technique pioneered by Thompson \cite{Thompson1933} in 1933. 
 The method is Bayesian in nature, in that it uses new information to update probability estimates, but avoids the computational intractability that is often the drawback of Bayesian methods.
-For every available arm it keeps a distribution estimate, which is 
-updated based on received reward. The use of Thompson sampling in the bandit 
-setting depends on a parameter known as observation noise, $\sigma_{ob}$, which 
-is assigned a value based on how much new information is to be trusted. A low 
-observation noise signifies that new information should be considered 
-trustworthy, while a high value means that observations are insecure.
+While the original method Thompson proposed was for choosing between 2 actions in a Bernoulli trial, it is easily generalised as a method of choosing among any number of actions with arbitrary reward distributions.
 
-After receiving a reward $r_i$ by pulling arm $i$ the bandit is updated. The mean and variance
-is calculated as follows \cite{Murphy2007}:
+The algorithm functions as follows: For every available action it keeps a distribution estimate.
+On every round, it picks an action by drawing a random number from each distribution and selecting the action which achieved the highest value.
+Using the reward $r_i$which is then received, the arm estimate of the selected arm $i$ is updated.
+Specifically, in the Gaussian bandit setting the mean and variance is calculated as follows \cite{Murphy2007}:
 \begin{displaymath}
 \mu_i [t + 1] = \frac{\sigma_i^2 [t] \cdot r_i + \sigma_{ob}^2 \cdot \mu_i [t]}{\sigma_i^2 [t] + \sigma_{ob}^2}
 \end{displaymath}
@@ -109,8 +106,12 @@ is calculated as follows \cite{Murphy2007}:
 \begin{displaymath}
 \sigma_i^2 [t + 1] = \frac{\sigma_i^2 [t] \sigma_{ob}^2}{\sigma_i^2 [t] + \sigma_{ob}^2}
 \end{displaymath}
+
 Where $\sigma_i^2 [t + 1]$ and $\mu_i [t + 1]$ is the variance and mean of the updated arm and
 $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its previous state.
+
+The use of Thompson sampling in the bandit setting depends on a parameter known as observation noise, $\sigma_{ob}$, which is assigned a value based on how much new information is to be trusted.
+A low observation noise signifies that new information should be considered trustworthy, while a high value means that observations are insecure.
 
 \begin{figure}[htbp]
     \centering
@@ -140,15 +141,15 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
 %    ,'est.txt' using 2:(column(4)<1.5?column(4):1/0):(column(3)==2500.0?column(1):1/0) every 2:100::50::1001 with line lt -1 lw 1 title "" \
 %    ,'est.txt'       using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every 2:10::::70  with line lt -1 lw 1 title ""
 %    \end{gnuplot}
-%    \input{ob-var-fig1.tex}
-\begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-    set style data lines
-    set log y
-    set xlabel "Rounds"
-    set ylabel '$\hat{\sigma}^2$'
-    set xtics 1,100,1000
-    plot [1:1000] [*:1] for [o in "1.0 1.0e-3"] 'est.txt' using ($4==o?$2:NaN):1 title 'OB = '.o
-    \end{gnuplot}
+%\begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+%    set style data lines
+%    set log y
+%    set xlabel "Rounds"
+%    set ylabel '$\hat{\sigma}^2$'
+%    set xtics 1,100,1000
+%    plot [1:1000] [*:1] for [o in "1.0 1.0e-3"] 'est.txt' using ($4==o?$2:NaN):1 title 'OB = '.o
+%\end{gnuplot}
+    \input{ob-var-fig1.tex}
 \caption{Variance as a function of time}
 \label{fig:variance}
 \end{figure}
@@ -168,7 +169,7 @@ $\sigma_i^2 [t]$ and $\mu_i [t]$ is the variance and mean of the arm in its prev
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{2.0}{4.0}{4.0}{2}{1000}
+    \banditsetup{5.0}{4.0}{4.0}{2}{1000}
     \end{minipage}
 \caption{Resulting total regret from varying observation noise.}
 \label{fig:regretob}
