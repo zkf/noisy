@@ -194,27 +194,6 @@ This is a welcome result in light of the practice of letting the standard deviat
 
 \section{Goore Game}
 
-\begin{figure}[htbp]
-    \hspace*{-2.5cm}
-    \begin{minipage}[c]{0.39\textwidth}
-    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-    set grid
-    set style data lines
-    set key left
-    set ylabel "Observasion noise" rotate 
-    set xlabel "White Noise"
-    set xrange [0.1:3.9]
-    plot for [m in "10 100 1000"] "../python/3ddata/new_created_data.data" using 4:($1==m."0.0"&&$2==10.0&&$3==0.2?$5:1/0) title m."0.0 Rounds"
-    \end{gnuplot}
-    \end{minipage}
-    \hspace*{7.5cm}
-    \begin{minipage}[c]{0.49\textwidth}
-    \gooresetup{20/80}{In graph}{10}
-    \end{minipage}
-\caption{Finding the optimal observation noise.}
-\label{fig:ex8}
-\end{figure}
-
 Goore game have only one optimal observation noise, and it is at the peek of where the rewards are highest.
 In Figure \ref{fig:ex12} you may see that the optimal noise is between 1.3 and 1.4 and going past those two
 points will lead to less reward. The drop is steeper past 1.3 then past 1.4. Reason for this is that when players
@@ -241,6 +220,27 @@ is that having more time gives you more time to explore.
     \end{minipage}
 \caption{Overview of observation noise}
 \label{fig:ex12}
+\end{figure}
+
+\begin{figure}[htbp]
+    \hspace*{-2.5cm}
+    \begin{minipage}[c]{0.39\textwidth}
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set grid
+    set style data lines
+    set key left
+    set ylabel "Observasion noise" rotate 
+    set xlabel "White Noise"
+    set xrange [0.1:3.9]
+    plot for [m in "10 100 1000"] "../python/3ddata/new_created_data.data" using 4:($1==m."0.0"&&$2==10.0&&$3==0.2?$5:1/0) title m."0.0 Rounds"
+    \end{gnuplot}
+    \end{minipage}
+    \hspace*{7.5cm}
+    \begin{minipage}[c]{0.49\textwidth}
+    \gooresetup{20/80}{In graph}{10}
+    \end{minipage}
+\caption{Finding the optimal observation noise.}
+\label{fig:ex8}
 \end{figure}
 
 \begin{figure}[htbp]
