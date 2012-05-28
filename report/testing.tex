@@ -30,29 +30,29 @@ By fixing all but one parameter and testing for a range of values for this param
 \begin{figure}[hbtp]
     \hspace*{-2.5cm}
     \begin{minipage}[c]{0.39\textwidth}
-%        \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-%            set style data lines
-%            set grid
-%            set xlabel "Arms" rotate
-%            set ylabel "Rounds" rotate
-%            set zlabel "Observation noise" rotate
-%            set log xy
-%            set xyplane 0
-%            set xtics 2
-%            set xrange [2:64]
-%            set yrange [10:1000]
-%            set zrange [0:0.3]
-%            set palette model CMY rgbformulae 7,5,15
-%            set pm3d interpolate 0,0
-%            unset hidden3d
-%    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with pm3d, \
-%      "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7 title "" with line lt -1 lw 1
-%    \end{gnuplot}
-    \input{armsplot.tex}
+        \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+            set style data dots
+            set grid
+            set nokey
+            set xlabel "Arms" rotate
+            set ylabel "Rounds" rotate
+            set zlabel "Observation noise" rotate
+            set log xy
+            set xyplane 0
+            set xtics 2
+            set xrange [2:64]
+            set yrange [10:1000]
+            set zrange [0:0.3]
+            set palette model CMY rgbformulae 7,5,15
+            set pm3d at s hidden3d 100 
+            set style line 100 lt -1 lw 2
+    splot "../data/bandit/good-5.0,0.5\_bad-4.0,0.5\_est-0.0,50.0\_num-(64,1.0,1.0)\_rounds-1000\_algo-UCB1.data" using 5:6:7
+    \end{gnuplot}
+%    \input{armsplot.tex}
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{0.5}{4.0}{0.5}{2 -- 64}{10 -- 1000}
+    \banditsetup{5.0}{4.0}{0.5}{2 -- 64}{10 -- 1000}
     \end{minipage}
     \caption{Best observation noise varying with the number of arms. Note the logarithmic scales on the \emph{Arms} and \emph{Rounds} axes.}
 \label{fig:numarms}
@@ -98,7 +98,7 @@ We see that \obstar{} exhibits approximately logarithmic growth as the number of
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{0.5}{0.5 -- 4.5}{0.5}{5}{1000}
+    \banditsetup{5.0}{0.5 -- 4.5}{0.5}{5}{1000}
     \end{minipage}
     \caption{Best observation noise varying with the mean on the suboptimal arms.}{As the mean is lowered past 3 or so changing observation noise stops having an effect, so these numbers are excluded from this figure.}
 \label{fig:badmean}
@@ -125,14 +125,14 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     set yrange [0.1:5]
     set ytics 0.1,0.9
     set ytics offset 0,-0.5
-    splot "../data/bandit/good-6.5,(0.1,5.0,0.9)\_bad-4.0,0.1\_est-0.0,50.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:2:7 with line lt -1 lw 2 title ""
+    splot "../data/bandit/good-6.5,(0.1,5.0,0.9)\_bad-4.0,(0.1,5.0,0.9)\_est-0.0,50.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:2:7 with line lt -1 lw 2 title ""
     \end{gnuplot}
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{6.5}{0.1 -- 5.0}{4.0}{0.1}{5}{10 -- 1000}
+    \banditsetup{6.5}{4.0}{0.1 -- 5.0}{5}{10 -- 1000}
     \end{minipage}
-\caption{Varying standard deviation of the best arm}
+\caption{Varying standard deviation.}
 \label{fig:gooddev}
 \end{figure}
 
@@ -149,13 +149,13 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
     set ylabel "Instant regret"
     set log x
     set xrange [4:1000]
-    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS.data" using 1:(5-column(2)) title "\\textsc{lts: 0.51}", \
-         "../data/instantrewards/good-5.0,2.0\_bad-4.0,4.0\_num-2\_rounds-1000\_reps-100000\_algo-UCB1.data" using 1:(5-column(2)) title "\\textsc{ucb1}"
+    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_est-10.0,50.0\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS\_kind-Instant.data" using 1:(5-column(2)) title "LTS (\\ob{} = 0.51)", \
+         "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_num-2\_rounds-1000\_reps-100000\_algo-UCB1\_kind-Instant.data" using 1:(5-column(2)) title "UCB1"
     \end{gnuplot}
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{2.0}{4.0}{4.0}{2}{1 -- 1000}
+    \banditsetup{5.0}{4.0}{2.0}{2}{1 -- 1000}
     \end{minipage}
 \caption{Instant regret for UCB1 and LTS.}
 \label{fig:ucbcomp}
@@ -183,9 +183,9 @@ Even though UCB1 performs reasonably good from the start it seemingly ceases red
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{0.5}{4.0}{0.1 -- 3.5}{5}{1000}
+    \banditsetup{5.0}{4.0}{0.1 -- 3.5}{5}{1000}
     \end{minipage}
-\caption{Varying standard deviation of the bad arms}
+\caption{Varying standard deviation of the bad arms, on the best arm it is kept at 0.5.}
 \label{fig:baddev}
 \end{figure}
 

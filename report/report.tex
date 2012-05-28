@@ -4,6 +4,7 @@
 %\documentclass[12pt,letterpaper,final]{report}
 \documentclass[12pt,a4paper,final]{report}
 \usepackage{ifpdf}
+\usepackage{ifplatform}
 \ifpdf
     \usepackage{graphicx}
 \else
@@ -37,7 +38,11 @@
 \usepackage{color}
 \usepackage{uiafrontpage} % For UiA Style frontpage.
 \usepackage{rotating}
-\usepackage[miktex]{gnuplottex}   % Inline gnuplotting
+\ifwindows
+    \usepackage[miktex]{gnuplottex}   % Inline gnuplotting
+\else
+    \usepackage{gnuplottex}   % Inline gnuplotting
+\fi
 \usepackage[section]{placeins}     % Keep figures within their sections
 \ifpdf
     \usepackage[colorlinks]{hyperref}  % Clickable urls, within doc and to the web.
@@ -96,15 +101,15 @@ the Goore Game }
 % cross-references intact.
 % \includeonly{background}
 
-\newcommand{\banditsetup}[6]{%
-    \begin{tabular}{lll}
+\newcommand{\banditsetup}[5]{%
+    \begin{tabular}{cl}
+        \multicolumn{2}{c}{\textsc{Setup}} \\
         \toprule
-        \multirow{2}{*}{Best arm}   & $\mu$    & #1 \\
-                                    & $\sigma$ & #2 \\
-        \multirow{2}{*}{Other arms} & $\mu$    & #3 \\
-                                    & $\sigma$ & #4 \\
-        \multicolumn{2}{l}{Number of arms}     & #5 \\
-        \multicolumn{2}{l}{Number of rounds}   & #6 \\
+          $\mu^*$  & #1 \\
+          $\mu$    & #2 \\
+          $\sigma$ & #3 \\
+          $K$      & #4 \\
+          $T$      & #5 \\
         \bottomrule
     \end{tabular}}
 
