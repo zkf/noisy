@@ -4,6 +4,7 @@
 %\documentclass[12pt,letterpaper,final]{report}
 \documentclass[12pt,a4paper,final]{report}
 \usepackage{ifpdf}
+\usepackage{ifplatform}
 \ifpdf
     \usepackage{graphicx}
 \else
@@ -37,7 +38,11 @@
 \usepackage{color}
 \usepackage{uiafrontpage} % For UiA Style frontpage.
 \usepackage{rotating}
-\usepackage[miktex]{gnuplottex}   % Inline gnuplotting
+\ifwindows
+    \usepackage[miktex]{gnuplottex}   % Inline gnuplotting
+\else
+    \usepackage{gnuplottex}   % Inline gnuplotting
+\fi
 \usepackage[section]{placeins}     % Keep figures within their sections
 \ifpdf
     \usepackage[colorlinks]{hyperref}  % Clickable urls, within doc and to the web.
