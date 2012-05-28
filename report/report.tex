@@ -3,7 +3,12 @@
 
 %\documentclass[12pt,letterpaper,final]{report}
 \documentclass[12pt,a4paper,final]{report}
-\usepackage[dvipdfmx]{graphicx}     % For inclusion of images
+\usepackage{ifpdf}
+\ifpdf
+    \usepackage{graphicx}
+\else
+    \usepackage[dvipdfmx]{graphicx}
+\fi
 \usepackage[utf8]{inputenc}
 \usepackage{microtype}   % document will look subtly nicer 
 \usepackage{makeidx}
@@ -34,7 +39,12 @@
 \usepackage{rotating}
 \usepackage{gnuplottex}   % Inline gnuplotting
 \usepackage[section]{placeins}     % Keep figures within their sections
-\usepackage[colorlinks,dvipdfmx]{hyperref}  % Clickable urls, within doc and to the web.
+\ifpdf
+    \usepackage[colorlinks]{hyperref}  % Clickable urls, within doc and to the web.
+\else
+    \usepackage[colorlinks,dvipdfmx]{hyperref}  % Clickable urls, within doc and to the web.
+\fi
+
 
 \input{colordefinitions}
 
