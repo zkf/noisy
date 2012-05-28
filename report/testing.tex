@@ -215,10 +215,33 @@ This is a welcome result in light of the practice of letting the standard deviat
 \label{fig:ex8}
 \end{figure}
 
-As seen in Figure(Incoming), the higher white noise you have the higher observation noise is needed to achieve
+Goore game have only one optimal observation noise, and it is at the peek of where the rewards are highest.
+In Figure \ref{fig:ex12} you may see that the optimal noise is between 1.3 and 1.4 and going past those two
+points will lead to less reward. The drop is steeper past 1.3 then past 1.4. Reason for this is that when players
+decide to quickly the ratio may not be achieved in time.
+As seen in Figure \ref{fig:ex8}, the higher white noise you have the higher observation noise is needed to achieve
 the optimal reward. Also the optimal observation noise rises if the Goore game have more time, reason for this
 is that having more time gives you more time to explore. 
 
+\begin{figure}[htbp]
+    \hspace*{-2.5cm}
+    \begin{minipage}[c]{0.39\textwidth}
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set grid
+    set xrange [0.9:1.8]
+    set style data lines
+    set xlabel "Observasion noise"  
+    set ylabel "Reward" rotate
+    plot "../python/datafolder/obsdata_repetitions-10000_bandits-40_rounds-1000_ratio-0.3_noise-1.1.data" title ""
+    \end{gnuplot}
+    \end{minipage}
+    \hspace*{7.5cm}
+    \begin{minipage}[c]{0.49\textwidth}
+    \gooresetup{30/70}{10 000}{40}
+    \end{minipage}
+\caption{Overview of observation noise}
+\label{fig:ex12}
+\end{figure}
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
