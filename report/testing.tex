@@ -149,7 +149,7 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
     set ylabel "Instant regret"
     set log x
     set xrange [4:1000]
-    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_est-0.0,50.0\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS\_kind-Instant.data" using 1:(5-column(2)) title "LTS (\\ob{} = 0.51)", \
+    plot "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_est-10.0,50.0\_num-2\_obnoise-0.51\_rounds-1000\_reps-100000\_algo-LTS\_kind-Instant.data" using 1:(5-column(2)) title "LTS (\\ob{} = 0.51)", \
          "../data/instantrewards/good-5.0,2.0\_bad-4.0,2.0\_num-2\_rounds-1000\_reps-100000\_algo-UCB1\_kind-Instant.data" using 1:(5-column(2)) title "UCB1"
     \end{gnuplot}
     \end{minipage}
@@ -160,7 +160,6 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
 \caption{Instant regret for UCB1 and LTS.}
 \label{fig:ucbcomp}
 \end{figure}
-
 
 LTS is superior to UCB1 when the optimal observation noise value is selected.
 In figure~\ref{fig:ucbcomp} this is clearly demonstrated:
@@ -218,7 +217,7 @@ the Goore game for reward.
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \gooresetup{30/70}{10 000}{40}
+    \gooresetup{0.3}{10 000}{40}
     \end{minipage}
 \caption{Overview of observation noise}
 \label{fig:ex12}
@@ -239,7 +238,7 @@ the Goore game for reward.
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \gooresetup{20/80}{In graph}{10}
+    \gooresetup{0.2}{In graph}{10}
     \end{minipage}
 \caption{Finding the optimal observation noise.}
 \label{fig:ex8}
@@ -289,7 +288,7 @@ noise is low, as White noise gets bigger they all go towards the same optimal ob
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \gooresetup{30/70}{10 000}{In graph}
+    \gooresetup{0.3}{10 000}{In graph}
     \end{minipage}
 \caption{Change in number of players.}
 \label{fig:ex10}
@@ -321,7 +320,7 @@ lower then if you have low white noise and many rounds, although variations are 
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \gooresetup{30/70}{In graph}{10}
+    \gooresetup{0.3}{In graph}{10}
     \end{minipage}
 \caption{Overview of Rounds and White noise}
 \label{fig:ex11}
