@@ -51,7 +51,7 @@ Last, the number of times the best arm is selected at any given time can be an i
 
 \section{Goore Game}
 Contrary to the multi-armed bandit scenario the bandits in the Goore game have identical starting
-values on both their arms. They way we measured performance was by looking at the reward for each observation
+values on both their arms. The way we measured performance was by looking at the reward for each observation
 noise. By doing so we would find where the top observation noises are and the best one.
 Following is a list of all parameters used for the Goore game:
 \begin{itemize}
@@ -60,12 +60,13 @@ Following is a list of all parameters used for the Goore game:
 \item Number of bandits
 \item Raito for the selected arms(Yes and no)
 \item Gaussian white noise
+\item Number of rounds the game lasted
 \end{itemize}
 
 The mean and standard deviation on the arms are fairly insignificant as long as the mean or the standard deviation
 is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 40 bandits to understand how
 the increase in players affected the observation noise. Additionally we changed the ratio to different values
-to see wether certian target values were more difficult hit. Finally by varying the gaussian white noise we observed how
+to see whether certain target values were more difficult hit. Finally by varying the Gaussian white noise we observed how
 the higher standard deviation in reward affected the players.
 
 
