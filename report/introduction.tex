@@ -2,19 +2,19 @@
 \label{ch:introduction}
 
 \section{Introduction}
-The purpose of this project was to determine the optimal observation noise for different 
-configurations in the multi-armed bandit problem and in the Goore game using local
-Thompson sampling. The multi-armed bandit problem gives a gambler the option to pull one
-out of several arms. Each arm will return a reward based on a distribution that may or may not be
-unique to that arm. The gambler will have to decide which arm is the better one to maximize his
-reward.
+Both the multi-armed bandit problem and the Goore game are settings which help illustrated the exploration-exploitation dilemma.
+To succeed in these games the player must weigh the value of exploration against the value of exploitation, and the goal is to achieve the highest possible payoff.
+Many performant strategies have been developed for both these games.
+For the multi-armed bandit problem, methods employing what is called Thompson sampling have become increasingly popular in the recent years.
+Thompson sampling was initially described by Thompson already in 1933 -- making it one of the first solution strategies for multi-armed bandits -- but it has not received much attention until recently.
+As for the Goore game, of special interest is the type of solution where the players are modelled as playing on 2-armed gambling machines -- a special case of the multi-armed bandit problem.
 
-The Goore game builds on the same principles. However in this game there are several players
-but exactly two arms for each player to chose from. To maximize the reward the different
-players need to obtain a certian distribution of arms pulled, for example 70 percent of the players chose
-arm number one while the remaining 30 percent chose arm number 2. Thompson sampling aims to solve
-this problem by chosing an armed based on its probability of returning the highest reward. William R.
-Thompson wrote about Thompson sampling in an article from 1933 and it has not seen much use since.
+In this paper we take a closer look on the use of Thompson sampling in the Gaussian version of the multi-armed bandit, and we then employ this model in the Goore game.
+In the Gaussian bandits the reward distributions are normally distributed, and this causes the observation noise parameter \ob{} to arise when applying Thompson sampling to the problem.
+This parameter is therefore the focus of this report.
+We investigate empirically the optimal observation noise settings for different configurations in the multi-armed bandit problem and in the Goore game.
+
+
 
 Multi-armed bandit approaches have multiple real life applications, and we will mention a few here.
 It has been used to to manage the prioritising of multiple projects in large corporations, where money and manpower is distributed based on the expected return of investment.
