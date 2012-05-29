@@ -1,5 +1,4 @@
 
-\newcommand{\ob}{$\sigma_{ob}$}
 
 \newcommand{\gooresetup}[3]{%
 	\begin{tabular}{ll}
@@ -12,7 +11,6 @@
 	
 
 
-\newcommand{\obstar}{$\sigma^*_{ob}$}
 
 \chapter{Results}
 \label{ch:results}
@@ -114,7 +112,7 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
     set pm3d
-    set ylabel "[r]{\\shortstack{Best arm \\\\ standard deviation}}" offset 6,-1
+    set ylabel "Standard deviation" offset 2,-1
     set xlabel "Rounds" offset 1,-1
     set zlabel "Observation noise" rotate
     set xyplane 0

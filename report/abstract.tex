@@ -1,10 +1,9 @@
 \begin{abstract}
 
-The use of learning automata employing the Thompson sampling method for solving 
-the stochastic multi-armed bandit problem is well known, but confusion surrounds 
-the all-important parameter for this algoritm -- the observation noise. In this 
-paper we investigate how this parameter affects the outcome of bandit 
-simulations. We also test this in a Goore game setting where the players are 
-modelled as learning automata playing 2-armed bandits.
+The use of learning automata employing the Thompson sampling method for solving the Gaussian multi-armed bandit problem is well known, but for this method to perform optimally a good choice has to be made when setting the value for the observation noise.
+In this paper we empirically investigate how the optimal observation noise value changes as the parameters for the multi-armed bandit simulation are modified.
+We also do this for the Goore game, in which the players are modelled as playing 2-armed bandits.
+
+Interesting findings include the fact that in the multi-armed bandit setting there is a near logarithmic relationship between the number of arms available and the best observation noise, and that the behaviour in the multi-armed bandit problem when the standard deviation is changed is similar to the behaviour in the Goore game when the added white noise is changed.
 
 \end{abstract}
