@@ -194,9 +194,7 @@ This is a welcome result in light of the practice of letting the standard deviat
 
 The Goore game have exactly one optimal observation noise, and it is at the apex the rewards are highest.
 In figure \ref{fig:ex12} one can see that the optimal noise is between 1.3 and 1.4. Any higher or any lower 
-observation noise will quickly lead to less reward. The drop is steeper if the observation noise is less than 1.3 compared to if the observation noise is greater than 1.4. The reason for this is that when players decide too quickly the correct ratio may not be achieved in time.
-In figure \ref{fig:ex8} one can see that with a greater white noise a higher observation noise is needed to achieve
-the optimal reward. In addition, the optimal observation noise rises if the players are able to play Goore game for a long time. By having 
+observation noise will quickly lead to less reward. The drop is steeper if the observation noise is less than 1.3 compared to if the observation noise is greater than 1.4. The reason for this is that when players decide too quickly the correct ratio may not be achieved in time. In figure \ref{fig:ex8} one can see that with a greater white noise a higher observation noise is needed to achieve the optimal reward. In addition, the optimal observation noise rises if the players are able to play Goore game for a long time. By having 
 more time the players can spend more time exploring and still have plenty of time left to exploit the Goore game for reward. 
 
 \begin{figure}[htbp]
@@ -264,10 +262,7 @@ more time the players can spend more time exploring and still have plenty of tim
 
 The ratio of yes and no can also impact the optimal observation noise.
 The closer the ratio gets to 0 or 1, the optimal observation noise rises as shown in figure \ref{fig:ex9}. 
-As the ratio gets closer to either extreme a bad reward given to the player
-may not be because of this players choice but rather because of the other players choices. Meaning that the closer the ratio it is to 0
-or 1 the more the players affect each other.
-The number of bandits do not seem to affect the optimal observation noise too much, as shown in figure \ref{fig:ex10}. The only difference is at the starting point when the white noise is low. As the white noise gets higher the different configuration of players converge on the same optimal observation noise.
+As the ratio gets closer to either extreme a bad reward given to the player may not be because of this players choice but rather because of the other players choices. Meaning that the closer the ratio it is to 0 or 1 the more the players affect each other. The number of bandits do not seem to affect the optimal observation noise too much, as shown in figure \ref{fig:ex10}. The only difference is at the starting point when the white noise is low. As the white noise gets higher the different configuration of players converge on the same optimal observation noise.
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
@@ -290,13 +285,8 @@ The number of bandits do not seem to affect the optimal observation noise too mu
 \label{fig:ex10}
 \end{figure}
 
-Figure \ref{fig:ex11} shows how both number of rounds and white noise affects the optimal observasion noise for
-the Goore game. As seen in the figure, by having more rounds and a high white noise it is optimal to have a high observation noise.
-Meaning that players should spend more time exploring this very uncertian environment to find the optimal configuration of choices.
-Additionally if you have a low white noise and a high amount of rounds, the optimal observation noise is 
-higher than if you have high white noise and few rounds. Naturally, a high amount of white noise causes high variance. Given high white noise
-and a short amount of time to explore the observation varies as it is hard for players to decide on the correct configuration and thus the results
-are generally poor.
+Figure \ref{fig:ex11} shows how both number of rounds and white noise affects the optimal observasion noise for the Goore game. As seen in the figure, by having more rounds and a high white noise it is optimal to have a high observation noise. Meaning that players should spend more time exploring this very uncertian environment to find the optimal configuration of choices. Additionally if you have a low white noise and a high amount of rounds, the optimal observation noise is  higher than if you have high white noise and few rounds. Naturally, a high amount of white noise causes high variance. Given high white noise
+and a short amount of time to explore the observation varies as it is hard for players to decide on the correct configuration and thus the results are generally poor.
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
