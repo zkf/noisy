@@ -194,14 +194,10 @@ This is a welcome result in light of the practice of letting the standard deviat
 
 \section{Goore Game}
 
-Goore game have only one optimal observation noise, and it is at the peek of where the rewards are highest.
-In figure \ref{fig:ex12} you may see that the optimal noise is between 1.3 and 1.4, and going past those two
-points will lead to less reward. The drop is steeper past 1.3 then past 1.4. Reason for this is that when players
-decide to quickly the ratio may not be achieved in time.
-In figure \ref{fig:ex8}, the higher white noise you have the higher observation noise is needed to achieve
-the optimal reward. Also the optimal observation noise rises if the Goore game have more time. By having 
-more time the, player may use more on exploration and still have plenty time left to exploit
-the Goore game for reward. 
+The Goore game have exactly one optimal observation noise, and it is at the apex the rewards are highest.
+In figure \ref{fig:ex12} one can see that the optimal noise is between 1.3 and 1.4. Any higher or any lower 
+observation noise will quickly lead to less reward. The drop is steeper if the observation noise is less than 1.3 compared to if the observation noise is greater than 1.4. The reason for this is that when players decide too quickly the correct ratio may not be achieved in time. In figure \ref{fig:ex8} one can see that with a greater Gaussian white noise a higher observation noise is needed to achieve the optimal reward. In addition, the optimal observation noise rises if the players are able to play Goore game for a long time. By having 
+more time the players can spend more time exploring and still have plenty of time left to exploit the Goore game for reward. 
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
@@ -210,7 +206,7 @@ the Goore game for reward.
     set grid
     set xrange [0.9:1.8]
     set style data lines
-    set xlabel "Observasion noise"  
+    set xlabel "Observation noise"  
     set ylabel "Reward" rotate
     plot "../python/datafolder/obsdata_repetitions-10000_bandits-40_rounds-1000_ratio-0.3_noise-1.1.data" title ""
     \end{gnuplot}
@@ -230,8 +226,8 @@ the Goore game for reward.
     set grid
     set style data lines
     set key left
-    set ylabel "Observasion noise" rotate 
-    set xlabel "White Noise"
+    set ylabel "Observation noise" rotate 
+    set xlabel "Gaussian white noise"
     set xrange [0.1:3.9]
     plot for [m in "10 100 1000"] "../python/3ddata/new_created_data.data" using 4:($1==m."0.0"&&$2==10.0&&$3==0.2?$5:1/0) title m."0.0 Rounds"
     \end{gnuplot}
@@ -251,8 +247,8 @@ the Goore game for reward.
     set grid
     set style data lines
     set key left
-    set ylabel "Observasion noise" rotate 
-    set xlabel "White Noise"
+    set ylabel "Observation noise" rotate 
+    set xlabel "Gaussian white noise"
     set xrange [0.1:3.9]
     plot for [m in "2 3 4"] "../python/3ddata/new_created_data.data" using 4:($1==10000.0&&$2==10.0&&$3=="0.".m?$5:1/0) title "0.".m." Ratio"
     \end{gnuplot}
@@ -261,19 +257,14 @@ the Goore game for reward.
     \begin{minipage}[c]{0.49\textwidth}
     \gooresetup{In graph}{10 000}{10}
     \end{minipage}
-\caption{Change in raito effects the optimal observation noise.}
+\caption{Change in ratio effects the optimal observation noise.}
 \label{fig:ex9}
 \end{figure}
 
 
-The ratio of yes and no may also impact the optimal observation noise.
-The more the ratio goes towards 0 or 1, the optimal observation noise rises as shown in figure \ref{fig:ex9}. 
-This is because when it is close to 0 or 1 ratio, a bad reward given to the player
-may not be because of the choice but rather because of the other players. Meaning that the closer it is to 0
-or 1 in the ratio, the more the other players impact the reward given to the player.
-The number of bandits do not seam to affect the optimal observation noise to much to have an effect. 
-This is shown in figure \ref{fig:ex10}, the only difference is at the starting point when the White 
-noise is low. As White noise gets bigger they all go towards the same optimal observation noise.
+The ratio of yes and no can also impact the optimal observation noise.
+The closer the ratio gets to 0 or 1, the optimal observation noise rises as shown in figure \ref{fig:ex9}. 
+As the ratio gets closer to either extreme a bad reward given to the player may not be because of this players choice but rather because of the other players choices. Meaning that the closer the ratio it is to 0 or 1 the more the players affect each other. The number of bandits do not seem to affect the optimal observation noise too much, as shown in figure \ref{fig:ex10}. The only difference is at the starting point when the Gaussian white noise is low. As the Gaussian white noise gets higher the different configuration of players converge on the same optimal observation noise.
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
@@ -282,8 +273,8 @@ noise is low. As White noise gets bigger they all go towards the same optimal ob
     set grid
     set style data lines
     set key left
-    set ylabel "Observasion noise" rotate 
-    set xlabel "White Noise"
+    set ylabel "Observation noise" rotate 
+    set xlabel "Gaussian white Noise"
     set xrange [0.1:3.9]
     plot for [m in "4 7 10"] "../python/3ddata/new_created_data.data" using 4:($1==10000.0&&$2==m.".0"&&$3==0.3?$5:1/0) title m." Players"
     \end{gnuplot}
@@ -296,11 +287,8 @@ noise is low. As White noise gets bigger they all go towards the same optimal ob
 \label{fig:ex10}
 \end{figure}
 
-In this next figure \ref{fig:ex11}, it shows how both round numbers and white noise effect the optimal observasion noise for
-goore game. And they both show that the more rounds and the higher white noise is, it is better to have a high
-observation noise. Also if you have a low white noise and many rounds, the optimal observation noise is 
-higher then if you have high white noise and few rounds, although variations are high in this area. 
-
+Figure \ref{fig:ex11} shows how both number of rounds and Gaussian white noise affects the optimal observation noise for the Goore game. As seen in the figure, by having more rounds and a high Gaussian white noise it is optimal to have a high observation noise. Meaning that players should spend more time exploring this very uncertian environment to find the optimal configuration of choices. Additionally if you have a low Gaussian white noise and a high amount of rounds, the optimal observation noise is  higher than if you have high Gaussian white noise and few rounds. Naturally, a high amount of Gaussian white noise causes high variance. Given high Gaussian white noise
+and a short amount of time to explore the observation varies as it is hard for players to decide on the correct configuration and thus the results are generally poor.
 
 \begin{figure}[htbp]
     \hspace*{-2.5cm}
@@ -314,8 +302,8 @@ higher then if you have high white noise and few rounds, although variations are
     set view 60,310
     set palette model CMY rgbformulae 7,5,15
     set style data lines
-    set zlabel "Observasion noise" rotate 
-    set ylabel "White noise"
+    set zlabel "Observation noise" rotate 
+    set ylabel "Gaussian white noise"
     set xlabel "Rounds"
     splot "../python/3ddata/new_created_data.data" every 4 using 1:4:($2==10.0&&$3==0.3?$5:1/0) with line lt -1 lw 1 title ""
     \end{gnuplot}
@@ -324,7 +312,7 @@ higher then if you have high white noise and few rounds, although variations are
     \begin{minipage}[c]{0.49\textwidth}
     \gooresetup{0.3}{In graph}{10}
     \end{minipage}
-\caption{Overview of Rounds and White noise}
+\caption{Overview of Rounds and Gaussian white noise}
 \label{fig:ex11}
 \end{figure}
 
