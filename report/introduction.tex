@@ -6,7 +6,7 @@ Both the multi-armed bandit problem and the Goore game are scenarioes which help
 To succeed in these games the player must weigh the value of exploration against the value of exploitation, and the goal is to achieve the highest possible payoff.
 Many performant strategies have been developed for both these games.
 For the multi-armed bandit problem, methods employing what is called Thompson sampling have become increasingly popular in the recent years.
-Thompson sampling was initially described by Thompson already in 1933 -- making it one of the first solution strategies for multi-armed bandits -- but it has not received much attention until recently.
+Thompson sampling was initially described by Thompson already in 1933 -- making it one of the first solution strategies for multi-armed bandits.
 As for the Goore game, of special interest is the type of solution where the players are modelled as playing on 2-armed gambling machines -- a special case of the multi-armed bandit problem.
 
 In this paper we take a closer look on the use of Thompson sampling in the Gaussian version of the multi-armed bandit, and we then employ this model in the Goore game.
@@ -15,9 +15,9 @@ This parameter is therefore the focus of this report.
 We investigate empirically the optimal observation noise settings for different configurations in the multi-armed bandit problem and in the Goore game.
 
 Multi-armed bandit approaches have multiple real life applications, and we will mention a few here.
-It has been used to to manage the prioritising of multiple projects in large corporations, where money and manpower is distributed based on the expected return of investment.
+It has been used to to manage the prioritising of multiple projects in large corporations, where money and manpower is distributed based on the expected return of investment \cite{Glimsdal12}.
 As time passes resources are redistributed as it becomes more apparent which projects provide the highest profit.
-In addition, multi-armed bandit approaches have been used in clinical trials and to solve scheduling problems in networks.
+In addition, multi-armed bandit approaches have been used in clinical trials, to solve scheduling problems in networks, in online advertising, news article selection and wireless networks \cite{Granmo07, Glimsdal12}.
 
 \section{Report outline}
 The rest of this report is structured as follows: Chapter \ref{ch:background} presents an overview of the background for our research.
