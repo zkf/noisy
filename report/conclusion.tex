@@ -10,7 +10,7 @@ We have also shown how the best observation noise varies with different paramete
 
 We have also seen that the best observation noise is not trivially decreasing or increasing as we change simulation parameters?
 
-In in goore game having more players only effects the optimal observation noise when you have a low white nose,
+In the Goore game having more players only affects the optimal observation noise when you have a low white nose,
 otherwise they all converge towards the same optimal observation noise. By changing the ratio, it effects the observation
 noise in the way when it is closer to 0 or 1 in ratio the optimal observation noise is higher.
 Observation noise also rises when the players have more time on their hands, since with more time each player may use more time 
@@ -22,7 +22,5 @@ Our contributions consist mainly of an improved empirical and intuitive understa
 
 
 \section{Further Work}
-Use Gaussian processes to create models or graphs that can point to where the optimal observation noise is going to be
-when we change the parameters of the Bandit or Goore game. By putting a list of optimal observation noises in to the
-Gaussian process it will guess where the next optimal observation noise is going to be for the next parameter change.
+Use Gaussian processes to create models or graphs that can be used to inferr the optimal observation noise for a realistic subset of possible parameter configurations for the multi-armed bandit problem and the Goore game. Meaning that the Gaussian processes will use existing data to estimate unknown optimal observation noises. Currently all optimal observation noises are discovered through a brute-force approach thus if anyone requires a non-existent configuration of parameters it would be necessary to run the program with these new parameters. By employing Gaussian processes the user would be able to estimate the optimal observation noise by using existing data.
 
