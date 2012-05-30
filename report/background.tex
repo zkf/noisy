@@ -11,7 +11,7 @@
 
 In our simplified model of reinforcement learning illustrated in figure~\ref{fig:rlearn}, on every iteration the agent takes an action and receives a reward from the environment based on that action.
 This feedback is then used by the agent to learn about the environment.
-By repeatedly choosing actions and receiving feedback from the environment, the agent is able to decide which action is the most profitable. 
+By repeatedly choosing actions and receiving feedback from the environment, the agent is able to decide which action is the most profitable.
 The more general version of reinforcement learning includes a communication of the environment's state to the agent, but in our case the environment does not change state and therefore this particularity is omitted from the figure.
 A comprehensive survey of reinforcement learning is found in \cite{Kaelbling1996}.
 
@@ -29,25 +29,19 @@ Actions have variable rewards associated with them, and exploration is needed to
 Thus the agent has to decide on whether to continue exploration -- to get a clearer picture of which action is the optimal one -- or to exploit the knowledge it already has acquired and select the action it currently believes to be the best one.
 
 \section{The multi-armed bandit problem}
-\textbf{Define regret (total and instant). Simplest reinforcement learning model.}
-A popular and surprisingly fitting way to model stochastic optimization problems 
-is through the multi-armed bandit scenario. Imagine, if you will, the iconic 
-gambling machine to be found in any casino. Only this apparatus has not one, but 
-many arms with which a player may try her luck. Oh, but which arm to choose? 
-With so many possible choices, a strategy for optimising the machine’s payout 
-must be employed. 
+The simplest \cite{Kaelbling1996} way to model reinforcement learning problems is through the multi-armed bandit scenario.
+Imagine the iconic gambling machine found in any self-respecting casino, only this version of the apparatus has more than one arm with which a player may try her luck.
+The arms may cause the machine to give the player different rewards, so she will want to choose the arm which gives the highest payoff.
+Hence, a strategy for optimising the machine's payout must be employed.
 
-Before any arm-pulling has been done, nothing is known about the possible 
-payoffs from the multitude of available arms exept that some arms are better 
-than others -- obviously our player will profit the most from playing only the 
-best arm. And so, it comes to this: she must make a tradeoff between exploration 
--- discovering which arm is truly the best one -- and exploitation -- actually 
-picking the best arm.
+Before any arm-pulling has been done, nothing is known about the possible payoffs from the available arms except that some arms are better than others -- obviously our player will profit the most from playing only the best arm.
+And now we again see the dilemma of exploration and exploitation: she must make a trade-off between exploration 
+-- discovering which arm is truly the best one -- and exploitation -- actually picking the best arm.
+When selecting to explore the short-term reward is sacrificed for possible long-term payoffs, while exploitation may cause the player to not achieve the best reward possible due to incomplete knowledge of the search space.
 
-More specifically, in this paper we look at Gaussian bandits.
-This means that arms are normally distributed, and each arm is described by a mean and standard deviation.
-Furthermore, seeing as the normal distribution is self-conjugate, this allows for the
-use of normal distributions to describe the arm estimates used in the LTS algorithm.
+In this paper we look at Gaussian bandits, as opposed to the more common Bernoulli bandits.
+This entails that arms are normally distributed, and each arm is described simply by a mean and variance.
+The choice of Gaussian distributions is also due to the fact that the Thompson sampling algorithm requires distributions with conjugate priors -- the normal distribution is self-conjugate.
 
 \section{The Goore Game}
 Introduced by Tsetlin in 1973, the Goore game is a cooperation game where each  
