@@ -110,9 +110,9 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     \hspace*{-2.5cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-    set grid
+    set nokey
     set pm3d
-    set ylabel "Standard deviation" offset 2,-1
+    set ylabel "Standard deviation" offset 0,-1
     set xlabel "Rounds" offset 1,-1
     set zlabel "Observation noise" rotate
     set xyplane 0
@@ -120,15 +120,17 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     set view 65,312
     set xtics 200 offset -1.2,0.-0.5
     set xrange [10:1000]
-    set yrange [0.1:5]
-    set ytics 0.1,0.9
+    set yrange [0.1:5.1]
+    set zrange [0.01:4.6]
+    set ytics 0.1,1.0
     set ytics offset 0,-0.5
-    splot "../data/bandit/good-6.5,(0.1,5.0,0.9)\_bad-4.0,(0.1,5.0,0.9)\_est-0.0,50.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:2:7 with line lt -1 lw 2 title ""
+    splot '../data/bandit/good-5.0,(0.1,5.0,0.5)_bad-4.0,(0.1,5.0,0.5)_est-0.0,50.0_num-2_rounds-1000_algo-UCB1.data' using 6:2:7 with line lt -1 lw 2
+    #splot "../data/bandit/good-6.5,(0.1,5.0,0.9)\_bad-4.0,(0.1,5.0,0.9)\_est-0.0,50.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:2:7 with line lt -1 lw 2 title ""
     \end{gnuplot}
     \end{minipage}
     \hspace*{7.5cm}
     \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{6.5}{4.0}{0.1 -- 5.0}{5}{10 -- 1000}
+    \banditsetup{5.0}{4.0}{0.1 -- 5.1}{2}{10 -- 1000}
     \end{minipage}
 \caption{Varying standard deviation.}
 \label{fig:gooddev}
