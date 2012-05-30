@@ -81,16 +81,19 @@ the players are most likely to receive a high reward by staying at this configur
 \centering
 \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
 set style data lines
-set grid
 set xlabel '$\lambda$'
 set ylabel '$G(\lambda)$'
 set xrange[0:10]
 set yrange[0:0.5]
-set label '$\lambda^*$' at 5.3, 0.45
-plot exp(-(x-5)*(x-5)/2.0/2)/2 title ""; set arrow from 5,0.5 to 5,0 nohead lt 0 lw 3
+set label '$\lambda^*$' at 5.3, 0.4
+set arrow from 5,0.5 to 5,0 nohead lt 0 lw 3
+plot exp(-(x-5)*(x-5)/2.0/2)/2 title "" lw 3
+\end{gnuplot}
 \caption{An unimodal performance criterion}
 \label{fig:gfunc}
 \end{figure}
+
+
 A final factor that increases the difficulty of the game is that a players choice is affected by the other
 players choices. Lets say that ten players all select 'no' at the first round and that the performance 
 criterion is as shown in figure \ref{fig:gfunc}. The probability of
