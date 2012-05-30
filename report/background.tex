@@ -43,63 +43,60 @@ In this paper we look at Gaussian bandits, as opposed to the more common Bernoul
 This entails that arms are normally distributed, and each arm is described simply by a mean and variance.
 The choice of Gaussian distributions is also due to the fact that the Thompson sampling algorithm requires distributions with conjugate priors -- the normal distribution is self-conjugate.
 
-\section{The Goore Game}
-Introduced by Tsetlin in 1973, the Goore game is a cooperation game where each  
-player is not privy to information on the other players choices. It can be 
-described as a voting process where the referee knows the correct answer, and 
-the players cast their votes as simple ‘yes’ or ‘no’. The correct answer is a 
-certain number of yes’s and no’s, and players are rewarded based on how close 
-they collectively are to the ideal solution.
 
-\begin{figure}[h]
+\section{The Goore Game}
+Introduced by Tsetlin \cite{Tsetlin1964} in 1964, the Goore game\footnote{Also known as the Gur game.} is an iterated cooperation game where each player is not privy to information on the other players.
+It can be described as a voting process where the referee knows the correct answer, and the players cast their votes as simple ‘yes’ or ‘no’.
+The correct answer is a certain fraction of yes-votes, and players are rewarded based on how close they collectively are to the ideal solution.
+Rewards are determined by an unimodal performance criterion $G(\lambda)$, for instance the density of the normal distribution, where $\lambda$ is the fraction of yes-votes.
+The fraction of yes-votes preferred by the referee corresponds to the maximum of the performance criterion; when the normal distribution is used it is simply the mean value of the distribution. 
+
+The Goore game is inherently noisy, in that the reward for a single player is dependent on the actions of all the other players, resulting in reward variance.
+The noise level is at its highest as $\lambda = 0.5$.
+At this point the reward received by one player is severely dependent upon the other players choices, and so has the highest variance. 
+Conversely, the lowest noise level is found when $\lambda = 0.0\text{ or } 1.0$, where on average the reward for a particular player always increases as any one player switch to the correct choice. 
+In addition to the inherent noisiness of the game the feedback process itself may be noisy, typically modelled by adding Gaussian white noise to the rewards.
+
+\begin{figure}[htbp]
 \centering
 \includegraphics[height=70mm,width=70mm]{images/goore_game}
 \caption{Eight Player Goore Game}
 \label{fig:gg}
 \end{figure}
-At the start of the game all participants selects an action at random, as seen in figure \ref{fig:gg}. The referee
-gathers all the votes and based on a unimodal performance criterion it decides on
-the amount of reward each player will receive. The players will then use the reward they received from the
-referee to decide on wether to chose another action or to stick to their previous one. As seen in figure \ref{fig:gg},
-some players receive a higher reward than other while chosing the same action and this is a part
-of the uncertainty in the Goore Game, that a player can make the correct choice and stil receive a low
-reward.
 
-Another factor that makes the game more difficult is that only the referee knows off the unimodal performance criterion.
-The players simply votes and receives a reward as feedback. As the name 'unimodal' suggest there is only a single
-amount of 'yes' and 'no' that yeilds the highest likely award. An example of such a function can be seen in figure \ref{fig:gfunc}.
-In the figure $\lambda$ is the amount of players that vote yes and $\lambda^*$ is the target value which is when the referee
-likely will provide the highest rewards. Thus, if the players reach the target value they are not ensured a high reward, however
-the players are most likely to receive a high reward by staying at this configuration.
+At the start of the game all participants select an action at random, as seen in figure~\ref{fig:gg}.
+The referee tallies the votes and based on the performance criterion it calculates the reward each player receive.
+The players will then use the reward they received from the referee to decide on whether to change their vote or to stick with it the next round.
+The differing rewards in figure~\ref{fig:gg} are due to noisy feedback from the referee: the players generally do not receive the same reward in a given round.
+This is part of the uncertainty in the Goore Game, that a player can make a good choice and still receive a low
+reward. 
+Another factor that makes the game difficult is that only the referee knows the performance criterion.
+The players simply vote and receive a reward as feedback.
+
+As the performance criterion is unimodal there is a unique fraction of yes-votes that yields the maximum reward.
+For the remainder of this paper the performance criterion will be, as suggested earlier, the density of a Gaussian distribution, an example of which is given in figure~\ref{fig:gfunc}.
+In the figure $\lambda$ is the fraction of players that vote yes and $\lambda^*$ is the target value, here 0.5, for which the referee provides the highest expected reward.
+If the players reach the target value they are not ensured a high reward, due to the noisy environment, but the players all receive the highest possible expected reward by staying in this configuration.
+
 \begin{figure}[htbp]
 \centering
 \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
 set style data lines
+set nokey
 set xlabel '$\lambda$'
 set ylabel '$G(\lambda)$'
-set xrange[0:10]
-set yrange[0:0.5]
-set label '$\lambda^*$' at 5.3, 0.4
-set arrow from 5,0.5 to 5,0 nohead lt 0 lw 3
-plot exp(-(x-5)*(x-5)/2.0/2)/2 title "" lw 3
+set xrange[-0.25:1.25]
+#set yrange[0:2]
+set label '$\lambda^*$' at 0.55, 0.6
+set arrow from 0.5,2 to 0.5,0 nohead lt 0 lw 3
+plot (1/(0.2*sqrt(2*pi))) * exp((-0.5)*(((x-0.5)/0.2)**2)) lw 3
 \end{gnuplot}
 \caption{An unimodal performance criterion}
 \label{fig:gfunc}
 \end{figure}
 
-
-A final factor that increases the difficulty of the game is that a players choice is affected by the other
-players choices. Lets say that ten players all select 'no' at the first round and that the performance 
-criterion is as shown in figure \ref{fig:gfunc}. The probability of
-each individual player receiving a high reward would be fairly low and thus most of them
-are likely to chose another action. Nevertheless, some players  could received a decent reward
-and chosen to stick to their previous action. Even if the players
-chose the ideal solution during the first round it is likely that not all players would
-receive a reward and thus it takes some time to explore all options before the players
-converge on the ideal solution, which in this case would be five 'yes' and five 'no' as seen in the figure.
-
 \section{Local Thompson sampling}
-Local Thompson sampling \cite{May2011} is based on a sampling technique pioneered by Thompson \cite{Thompson1933} in 1933. 
+Local Thompson sampling (LTS) \cite{May2011} is based on a sampling technique pioneered by Thompson \cite{Thompson1933} in 1933. 
 The method is Bayesian in nature, in that it uses new information to update probability estimates, but avoids the computational intractability that is often the drawback of Bayesian methods.
 While the original method Thompson proposed was for choosing between 2 actions in a Bernoulli trial, it is easily generalised as a method of choosing among any number of actions with arbitrary reward distributions.
 The \emph{local} part of the name is unimportant in our setting as the mean reward values are fixed, but it relates the fact that actions selection is done taking into account the current regressor (which is a value determining the mean reward for each action).
