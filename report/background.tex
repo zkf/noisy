@@ -73,10 +73,21 @@ likely will provide the highest rewards. Thus, if the players reach the target v
 the players are most likely to receive a high reward by staying at this configuration.
 \begin{figure}[htbp]
 \centering
-\includegraphics[height=50mm,width=150mm]{images/gfunc}
+\begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+set style data lines
+set xlabel '$\lambda$'
+set ylabel '$G(\lambda)$'
+set xrange[0:10]
+set yrange[0:0.5]
+set label '$\lambda^*$' at 5.3, 0.4
+set arrow from 5,0.5 to 5,0 nohead lt 0 lw 3
+plot exp(-(x-5)*(x-5)/2.0/2)/2 title "" lw 3
+\end{gnuplot}
 \caption{An unimodal performance criterion}
 \label{fig:gfunc}
 \end{figure}
+
+
 A final factor that increases the difficulty of the game is that a players choice is affected by the other
 players choices. Lets say that ten players all select 'no' at the first round and that the performance 
 criterion is as shown in figure \ref{fig:gfunc}. The probability of
@@ -85,7 +96,7 @@ are likely to chose another action. Nevertheless, some players  could received a
 and chosen to stick to their previous action. Even if the players
 chose the ideal solution during the first round it is likely that not all players would
 receive a reward and thus it takes some time to explore all options before the players
-converge on the ideal solution, which in this case would be seven 'yes' and three 'no' as seen in the figure.
+converge on the ideal solution, which in this case would be five 'yes' and five 'no' as seen in the figure.
 
 \section{Local Thompson sampling}
 Local Thompson sampling \cite{May2011} is based on a sampling technique pioneered by Thompson \cite{Thompson1933} in 1933. 
