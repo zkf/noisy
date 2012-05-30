@@ -111,14 +111,15 @@ Specifically, in the Gaussian bandit setting the mean and variance is calculated
 \end{align*}
 where $\sigma_i^2 [t + 1]$ and $\mu_i [t + 1]$ is, respectively, the variance and mean of the updated arm.
 The term $\sigma_{ob}$, the observation noise, is the parameter which is investigated in this report.
-It is assigned a value based on how much new information is to be trusted: A low value signifies that new information should be considered trustworthy, while a high value means that observations are insecure.
-
-Figure~\ref{fig:variance} illustrates how the variance develops as a function of $t$, for the cases where $\sigma_{ob}^2 \in \{0.0001, 1.0\}$, with $\sigma_i [0] = 50$ for all $i$.
-We see that the observation noise value determines how fast the variance shrinks and what it converges towards.
+It is assigned a value akin to a learning rate: A low value signifies that new information should be given much importance, while a high value means that new observations are lightly weighted.
+At the same time the \ob{} can be thought of as a discount factor, as it determines the rate of exploration versus exploitation.
+This is illustrated in figure~\ref{fig:variance}. 
+It shows how the variance of the estimates develops as a function of $t$, for the cases where $\sigma_{ob}^2 \in \{0.0001, 1.0\}$, with $\sigma_i [0] = 50$ for all $i$.
+We see that the observation noise value determines how fast the variance shrinks and what it converges towards, and hence, how much time to allocate for exploration.
 
 \begin{figure}[htbp]
     \centering
-% Haskell code to generate data:
+%% Haskell code to generate data %%
 % let var v ob = let vv = (v*ob)/(v+ob) in vv : var vv ob
 % let ppB b = unlines $ map ppL b
 % let ppL (t,a,b,c) = show t ++ " " ++ show a ++ " " ++ show b ++ " " ++ show c
@@ -126,8 +127,8 @@ We see that the observation noise value determines how fast the variance shrinks
 %   $ map (\(est, ob) -> (zip4 (var est ob) ([1..10000]) (repeat est) (repeat ob)))
 %         [(est, ob) | est <- [2500],
 %                      ob <- ([0.001,0.002, 0.003, 0.006, 0.01, 0.03,0.06] ++ [0.1,0.2..3.0])]
-
-%    Let's not recompile this thing all the time.
+%
+%% 3D plot %%
 %    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
 %    set grid
 %    set ylabel "[r]{\\shortstack{Observation noise \\\\ ($\\sigma_{ob}^2$)}}" offset 6,-2
@@ -144,6 +145,9 @@ We see that the observation noise value determines how fast the variance shrinks
 %    ,'est.txt' using 2:(column(4)<1.5?column(4):1/0):(column(3)==2500.0?column(1):1/0) every 2:100::50::1001 with line lt -1 lw 1 title "" \
 %    ,'est.txt'       using 2:(column(4) < 1.5 ? column(4) : 1/0):(column(3) == 2500.0 ? column(1) : 1/0) every 2:10::::70  with line lt -1 lw 1 title ""
 %    \end{gnuplot}
+%    \input{ob-var-fig1.tex}
+%
+%% Regular 2D plot
 \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set style data lines
     set key ins vert
@@ -155,35 +159,9 @@ We see that the observation noise value determines how fast the variance shrinks
     set yrange [*:1]
     plot 'est.txt' using ($4==1.0?$2:NaN):1 title '$\sigma_{ob}^2 = 1.0$' lt 1 lw 3, 'est.txt' using ($4==1.0e-3?$2:NaN):1 title '$\sigma_{ob}^2 = 0.0001$' lt 3 lw 3
 \end{gnuplot}
-%    \input{ob-var-fig1.tex}
-\caption{Variance as a function of time (at $t = 0$, $\sigma_{ob}$ is $50$)}
+\caption{Variance as a function of time (at $t = 0$, $\sigma$ is $50$)}
 \label{fig:variance}
 \end{figure}
-
-
-\begin{figure}[htbp]
-    \hspace*{-2.5cm}
-    \begin{minipage}[c]{0.39\textwidth}
-    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-    set style data lines
-    set grid
-    set xlabel "Observation noise"
-    set ylabel "Total regret"
-    set xrange [0.15:0.95]
-    plot "../data/bruteforce/good-5.0,2.0\_bad-4.0,4.0\_est-10.0,0.5\_num-2\_obstart-0.15\_obend-0.95\_obstep-0.01\_rounds-10000\_reps-10000.data" using 2:(column(1)==1000?(5000-column(3)):(1/0)) title ""
-    \end{gnuplot}
-    \end{minipage}
-    \hspace*{7.5cm}
-    \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{4.0}{4.0}{2}{1000}
-    \end{minipage}
-\caption{Resulting total regret from varying observation noise.}
-\label{fig:regretob}
-\end{figure}
-
-Figure~\ref{fig:regretob} illustrates why, when using LTS, it is important to make a good choice of observation noise.
-In this case we see that the total regret achieved increases rapidly when the value is set too low, while it increases slightly as we move past the optimum.
-With different setups we see similar results, although the slope after the optimum may be steeper or closer to zero.
 
 
 \section{UCB1-Tuned}
@@ -213,6 +191,33 @@ where
 $K$ is the number of available arms, $n_j$ the numer of times arm $j$ has 
 been played, $n$ is the total number of plays, and $\hat{\mu}_j 
 =\frac{(\text{cumulative reward for arm j})}{n_j}$.
+
+In figure~\ref{fig:regretob} we compare the performance of LTS and UCB1.
+We see that the optimal value for the \ob{} indeed causes LTS to perform better than UCB1.
+The figure also illustrates why, when using LTS, it is important to make a good choice of observation noise.
+In this case we see that the total regret achieved increases rapidly when the value is set too low, while it increases slightly as we move past the optimum.
+With different setups we see similar results, although the slope after the optimum may be steeper or closer to zero.
+
+\begin{figure}[htbp]
+    \hspace*{-2.5cm}
+    \begin{minipage}[c]{0.39\textwidth}
+    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set style data lines
+    set xlabel "Observation noise"
+    set ylabel "Total regret"
+    set xtics 0.048
+    set mxtics 2
+    #set arrow from 0.24,5 to 0.24,15 nohead lt 0
+    plot [0.048:0.445] [5:15] '../data/cumulative/good-5.0,0.5_bad-4.0,0.5_est-0.0,50.0_num-4_obnoise-0.24_rounds-1000_reps-10000_algo-LTS_kind-Cumulative.data' using 3:(5000-$2) title "LTS" lw 3, (5000-4992.961761728431) title "UCB1" lc 3 lw 3
+    \end{gnuplot}
+    \end{minipage}
+    \hspace*{7.5cm}
+    \begin{minipage}[c]{0.49\textwidth}
+    \banditsetup{5.0}{4.0}{4.0}{2}{1000}
+    \end{minipage}
+\caption{Resulting total regret from varying observation noise.}
+\label{fig:regretob}
+\end{figure}
 
 % \section{Sample stuff}
 % Some simple and useful latex formatting.
