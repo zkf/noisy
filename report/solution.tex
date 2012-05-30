@@ -63,7 +63,7 @@ is the best observation noise for that instance. Following is a list of all para
 \item Number of rounds the game lasted
 \end{itemize}
 
-The mean and standard deviation on the arms are fairly insignificant as long as the mean or the standard deviation is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 40 bandits to understand how the increase in players affected the observation noise. Additionally we changed the ratio to different values to see whether certain target values were more difficult hit. We only used ratios below 0.5, since the ratio is symmetric above and below 0.5 in ratio. For example is 0.2 the same as 0.8 in ratio, just different arms arms are picked, and both are identical at the beginning. Finally by varying the Gaussian white noise we observed how the higher standard deviation in reward affected the players.
+The mean and standard deviation on the arms are fairly insignificant as long as the mean or the standard deviation is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 40 bandits to understand how the increase in players affected the observation noise. Additionally we changed the ratio to different values to see whether certain target values were more difficult hit. We only used ratios below 0.5, since the ratio is symmetric above and below 0.5 in ratio. For example is 0.2 the same as 0.8 in ratio, and since both arms are identical it do not really matter witch one is chosen by the player. Finally by varying the Gaussian white noise we observed how the higher standard deviation in reward affected the players.
 
 
 %By testing all the values in a given range to determine where the maximum lies under different
