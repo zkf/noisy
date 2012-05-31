@@ -69,28 +69,14 @@ We see that \obstar{} exhibits approximately logarithmic growth as the number of
     \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-    set grid
     set nokey
-    set style data dots
-    set pm3d at s hidden3d 100
-    set style line 100 lt -1 lw 2
-    set ylabel "Bad arm mean" rotate
-    set xlabel "Rounds" rotate
-    set zlabel "Observation noise" rotate
-    set xyplane 0
-    set ytics 3,0.5
-    set xtics 100,100
-    set xrange [100:1000]
-    set yrange [3:4.5]
-    set view 40,36
-    set palette model CMY rgbformulae 7,5,15
-    splot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:3:7
-#    set style data lines
-#    set xlabel "Bad arm mean" rotate
-#    set ylabel "Observation noise" rotate
-#    set xtics 0.5
-#    set xrange [3.0:4.5]
-#    plot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using (column(6)==1000?column(3):NaN):7
+    set grid
+    set style data lines
+    set xlabel "Bad arm mean" rotate
+    set ylabel "Observation noise" rotate
+    set xtics 0.5
+    set xrange [3.0:4.5]
+    plot "../data/bandit/good-5.0,0.5\_bad-(0.5,4.5,0.5),0.5\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using (column(6)==1000?column(3):NaN):7
     \end{gnuplot}
     \end{minipage}
     \hspace*{7.5cm}
@@ -109,22 +95,16 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
     \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
+    set grid
     set nokey
-    set pm3d
-    set ylabel "Standard deviation" offset 0,-1
-    set xlabel "Rounds" offset 1,-1
-    set zlabel "Observation noise" rotate
-    set xyplane 0
-    set palette model CMY rgbformulae 7,5,15
-    set view 65,312
-    set xtics 200 offset -1.2,0.-0.5
-    set xrange [10:1000]
-    set yrange [0.1:5.1]
-    set zrange [0.01:4.6]
+    set style data lines
+    set xlabel "Standard deviation"
+    set ylabel "Observation noise" rotate
+    set xrange [0.1:5.1]
+    set xtics 0.5
+    set yrange [0.01:4.6]
     set ytics 0.1,1.0
-    set ytics offset 0,-0.5
-    splot '../data/bandit/good-5.0,(0.1,5.0,0.5)_bad-4.0,(0.1,5.0,0.5)_est-0.0,50.0_num-2_rounds-1000_algo-UCB1.data' using 6:2:7 with line lt -1 lw 2
-    #splot "../data/bandit/good-6.5,(0.1,5.0,0.9)\_bad-4.0,(0.1,5.0,0.9)\_est-0.0,50.0\_num-5\_rounds-1000\_algo-UCB1.data" using 6:2:7 with line lt -1 lw 2 title ""
+    plot '../data/bandit/good-5.0,(0.1,5.0,0.5)_bad-4.0,(0.1,5.0,0.5)_est-0.0,50.0_num-2_rounds-1000_algo-UCB1.data' using (column(6)==1000?column(2):NaN):7
     \end{gnuplot}
     \end{minipage}
     \hspace*{7.5cm}
@@ -135,7 +115,7 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
 \label{fig:gooddev}
 \end{figure}
 
-On the other hand, in figure~\ref{fig:gooddev} we see that increasing the uncertainty of rewards by increasing the variance of the best arm has the effect of increasing \obstar{}.
+On the other hand, in figure~\ref{fig:gooddev} we see that increasing the uncertainty of rewards by increasing the variance has the effect of increasing \obstar{}.
 So the notion that smaller \obstar{} indicates a more complex environment may be too simplistic.
 
 \begin{figure}[htbp]
@@ -161,7 +141,7 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
 \end{figure}
 
 LTS is superior to UCB1 when the optimal observation noise value is selected.
-In figure~\ref{fig:ucbcomp} this is demonstrated:
+This is illustrated in figure~\ref{fig:ucbcomp}:
 Even though UCB1 performs reasonably good from the start it is rapidly overtaken by LTS.
 
 \section{Goore Game}
