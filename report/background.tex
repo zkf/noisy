@@ -85,11 +85,11 @@ set style data lines
 set nokey
 set xlabel '$\lambda$'
 set ylabel '$G(\lambda)$'
-#set xrange[-0.25:1.25]
-set yrange[0:*]
+set xrange[-0.25:1.25]
+#set yrange[0:*]
 set label '$\lambda^*$' at 0.55, 0.6
 set arrow from 0.5,2 to 0.5,0 nohead lt 0 lw 3
-plot (1/(5*sqrt(2*pi))) * exp((-0.5)*(((x-0.5)/5)**2)) lw 3
+plot (1/(0.2*sqrt(2*pi))) * exp((-0.5)*(((x-0.5)/0.2)**2)) lw 3
 \end{gnuplot}
 \caption{A unimodal performance criterion}
 \label{fig:gfunc}
