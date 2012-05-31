@@ -6,10 +6,19 @@
 We have discovered the values for the observation noise, \ob{}, that maximise LTS performance in a multitude of settings for the multi-armed bandit.
 We have also shown how \obstar{} varies with different parameters, thereby providing an improved intuition towards how the observation noise affects performance of this strategy.
 
+
+For the multi-armed bandit, the most prominent features affecting the optimal observation noise value are the following.
+First, we discovered that when increasing the complexity by adding more arms to the bandit \obstar{} decreases.
+Second, as the difference $\mu^* - \mu$ decreases, \obstar{} increases.
+Third, we found a close to linear relationship between \obstar{} and the standard deviation $\sigma$.
+
 In the Goore game having more players seems to only affect the optimal observation noise when a small amount of Gaussian white noise is present, otherwise the configurations of the Goore game which we tested all required the same value for \obstar{} to perform the best.
 As the performance criterion ratio gets closer to 0 (or 1), we see that \obstar{} increases.
-The best observation noise value also rises as the amount of rounds $T$ is extended, since with more time each player may use more time to explore and find the best arm to pick and exploit.
 With higher white noise, \obstar{} increases at what seems to be close to a linear rate.
+This effect is similar to the one seen when changing standard deviation in the multi-armed bandit case.
+
+In both the multi-armed bandit problem and the Goore game we found that as the number of rounds $T$ is extended, \obstar{} increases, most likely since with more time each player may use more time to explore and find the best arm to pick and exploit.
+
 
 \section{Contributions}
 Our contributions consist mainly of an improved empirical and intuitive understanding of how the performance of the LTS strategy can be maximised by choosing correct observation noise.
