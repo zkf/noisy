@@ -1,22 +1,24 @@
-\chapter{Conclusion and further work}
+\chapter{Conclusion and future work}
 \label{ch:conclusion}
 
 \section{Conclusion}
 
-By doing thousands of simulations we have discovered the observation noises that maximise LTS performance in a multitude of settings for the multi armed bandit.
-We have also shown how the best observation noise varies with different parameters, thereby providing an improved intuition towards how the observation noise affects performance.
+We have discovered the values for the observation noise, \ob{}, that maximise LTS performance in a multitude of settings for the multi-armed bandit.
+We have also shown how \obstar{} varies with different parameters, thereby providing an improved intuition towards how the observation noise affects performance of this strategy.
 
-In the Goore game having more players only affects the optimal observation noise when you have a low white nose,
-otherwise they all converge towards the same optimal observation noise. By changing the ratio, it effects the observation
-noise in the way when it is closer to 0 or 1 in ratio the optimal observation noise is higher.
-Observation noise also rises when the players have more time on their hands, since with more time each player may use more time 
-to explore and find the best arm to pick and exploit. With higher white noise,the optimal observation noise do 
-increase, and this do seam to be at a linear rate for each time step, with bigger variations at lower time steps.
+In the Goore game having more players seems to only affect the optimal observation noise when a small amount of Gaussian white noise is present, otherwise the configurations of the Goore game which we tested all required the same value for \obstar{} to perform the best.
+As the performance criterion ratio gets closer to 0 (or 1), we see that \obstar{} increases.
+The best observation noise value also rises as the amount of rounds $T$ is extended, since with more time each player may use more time to explore and find the best arm to pick and exploit.
+With higher white noise, \obstar{} increases at what seems to be close to a linear rate.
 
 \section{Contributions}
 Our contributions consist mainly of an improved empirical and intuitive understanding of how the performance of the LTS strategy can be maximised by choosing correct observation noise.
 
 
-\section{Further Work}
-Use Gaussian processes to create models or graphs that can be used to inferr the optimal observation noise for a realistic subset of possible parameter configurations for the multi-armed bandit problem and the Goore game. Meaning that the Gaussian processes will use existing data to estimate unknown optimal observation noises. Currently all optimal observation noises are discovered through a brute-force approach thus if anyone requires a non-existent configuration of parameters it would be necessary to run the program with these new parameters. By employing Gaussian processes the user would be able to estimate the optimal observation noise by using existing data.
+\section{Future work}
+An avenue for future work would be to use a Gaussian process for inferring the optimal observation noise for a realistic subset of possible parameter configurations for the multi-armed bandit problem and the Goore game.
+Meaning that the Gaussian processes will use existing data to estimate unknown optimal observation noises.
+Currently all optimal observation noise values are discovered with programs requiring a substantial running time.
+Whenever a new configuration is to be used it is necessary to run the program using the new parameters.
+By employing a Gaussian process it would be possible to estimate the optimal observation noise through the use of existing data.
 
