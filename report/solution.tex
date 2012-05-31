@@ -2,7 +2,7 @@
 \label{ch:solution}
 
 The solution consists of several parts, as we have worked on both a single multi-armed bandit scenario, and multiple bandits playing the Goore Game.
-The solution produces machine-readable result files suitable for input to a programme which can infer the best observation noise to use through the use of a Gaussian process.
+The solution produces machine-readable result files suitable for input to a program which can infer the best observation noise to use through the use of a Gaussian process.
 
 \section{Multi-armed bandit}
 The multi-armed bandits in our trials have one uniquely best arm, and all other arms are identically distributed.
@@ -50,7 +50,7 @@ In fact, the multi-armed bandit problem is often stated as a minimisation proble
 Last, the number of times the best arm is selected at any given time can be an interesting metric.
 
 \section{Goore Game}
-Contrary to the multi-armed bandit scenario the bandits in the Goore game do not have a given arm that gives the best reward, however it can be any of the two arms it have. The way we measured performance was by looking at the reward for each observationnoise. By doing so we would find the highest reward, and the observation noise used by that simulation, witch is the best observation noise for that instance. Following is a list of all parameters used for the Goore game:
+Contrary to the multi-armed bandit scenario the bandits in the Goore game do not have a given arm that gives the best reward, however it can be any of the two arms it have. The way we measured performance was by looking at the reward for each observation noise. By doing so we would find the highest reward, and the observation noise used by that simulation, witch is the best observation noise for that instance. Following is a list of all parameters used for the Goore game:
 \begin{itemize}
 \item Initial mean of both arms
 \item Initial standard deviation of both arms
