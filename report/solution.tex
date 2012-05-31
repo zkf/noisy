@@ -7,7 +7,7 @@ The solution produces machine-readable result files suitable for input to a prog
 
 \section{Multi-armed bandit}
 The multi-armed bandits in our experiments have one uniquely best arm, and all other arms are identically distributed with an expected reward which is worse than the expected reward from the best arm.
-The parameters which fully define the bandit scenarios are as follows:
+The parameters which fully define the multi-armed bandit scenarios are as follows:
 \begin{itemize}
     \item Mean of the best arm ($\mu^*$)
     \item Mean of the bad arms ($\mu$)
@@ -16,17 +16,16 @@ The parameters which fully define the bandit scenarios are as follows:
     \item Number of rounds, time steps, or horizon ($T$)
 \end{itemize}
 
-In addition, for LTS we must provide a starting estimate for the arms.
+In addition, for LTS a starting estimate for the arms must be provided.
 Here the mean value is set to 0 and the standard deviation is set to 50, following the recommendation in \cite{Glimsdal12}.
-(We use 50.0.)
 
-The mean values for the best arm is for the most part set to 5.0, and all arm parameters stay between 0.0 and 10.0.
+The mean value for the best arm is for the most part set to 5.0, and all arm parameters stay between 0.0 and 10.0.
 Note that as $\mu \to \mu^*$, the penalty for choosing the wrong arm decreases.
 Furthermore, $\sigma$ determines the noisiness of rewards.
 
 The maximum number of arms we test is 64.
 This is a reasonably high number which represents a difficult task compared to the minimum of two arms.
-We do not elect to add results for when more arms are present as the rate of change in the results decrease rapidly with the number of arms.
+We do not elect to show results for when more arms are present as the rate of change in the results decrease rapidly with the number of arms.
 
 We calculate the best observation noise for a range of different values for $T$ up to 1000, as most interesting effects seem to wane around this point.
 
@@ -50,17 +49,31 @@ The environment proceeds to determine the reward by using the \ob{} associated w
 The reason for averaging the cumulative rewards is to reduce the variance of the rewards.
 
 \section{Goore Game}
-Contrary to the multi-armed bandit scenario the bandits in the Goore game do not have a given arm that gives the best reward, however it can be any of the two arms it have. The way we measured performance was by looking at the reward for each observation noise. By doing so we would find the highest reward, and the observation noise used by that simulation, witch is the best observation noise for that instance. Following is a list of all parameters used for the Goore game:
+
+Contrary to in the multi-armed bandit scenario there are no predetermined, universally best arm in the Goore game.
+The reward distribution is determined dynamically at each iteration of the game given the votes of the players together with the performance criterion $G(\lambda)$.
+Now we describe the parameters which define a Goore game scenario.
+
 \begin{itemize}
-\item Initial mean of both arms
-\item Initial standard deviation of both arms
-\item Number of bandits
-\item Ratio for the selected arms(Yes and no)
-\item Gaussian white noise
-\item Number of rounds the game lasted
+    \item Number of players ($N$)
+    \item Ratio, or the fraction of yes-votes ($\lambda^*$)
+    \item Added Gaussian white noise ($\sigma_n$)
+    \item Number of rounds ($T$)
 \end{itemize}
 
-The mean and standard deviation on the arms are fairly insignificant as long as the mean or the standard deviation is high enough to ensure that each arm is chosen atleast once. We tested between 2 and 40 bandits to understand how the increase in players affected the observation noise. Additionally we changed the ratio to different values to see whether certain target values were more difficult hit. We only used ratios below 0.5, since the ratio is symmetric above and below 0.5 in ratio. For example is 0.2 the same as 0.8 in ratio, and since both arms are identical it does not matter witch one is chosen by the player. Finally by varying the Gaussian white noise we observed how the higher standard deviation in reward affected the players.
+In addition, LTS needs starting estimate for the two arms.
+These were set to the normal distribution $N(3.5,3.0)$.
+The start values for mean and standard deviation of the arms are fairly insignificant as long as the mean or the standard deviation is high enough to ensure that each arm is chosen at least once.
+
+We test $N$ between 2 and 40 to find how the increase in players affects \obstar{}.
+The ratios used for the performance function are 0.2, 0.3, and 0.4.
+Some ratios should present harder problem for certain numbers of players, as it is impossible for, say, 7 players to reach the exact ratio of 0.4 yes-votes.
+We only use ratios below 0.5, since the corresponding ratios above 0.5 would provide identical results.
+For instance, the ratio 0.8 corresponds to the ratio 0.2.
+The standard deviation of the Gaussian distribution used for the performance criterion is set at 0.1 throughout all experiments.
+Finally by varying the added Gaussian white noise we simulate different strengths of noise in the feedback from the environment.
+
+For the Goore game only a brute force approach was used to find the best observation noise.
 
 
 %By testing all the values in a given range to determine where the maximum lies under different
