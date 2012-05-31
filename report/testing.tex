@@ -1,11 +1,12 @@
 
 
 \newcommand{\gooresetup}[3]{%
-	\begin{tabular}{ll}
+	\begin{tabular}{cl}
+		\multicolumn{2}{c}{\textsc{Setup}} \\
 		\toprule
-		Ratio & #1 \\
-		Rounds & #2 \\
-		Number of players & #3 \\
+		$\lambda^*$ & #1 \\
+		$T$ & #2 \\
+		$N$ & #3 \\
 		\bottomrule
 	\end{tabular}}
 	
@@ -26,7 +27,7 @@ By fixing all but one parameter and testing for a range of values for this param
 
 \section{Multiarmed Bandit}
 \begin{figure}[hbtp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
         \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
             set style data dots
@@ -67,7 +68,7 @@ This effect is nicely illustrated in figure~\ref{fig:numarms}, where we have var
 We see that \obstar{} exhibits approximately logarithmic growth as the number of rounds increase, and exponential decay as the number of arms increase.
 
 \begin{figure}[htbp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
@@ -200,7 +201,7 @@ observation noise will quickly lead to less reward. The drop is steeper if the o
 more time the players can spend more time exploring and still have plenty of time left to exploit the Goore game for reward. 
 
 \begin{figure}[htbp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
@@ -220,7 +221,7 @@ more time the players can spend more time exploring and still have plenty of tim
 \end{figure}
 
 \begin{figure}[htbp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
@@ -241,7 +242,7 @@ more time the players can spend more time exploring and still have plenty of tim
 \end{figure}
 
 \begin{figure}[htbp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
@@ -267,7 +268,7 @@ The closer the ratio gets to 0 or 1, the optimal observation noise rises as show
 As the ratio gets closer to either extreme a bad reward given to the player may not be because of this players choice but rather because of the other players choices. Meaning that the closer the ratio it is to 0 or 1 the more the players affect each other. The number of bandits do not seem to affect the optimal observation noise too much, as shown in figure \ref{fig:ex10}. The only difference is at the starting point when the Gaussian white noise is low. As the Gaussian white noise gets higher the different configuration of players converge on the same optimal observation noise.
 
 \begin{figure}[htbp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
@@ -291,7 +292,7 @@ Figure \ref{fig:ex11} shows how both number of rounds and Gaussian white noise a
 and a short amount of time to explore the observation varies as it is hard for players to decide on the correct configuration and thus the results are generally poor.
 
 \begin{figure}[htbp]
-    \hspace*{-2.5cm}
+    \hspace*{-0.8cm}
     \begin{minipage}[c]{0.39\textwidth}
     \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
     set grid
