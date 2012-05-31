@@ -13,11 +13,11 @@ The parameters which fully define the bandit scenarios are as follows:
     \item Mean of the bad arms ($\mu$)
     \item Standard deviation of all arms ($\sigma$)
     \item Number of arms ($K$)
-    \item Number of rounds, timesteps, or horizon ($T$)
+    \item Number of rounds, time steps, or horizon ($T$)
 \end{itemize}
 
 In addition, for LTS we must provide a starting estimate for the arms.
-Here the mean value is set to 0, and the standard deviation is set to a large value as recommended in \cite{Glimsdal12}.
+Here the mean value is set to 0 and the standard deviation is set to 50, following the recommendation in \cite{Glimsdal12}.
 (We use 50.0.)
 
 The mean values for the best arm is for the most part set to 5.0, and all arm parameters stay between 0.0 and 10.0.
@@ -30,31 +30,24 @@ We do not elect to add results for when more arms are present as the rate of cha
 
 We calculate the best observation noise for a range of different values for $T$ up to 1000, as most interesting effects seem to wane around this point.
 
-\subsection{Solution strategy}
-We developed a couple of ways to compute and visualise the needed data.
-A brute force method calculating cumulative rewards for all given observation noises, and a method that, given the simulation parameters, employs a bandit approach to calculating the best observation noise.
+We developed a couple of ways to compute and visualise the needed data:
+First, a brute force method calculating cumulative rewards for all given observation noises, and second, a method that, given the simulation parameters, employs a multi-armed bandit approach to finding the best observation noise.
 
-In addition we calculate instant rewards at log-scale timesteps given the simulation parameters, for verifying that the solution found is in fact the best one.
+\subsection{Brute force exploration}
+By testing a set of values in a given range it is possible to approximately determine which value yields the maximum.
+The exactness of the result is then determined by how fine-grained the tested values are, and by how many runs the results are averaged over.
+In our case, we elected for a step size of 0.01, and the values where averaged over up to 100,000 runs.
 
-\subsubsection{Brute force solution}
-By testing all the values in a given range it is possible to determine where the maximum lies.
 Although this method is crude, it is helpful for gaining an indication towards what values are best or what values need more testing.
-The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting if we in reality are only looking for a (unique) maximum.
+It also gives us the opportunity to have results of arbitrary precision, where an increased precision is achieved by increasing the number of runs and decreasing the step size.
+The downside of this solution is that many tests and much computation may be required, and most of the results generated are not interesting as we are only interested in the value yielding the maximum.
 
-\subsubsection{Bandit approach}
-As the multi-armed bandit approach can be used to find the maximum of a
-stochastic function, it fits perfectly to the task of finding the best
-observation noise for a multi-armed bandit employing the local Thompson
-sampling strategy.
-
-\subsubsection{Measuring performance}
-There are several ways to keep score and look at data from a bandit simulation.
-First, one can look at the cumulative reward recieved by the player.
-Second, there is the instant rewards, that is, the reward received by the player at a given time $t$.
-By logging this one can easily see how the player increases its performance over time.
-Third, a much used approach is to calculate regret.
-In fact, the multi-armed bandit problem is often stated as a minimisation problem with respect to regret.
-Last, the number of times the best arm is selected at any given time can be an interesting metric.
+\subsection{Bandit approach}
+As the multi-armed bandit approach can be used to find the maximum of a stochastic function, it fits perfectly to the task of finding the best observation noise for a multi-armed bandit employing the LTS strategy.
+Like in the brute-force method, a range of observation noise values is subdivided, and each of these values count as an arm of a multi-armed bandit.
+The player then selects one of these arms according to its strategy.
+The environment proceeds to determine the reward by using the \ob{} associated with the selected arm in an appropriate number of bandit simulation, and returns the average total cumulative reward to the player, which continues to iterate as in a normal multi-armed bandit scenario.
+The reason for averaging the cumulative rewards is to reduce the variance of the rewards.
 
 \section{Goore Game}
 Contrary to the multi-armed bandit scenario the bandits in the Goore game do not have a given arm that gives the best reward, however it can be any of the two arms it have. The way we measured performance was by looking at the reward for each observation noise. By doing so we would find the highest reward, and the observation noise used by that simulation, witch is the best observation noise for that instance. Following is a list of all parameters used for the Goore game:
