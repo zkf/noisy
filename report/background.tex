@@ -48,7 +48,7 @@ The choice of Gaussian distributions is also due to the fact that the Thompson s
 Introduced by Tsetlin \cite{Tsetlin1964} in 1964, the Goore game\footnote{Also known as the Gur game.} is an iterated cooperation game where each player is not privy to information on the other players.
 It can be described as a voting process where the referee knows the correct answer, and the players cast their votes as simple ‘yes’ or ‘no’.
 The correct answer is a certain fraction of yes-votes, and players are rewarded based on how close they collectively are to the ideal solution.
-Rewards are determined by an unimodal performance criterion $G(\lambda)$, for instance the density of the normal distribution, where $\lambda$ is the fraction of yes-votes.
+Rewards are determined by a unimodal performance criterion $G(\lambda)$, for instance the density of the normal distribution, where $\lambda$ is the fraction of yes-votes.
 The fraction of yes-votes preferred by the referee corresponds to the maximum of the performance criterion; when the normal distribution is used it is simply the mean value of the distribution. 
 
 The Goore game is inherently noisy, in that the reward for a single player is dependent on the actions of all the other players, resulting in reward variance.
@@ -91,7 +91,7 @@ set label '$\lambda^*$' at 0.55, 0.6
 set arrow from 0.5,2 to 0.5,0 nohead lt 0 lw 3
 plot (1/(0.2*sqrt(2*pi))) * exp((-0.5)*(((x-0.5)/0.2)**2)) lw 3
 \end{gnuplot}
-\caption{An unimodal performance criterion}
+\caption{A unimodal performance criterion}
 \label{fig:gfunc}
 \end{figure}
 
