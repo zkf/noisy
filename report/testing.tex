@@ -17,12 +17,10 @@
 
 Here we present a representative subset of the obtained results.
 We provide graphs to visualise how different parameters influence the results.
+We first present results for the multi-armed bandit, followed by the results for the Goore game.
 
 Parameter values are likely to interact and impact the end result in different ways, and it may be difficult to capture these interactions directly.
 By fixing all but one parameter and testing for a range of values for this parameter, we capture different aspects of how the optimal observation noise changes.
-
-\textbf{Why 1000 rounds and not 10,000 (graph or table).}
-\textbf{Keeping standard deviations equal all over. Why is this a good idea, and why is it not a bad idea?}
 
 \section{Multiarmed Bandit}
 \begin{figure}[hbtp]
@@ -56,9 +54,9 @@ By fixing all but one parameter and testing for a range of values for this param
 \label{fig:numarms}
 \end{figure}
 
-As the horizon is extended, the overall trend is for \obstar{} to increase (but see figure~\ref{fig:gooddev}). 
-\textbf{Why}
-
+As the horizon is extended, the overall trend is for \obstar{} to increase.
+This can quite simply be explained if we think of the observation noise as regulating the rate of exploration.
+When more time is available, more of it should be allocated for exploration in order to make it more certain that the best arm is discovered and exploited.
 
 We first look at the case where the number of arms is changed, from the simplest case with 2 arms to a comparatively hard problem with 64 arms.
 This corresponds directly to increasing the complexity of the environment, and so we get the first indication that observation noise can be used as a complexity measure: a low \obstar{} indicates a complex environment, and as the best observation noise increases the environment gradually becomes simpler.
@@ -136,7 +134,7 @@ This effect is illustrated in figure~\ref{fig:badmean}, where \obstar{} increase
 \label{fig:gooddev}
 \end{figure}
 
-On the other hand, in figure~\ref{fig:gooddev} we see that increasing the uncertainty of rewards by increasing the variance of the best arm has the effect of increasing \obstar{}. 
+On the other hand, in figure~\ref{fig:gooddev} we see that increasing the uncertainty of rewards by increasing the variance of the best arm has the effect of increasing \obstar{}.
 So the notion that smaller \obstar{} indicates a more complex environment may be too simplistic.
 
 \begin{figure}[htbp]
@@ -162,35 +160,8 @@ So the notion that smaller \obstar{} indicates a more complex environment may be
 \end{figure}
 
 LTS is superior to UCB1 when the optimal observation noise value is selected.
-In figure~\ref{fig:ucbcomp} this is clearly demonstrated:
-Even though UCB1 performs reasonably good from the start it seemingly ceases reducing its regret after a while, whereas LTS converges towards zero regret in this case.
-
-\begin{figure}[hbtp]
-    \hspace*{-2.5cm}
-    \begin{minipage}[c]{0.39\textwidth}
-    \begin{gnuplot}[terminal=epslatex,terminaloptions=color solid]
-    set style data lines
-    set grid
-    set xlabel "Bad arm standard deviation"
-    set ylabel "Observation noise" rotate
-    set xtics 0.5
-    set ytics 0.1
-    set xrange [0:3.5]
-    set yrange [0:0.4]
-    set palette model CMY rgbformulae 7,5,15
-    plot for [t in "100 500 1000"] "../data/bandit/good-5.0,0.5\_bad-4.0,(0.1,3.5,0.2)\_est-10.0,2.0\_num-5\_rounds-1000\_algo-UCB1.data" using (column(6)==t?column(4):1/0):7 title t." rounds"
-    \end{gnuplot}
-    \end{minipage}
-    \hspace*{7.5cm}
-    \begin{minipage}[c]{0.49\textwidth}
-    \banditsetup{5.0}{4.0}{0.1 -- 3.5}{5}{1000}
-    \end{minipage}
-\caption{Varying standard deviation of the bad arms, on the best arm it is kept at 0.5.}
-\label{fig:baddev}
-\end{figure}
-
-In figure~\ref{fig:baddev} we see that changing only the standard deviation of the suboptimal arms does not have any meaningful influence on the optimal observation noise, except for when the number of rounds is low.
-This is a welcome result in light of the practice of letting the standard deviation of both the good and bad arms be equal.
+In figure~\ref{fig:ucbcomp} this is demonstrated:
+Even though UCB1 performs reasonably good from the start it is rapidly overtaken by LTS.
 
 \section{Goore Game}
 
