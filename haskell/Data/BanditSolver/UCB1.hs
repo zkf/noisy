@@ -1,6 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 module Data.BanditSolver.UCB1
 ( runAveragedInstantRewards 
+, runAverageCumulativeReward 
 , makeUCB1
 , UCB1(..)
 )
@@ -13,7 +14,10 @@ import Data.Vector.Generic.Mutable (write)
 import Data.List.Extras (argmax)
 import System.Random.Mersenne.Pure64
 import Control.Monad.State
-import Control.Monad.Writer
+import Data.Random (MonadRandom)
+import Control.Concurrent (forkIO, getNumCapabilities)
+import Control.Concurrent.Chan.Strict
+import Text.Printf
 
 data UCB1 = UCB1 
                 !(V.Vector Reward)  -- cumulative rewards
@@ -66,13 +70,47 @@ instance Solver UCB1 where
 
     getCumulativeReward (UCB1 rewards _ _ _) = V.sum rewards
 
+showDouble :: Double -> String
+showDouble = printf "%f" 
+
+evenlyDistribute :: Int -> Int -> [Int]
+evenlyDistribute tasks threads = 
+    let (chunk, rest) = tasks `divMod` threads
+    in  zipWith (+) (replicate threads chunk) (replicate rest 1 ++ repeat 0)
+
 runAveragedInstantRewards :: GA -> GA -> Int
-    -> Int -> Int -> PureMT -> [String]
-runAveragedInstantRewards bestArm badArm numArms rounds repetitions gen =
+    -> Int -> Int -> IO [String] -- Checkpoint, mean of instant rewards
+runAveragedInstantRewards bestArm badArm numArms rounds repetitions = do
+    threads <- getNumCapabilities
+    let chunks = evenlyDistribute repetitions threads
+    chans <- replicateM threads newChan
+    _ <- zipWithM (\chan reps -> forkIO $ runAveragedInstantRewardsIO bestArm badArm numArms rounds reps chan) chans chunks
+    forM (makeCheckpoints rounds) $ \n -> do
+        results <- mapM readChan chans
+        let m = sum results / fromIntegral repetitions
+        return $ unwords [show n, showDouble m]
+
+runAveragedInstantRewardsIO :: GA -> GA -> Int
+    -> Int -> Int -> Chan Double -> IO ()
+runAveragedInstantRewardsIO bestArm badArm numArms rounds repetitions chan = do
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm
         badArms = replicate (numArms - 1) myBadArm
         realArms = V.fromList $ myBestArm : badArms
         agents = replicate repetitions (makeUCB1 numArms)
-    in  evalState (execWriterT $ runInstantRewards realArms agents rounds) gen
+    gen <- newPureMT
+    evalStateT (runInstantRewards realArms agents rounds chan) gen
+
+{-# SPECIALIZE runAverageCumulativeReward :: 
+    GA -> GA -> Int -> Int -> Int -> RandomStateIO String #-}
+runAverageCumulativeReward :: (MonadRandom m) =>
+      GA -> GA -> Int -> Int -> Int -> m String
+runAverageCumulativeReward bestArm badArm numArms rounds repetitions = do
+    let myBestArm = makeGaussianArm bestArm
+        myBadArm  = makeGaussianArm badArm
+        badArms = replicate (numArms - 1) myBadArm
+        realArms = V.fromList $ myBestArm : badArms
+        solver = makeUCB1 numArms
+    res <- runAvg realArms repetitions rounds solver
+    return $ show numArms ++ " " ++ show res
 

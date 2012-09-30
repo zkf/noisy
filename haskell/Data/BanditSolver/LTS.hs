@@ -1,8 +1,9 @@
 {-# LANGUAGE BangPatterns, TypeSynonymInstances, FlexibleInstances #-}
 module Data.BanditSolver.LTS 
 
-(   GaussianArms, GaussianArm(..), LTS(..), GA,
-    runAveragedLTS, runAveragedInstantRewards,
+(   GaussianArms, GaussianArm(..), LTS(..),
+    runAveragedLTS, runAveragedInstantRewards, runAverageCumulativeReward,
+    runArms,
     updateLTS, makeLTS,
     makeGaussianArm
 ) where
@@ -67,16 +68,67 @@ runAveragedLTSIO bestArm badArm armEstimate numArms rounds repetitions ob chan =
     gen <- newPureMT
     evalStateT (runEnsembleIO realArms rounds solvers chan) gen
 
-runAveragedInstantRewards :: GA -> GA -> GA -> Int
-    -> Int -> Int -> Double -> PureMT -> [String]
-runAveragedInstantRewards bestArm badArm armEstimate numArms rounds repetitions ob gen =
+runAveragedInstantRewards :: GA -> GA -> GA ->  Int
+    -> Int -> Int -> Double -> IO [String] -- Checkpoint, mean of instant rewards
+runAveragedInstantRewards bestArm badArm armEstimate numArms rounds repetitions ob = do
+    threads <- getNumCapabilities
+    let chunks = evenlyDistribute repetitions threads
+    chans <- replicateM threads newChan
+    zipWithM_ (\chan reps -> forkIO $ runAveragedInstantRewardsIO bestArm badArm armEstimate numArms rounds reps ob chan) chans chunks
+    forM (makeCheckpoints rounds) $ \n -> do
+        results <- mapM readChan chans
+        let m = sum results / fromIntegral repetitions
+        return $ unwords [show n, showDouble m]
+
+
+runAveragedInstantRewardsIO :: GA -> GA -> GA -> Int
+    -> Int -> Int -> Double -> Chan Double -> IO ()
+runAveragedInstantRewardsIO bestArm badArm armEstimate numArms rounds repetitions ob chan = do
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm
         myArmEstimate = makeGaussianArm armEstimate
         badArms = replicate (numArms - 1) myBadArm
         realArms = V.fromList $ myBestArm : badArms
         agents = replicate repetitions (makeLTS myArmEstimate numArms ob)
-    in  evalState (execWriterT $ runInstantRewards realArms agents rounds) gen
+    gen <- newPureMT
+    evalStateT (runInstantRewards realArms agents rounds chan) gen
+
+{-# SPECIALIZE runAverageCumulativeReward :: 
+    GA -> GA -> GA -> Int -> Int -> Int -> Double -> RandomStateIO String #-}
+runAverageCumulativeReward :: MonadRandom m =>
+    GA -> GA -> GA -> Int -> Int -> Int -> Double -> m String
+runAverageCumulativeReward  bestArm badArm armEstimate numArms rounds repetitions ob = do
+    let myBestArm = makeGaussianArm bestArm
+        myBadArm  = makeGaussianArm badArm
+        myArmEstimate = makeGaussianArm armEstimate
+        badArms = replicate (numArms - 1) myBadArm
+        realArms = V.fromList $ myBestArm : badArms
+        agent = makeLTS myArmEstimate numArms ob
+    res <- runAvg realArms repetitions rounds agent
+    return $ show numArms ++ " " ++ show res
+
+
+runArms :: GA -> GA -> GA -> Int -> Int -> Double -> PureMT -> [String]
+runArms bestArm badArm armEstimate numArms rounds ob gen = do
+    let myBestArm = makeGaussianArm bestArm
+        myBadArm  = makeGaussianArm badArm
+        myArmEstimate = makeGaussianArm armEstimate
+        badArms = replicate (numArms - 1) myBadArm
+        realArms = V.fromList $ myBestArm : badArms
+        agent = makeLTS myArmEstimate numArms ob
+    return $ evalState (execWriterT $ logArms realArms agent rounds) gen
+
+logArms :: (Environment e) => e -> LTS -> Int 
+    -> WriterT String (State PureMT) ()
+logArms environment startAgent rounds = run 1 startAgent
+  where run n agent
+            | n > rounds  = return ()
+            | otherwise   = do
+                agent'@(LTS arms _ _) <- lift $ fst `liftM` oneRound environment agent
+                let as = map (\(GaussianArm m s) -> unwords [show n, show m, show s]) (V.toList arms)
+                tell $ unlines as ++ "\n"
+                run (n + 1) agent'
+
 
 {-# SPECIALIZE INLINE selectArm :: LTS -> RandomStateIO ActionId #-}
 {-# SPECIALIZE INLINE selectArm :: LTS -> RandomState ActionId #-}

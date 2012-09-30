@@ -70,6 +70,7 @@ runOne realArms rounds startSolver = run 0 startSolver
                     then run (n+1) solver'
                     else return solver'
 
+
 {-# SPECIALIZE INLINE runAvg :: (Environment e, Solver s) => e -> Int -> Int 
  -> s -> RandomState Reward #-}
 runAvg :: (MonadRandom m, Environment e, Solver s) => e -> Int -> Int -> s -> m Reward
@@ -93,29 +94,27 @@ runEnsembleIO environment rounds startSolvers chan = run 1 startSolvers
             in evaluate crewards >>= writeChan chan
 
 runInstantRewards :: (Environment e, Solver s) => e -> [s] -> Int 
-    -> WriterT [String] (State PureMT) ()
-runInstantRewards environment startAgents rounds = run 1 startAgents
-  where run n agents
+    -> Chan Double -> RandomStateIO () 
+runInstantRewards environment startAgents rounds chan = run 1 startAgents
+  where run :: Solver s => Int -> [s] -> RandomStateIO () 
+        run n agents
             | n > rounds  = return ()
             | otherwise   = do
                 (agents', rewards) <- lift $ mapAndUnzipM (oneRound environment) agents
-                writeLog rewards n
-                force agents' `seq` run (n + 1) agents'
+                liftIO $ writeLog rewards n
+                run (n + 1) agents'
         checkpoints = makeCheckpoints rounds
         writeLog rewards n = when (n `elem` checkpoints) $
-            let (m, var) = S.meanVarianceUnb $ V.fromList rewards
-            in tell $ [unwords [show n, showDouble m, showDouble $ sqrt var]]
+            evaluate (sum rewards) >>= writeChan chan 
 
 force :: [a] -> () 
 force (x:xs) = x `pseq` force xs
 force []     = ()
 
 makeCheckpoints :: Int -> [Int]
-makeCheckpoints rounds = takeWhile (< rounds) [2^x | x <- [(3::Int)..]] ++ [rounds]
-
-showDouble :: Double -> String
-showDouble = printf "%f" 
-
+makeCheckpoints rounds = 
+    takeWhile (< rounds) [round (sqrt (2::Double) ^x) | x <- [(3::Int)..]] ++ [rounds]
+    -- takeWhile (< rounds) [ 10*2^y | y <- [(0::Int)..]] ++ [rounds]
 
 {-# SPECIALIZE INLINE oneRound :: (Environment e, Solver s) => e -> s -> RandomStateIO (s, Reward) #-}
 {-# SPECIALIZE INLINE oneRound :: (Environment e, Solver s) => e -> s -> RandomState (s, Reward) #-}

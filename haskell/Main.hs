@@ -2,8 +2,10 @@
     FlexibleInstances #-}
 module Main where
 import Control.Applicative
-import Control.Concurrent (getNumCapabilities)
+import Control.Concurrent (getNumCapabilities, forkIO)
+import Control.Concurrent.MVar.Strict (newEmptyMVar, putMVar, takeMVar)
 import Control.DeepSeq
+import Control.Exception (evaluate)
 import Control.Monad 
 import Control.Monad.State
 import Control.Monad.Writer
@@ -25,6 +27,8 @@ import qualified Data.BanditSolver.LTS as LTS
 import Data.BanditSolver.OBFinder
 import qualified Data.BanditSolver.Poker as Poker
 import qualified Data.BanditSolver.UCB1 as UCB1
+import qualified Data.BanditSolver.Null as Null
+import qualified Data.BanditSolver.BanditSolver as BS
 
 main :: IO ()
 main = do
@@ -36,30 +40,27 @@ runMode :: Args -> IO ()
 runMode opts@Bandit{..} = do
     print opts
     threads <- getNumCapabilities
-    let roundsList = takeWhile (< rounds) ([10,20..90]++[100,200..900]++[1000,2000..9000]) ++ [rounds]
-        (bestArmList, badArmList, numArmsList) = makeParamLists opts
+    let roundsList = takeWhile (< rounds) ([10,50] ++ [100,200..900] ++ [1000,2000..9000]) ++ [rounds]
+                     -- takeWhile (< rounds) [ 10*2^y | y <- [(0::Int)..]] ++ [rounds]
+                     -- [10000]
+        armsLists = makeParamLists opts
         strat = case algo of
             LTS -> StratLTS
             UCB1 -> StratUCB1
             Poker -> error "Poker is not available."
-        paramLength = length bestArmList 
-                        * length badArmList 
-                        * length numArmsList
-    gs <- replicateM (paramLength * length roundsList)
+            Null  -> error "Null makes no sense here."
+        numSetups = length armsLists
+    gs <- replicateM (numSetups * length roundsList)
                      $ pureMT `fmap` getOpenSSLRand
     let results = parMap' threads deepid . getZipList 
           $ ZipList (evalState <$> (findOB 
                                     <$> roundsList
-                                    <*> bestArmList
-                                    <*> badArmList
+                                    <*> armsLists
                                     <*> [armEstimate]
-                                    <*> numArmsList 
                                     <*> [strat])
                     ) <*> ZipList gs
     showProgress results
-    writeResults opts $ chunk paramLength results
-  where parMap' n f = withStrategy (parBuffer n rseq) . map f
-        deepid e = e `deepseq` e
+    writeResults opts $ chunk numSetups results
 
 runMode opts@BruteForce{..}  = do
     print opts
@@ -73,49 +74,73 @@ runMode opts@BruteForce{..}  = do
     showProgress results
     writeResults opts resultsTr
 
-runMode opts@InstantRewards{..} = do
+runMode opts@Simple{..} = do
     print opts
     gen <- pureMT `fmap` getOpenSSLRand
-    let result = 
-            case algo of
-                 LTS -> LTS.runAveragedInstantRewards bestArm badArm 
-                                armEstimate numArms rounds repetitions obNoise
-                                gen
-                 UCB1 -> UCB1.runAveragedInstantRewards bestArm badArm numArms 
-                                rounds repetitions gen
-                 Poker -> Poker.runAveragedInstantRewards bestArm badArm 
-                                    numArms rounds repetitions gen
+    result <-
+          case kind of
+             Instant -> 
+                case algo of
+                     LTS -> LTS.runAveragedInstantRewards bestArm badArm 
+                                    armEstimate numArms rounds repetitions obNoise
+                     UCB1 -> UCB1.runAveragedInstantRewards bestArm badArm numArms 
+                                    rounds repetitions
+                     Poker -> Poker.runAveragedInstantRewards bestArm badArm 
+                                        numArms rounds repetitions
+                     Null -> error "Not implemented."
+             Cumulative -> 
+                case algo of
+                     LTS -> do 
+                            let run ob m = forkIO (LTS.runAverageCumulativeReward bestArm badArm
+                                    armEstimate numArms rounds repetitions ob >>= evaluate >>= putMVar m)
+                                obs = map (*obNoise) ps
+                            mvars <- replicateM (length obs) newEmptyMVar
+                            zipWithM_ run obs mvars
+                            rs <- mapM takeMVar mvars
+                            return $ zipWith (\o r -> r ++ " " ++ show o) obs rs
+                     Null -> (\a -> Null.runAverageCumulativeReward bestArm badArm a 
+                                    rounds repetitions) `mapM` [2,4,8,16,32,64]
+                     UCB1 -> (:[]) `liftM` UCB1.runAverageCumulativeReward bestArm badArm numArms
+                                    rounds repetitions 
+                     _ -> error "Not implemented."
+             Arms ->
+                case algo of
+                    LTS -> return $ LTS.runArms bestArm badArm armEstimate numArms rounds obNoise gen
+                    _   -> error "Not implemented."
+    showProgress result
     writeResults opts [result]
 
-makeParamLists ::  Args -> ([(Double, Double)], [(Double, Double)], [Int])
+ps = [0.1,0.2..1.9]
+deepid e = e `deepseq` e
+parMap' n f = withStrategy (parBuffer n rseq) . map f
+
+makeParamLists ::  Args -> [[(Double, Double)]]
 makeParamLists Bandit{..} =
+    let nb = numArms - 1 in
     case vary of 
          Just BestArmMean ->
-              (makeMeanRange bestArm
-              ,[badArm]
-              ,[numArms])
+              map (:replicate nb badArm) (makeMeanRange bestArm)
          Just BestArmStdDev -> 
-            (makeStdDevRange bestArm
-            ,[badArm]
-            ,[numArms])
+              map (:replicate nb badArm) (makeStdDevRange bestArm)
          Just BadArmMean -> 
-            ([bestArm]
-            ,makeMeanRange badArm
-            ,[numArms])
+              map (\a -> bestArm : replicate nb a) (makeMeanRange badArm)
          Just BadArmStdDev -> 
-            ([bestArm]
-            ,makeStdDevRange badArm
-            ,[numArms])
+              map (\a -> bestArm : replicate nb a) (makeStdDevRange badArm)
+         Just StdDev -> 
+            zipWith (\best bad -> best : replicate nb bad) 
+                (makeStdDevRange bestArm)
+                (makeStdDevRange badArm)
          Just NumArms ->
-            ([bestArm]
-            ,[badArm]
-            ,[ n | let start = numArms
+            let myNumArms = takeWhile (<= numArms) [ 2^y | y <- [(1::Int)..]]
+            in map (\n -> bestArm : replicate (n-1) badArm) myNumArms
+            {-,[ n | let start = numArms
                  , let step = (round.fst.fromJust) stepEnd      
                  , let stop = (round.snd.fromJust) stepEnd      
-                 , n <- makeRange start stop step ])
-         _ -> ([bestArm], [badArm], [numArms])
+                 , n <- makeRange start stop step ]) -}
+         _ -> [bestArm : replicate nb badArm]
   where
     makeRange start stop step = [start, start + step .. stop]
+    makeMeanRange :: (Double, Double) -> [(Double,Double)]
     makeMeanRange arm = 
         [(m, snd arm) | let start = fst arm
              , let (step, stop) = fromJust stepEnd
@@ -131,7 +156,9 @@ writeResults :: Args -> [[String]] -> IO ()
 writeResults mode resultlist = do
     let dir  = case mode of
                 BruteForce{} -> "bruteforce"
-                InstantRewards{} -> "instantrewards"
+                Simple{..} -> case kind of Instant ->    "instantrewards"
+                                           Cumulative -> "cumulative"
+                                           Arms -> "arms"
                 Bandit{} -> "bandit"
         file = dir ++ "/" ++ filename mode
         hdr = header mode
@@ -181,9 +208,13 @@ showProgress xs = do
 
 
 data WhatRange = BestArmMean | BestArmStdDev | BadArmMean | BadArmStdDev
-                 | NumArms
+                 | StdDev | NumArms
     deriving (Eq,Show,Data,Typeable)
-data Algorithm  = LTS | UCB1 | Poker
+
+data Algorithm  = LTS | UCB1 | Poker | Null
+    deriving (Eq,Show,Data,Typeable)
+
+data SimpleRun = Instant | Cumulative | Arms
     deriving (Eq,Show,Data,Typeable)
 
 data Args = BruteForce
@@ -205,7 +236,7 @@ data Args = BruteForce
         , vary  :: Maybe WhatRange
         , stepEnd  :: Maybe (Double, Double)
         , algo     :: Algorithm}
-        | InstantRewards
+        | Simple
         { obNoise :: Double 
         , rounds  :: Int
         , repetitions :: Int
@@ -213,7 +244,9 @@ data Args = BruteForce
         , badArm  :: (Double, Double)
         , armEstimate  :: (Double, Double)
         , numArms  :: Int
-        , algo     :: Algorithm}
+        , algo     :: Algorithm
+        , kind     :: SimpleRun
+        }
         deriving (Data, Typeable, Show, Eq)
 
 bruteforce :: Args
@@ -244,7 +277,7 @@ bandit = Bandit
              \ for the specified scenario."
 
 instant :: Args
-instant = InstantRewards
+instant = Simple
     {obNoise     = def
     ,rounds      = def
     ,repetitions = def
@@ -253,8 +286,8 @@ instant = InstantRewards
     ,armEstimate = def
     ,numArms     = def
     ,algo        = LTS
-    } &= help "Get the instant rewards\
-             \ for the specified scenario."
+    ,kind        = Instant
+    } &= help "Run a simple bandit scenario."
 
 {- 
  - good-5.0-2.0_bad-4.0,4.0_est-10.0,0.5_num-2_ob-0.6_rounds-1000_repetitions-1000000.data
@@ -271,7 +304,7 @@ filename BruteForce{..} = concat
     ,"_reps-", show repetitions
     ,".data"
     ]
-filename InstantRewards{..} = concat 
+filename Simple{..} = concat 
     ["good-", showDouble $ fst bestArm, ",", showDouble $ snd bestArm
     ,"_bad-", showDouble $ fst badArm, ",", showDouble $ snd badArm
     ,est
@@ -280,6 +313,7 @@ filename InstantRewards{..} = concat
     ,"_rounds-", show rounds
     ,"_reps-", show repetitions
     ,"_algo-", show algo
+    ,"_kind-", show kind
     ,".data"
     ]
   where
@@ -302,11 +336,13 @@ filename Bandit{..} = concat
   where
     good = case vary of
         Just BestArmMean   -> concat [vari $ fst bestArm, ",", showDouble $ snd bestArm] 
-        Just BestArmStdDev -> concat [showDouble $ fst bestArm, ",", vari $ snd bestArm] 
+        s | s == Just BestArmStdDev || s == Just StdDev
+                -> concat [showDouble $ fst bestArm, ",", vari $ snd bestArm] 
         _                  -> concat [showDouble $ fst bestArm, ",", showDouble $ snd bestArm]
     bad = case vary of
         Just BadArmMean   -> concat [vari $ fst badArm, ",", showDouble $ snd badArm] 
-        Just BadArmStdDev -> concat [showDouble $ fst badArm, ",", vari $ snd badArm] 
+        s | s == Just BadArmStdDev || s == Just StdDev
+                -> concat [showDouble $ fst badArm, ",", vari $ snd badArm] 
         _                  -> concat [showDouble $ fst badArm, ",", showDouble $ snd badArm]
     vari x =
         let step = fst . fromJust $ stepEnd
@@ -321,8 +357,12 @@ filename Bandit{..} = concat
 header :: Args -> String
 header BruteForce{..} =
             "# Round | Observation noise | Cumulative reward"
-header InstantRewards{..} =
-            "# Round | Instant reward | standard deviation"
+header Simple{..} =
+    case kind of
+        Instant -> "# Round | Instant reward | standard deviation"
+        Cumulative -> "# Arms | Cumulative reward"
+        Arms       -> "# Round | Arm"
+
 header Bandit{..} =
             "# best arm mean | best arm standard deviation\
             \ | bad arm mean | bad arm standard deviation\
@@ -356,7 +396,7 @@ checkOpts opts =
                 ,(armEstimate == (0.0,0.0),
                     "Estimate has default value (0.0, 0.0).", False)
                 ]
-            InstantRewards{..} ->
+            Simple{..} ->
                 [(algo == LTS && obNoise <= 0, "Observation noise must be > 0.", True)
                 ,(algo == LTS && armEstimate == (0.0,0.0),
                     "Estimate has default value (0.0, 0.0).", False)

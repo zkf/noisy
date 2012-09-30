@@ -9,7 +9,9 @@ import System.Random.Mersenne.Pure64
 import Data.RVar (sampleRVar)
 import Data.Random (shuffle)
 import Control.Monad.State
-import Control.Monad.Writer
+import Control.Concurrent (forkIO, getNumCapabilities)
+import Control.Concurrent.Chan.Strict
+import Text.Printf
 
 
 data Poker = Poker Int -- Horizon h
@@ -102,13 +104,33 @@ instance Solver Poker where
 modifyVector :: Int -> a -> V.Vector a -> V.Vector a
 modifyVector index el = V.modify (\v -> write v index el)
 
+showDouble :: Double -> String
+showDouble = printf "%f" 
+
+evenlyDistribute :: Int -> Int -> [Int]
+evenlyDistribute tasks threads = 
+    let (chunk, rest) = tasks `divMod` threads
+    in  zipWith (+) (replicate threads chunk) (replicate rest 1 ++ repeat 0)
+
 runAveragedInstantRewards :: GA -> GA -> Int
-    -> Int -> Int -> PureMT -> [String]
-runAveragedInstantRewards bestArm badArm numArms rounds repetitions gen =
+    -> Int -> Int -> IO [String] -- Checkpoint, mean of instant rewards
+runAveragedInstantRewards bestArm badArm numArms rounds repetitions = do
+    threads <- getNumCapabilities
+    let chunks = evenlyDistribute repetitions threads
+    chans <- replicateM threads newChan
+    _ <- zipWithM (\chan reps -> forkIO $ runAveragedInstantRewardsIO bestArm badArm numArms rounds reps chan) chans chunks
+    forM (makeCheckpoints rounds) $ \n -> do
+        results <- mapM readChan chans
+        let m = sum results / fromIntegral repetitions
+        return $ unwords [show n, showDouble m]
+
+runAveragedInstantRewardsIO :: GA -> GA -> Int
+    -> Int -> Int -> Chan Double -> IO ()
+runAveragedInstantRewardsIO bestArm badArm numArms rounds repetitions chan = do
+    gen <- newPureMT
     let myBestArm = makeGaussianArm bestArm
         myBadArm  = makeGaussianArm badArm
         badArms = replicate (numArms - 1) myBadArm
         realArms = V.fromList $ myBestArm : badArms
         (agents, gen') = runState (replicateM repetitions (makePoker rounds numArms realArms)) gen 
-    in  evalState (execWriterT $ runInstantRewards realArms agents rounds) gen'
-
+    evalStateT (runInstantRewards realArms agents rounds chan) gen'

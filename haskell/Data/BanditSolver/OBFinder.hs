@@ -19,22 +19,30 @@ data Strategy = StratLTS | StratUCB1
 obFinderRounds :: Int
 obFinderRounds = 4000
 
-findOB :: Int -> GA -> GA -> GA -> Int -> Strategy
+findOB :: Int -> [GA] -> GA -> Strategy
     -> State PureMT String
-findOB rounds bestArm badArm armEstimate numArms strat = do
-    let myBestArm = makeGaussianArm bestArm
-        myBadArm  = makeGaussianArm badArm
-        myArmEstimate = makeGaussianArm armEstimate
-        actions = V.fromList [0.01,0.02..0.30] :: V.Vector Double -- Observation noises to choose from
+findOB rounds arms armEstimate strat = do
+    let myArmEstimate = makeGaussianArm armEstimate
+        actions = V.fromList (0.01: [0.1, 0.2 .. 5.0]) :: V.Vector Double -- Observation noises to choose from
         numActions = V.length actions
-        env = makeEnv rounds myBestArm myBadArm myArmEstimate numArms actions
+        env = makeEnv rounds arms myArmEstimate actions
     bestIndex <- case strat of
                       StratLTS -> useLTS numActions env 
                       StratUCB1 -> useUCB1 numActions env
     let bestOB = actions ! bestIndex
+        start = max 0 (bestOB - 0.15)
+        end   = bestOB + 0.15
+        actions2 = V.fromList [start, start + 0.01 .. end] :: V.Vector Double
+        numActions2 = V.length actions2
+        env2 = makeEnv rounds arms myArmEstimate actions2
+    bestIndex2 <- case strat of
+                      StratLTS -> useLTS numActions2 env2
+                      StratUCB1 -> useUCB1 numActions2 env2
+    let bestOB2 = actions2 ! bestIndex2
+        (bestArm:badArm:_) = arms
     return $
         unwords [unwords $ map showDouble [fst bestArm, snd bestArm, fst badArm, snd badArm]
-               ,show numArms, show rounds, showDouble bestOB]
+               ,show (length arms), show rounds, showDouble bestOB2]
 
 useLTS :: Int -> Env -> State PureMT Int -- index of best ob
 useLTS numActions env = do
@@ -63,11 +71,10 @@ showDouble :: Double -> String
 showDouble = printf "%f" 
 
 
-makeEnv :: Int -> GaussianArm -> GaussianArm -> GaussianArm -> Int
-    -> V.Vector Double -> Env
-makeEnv rounds bestArm badArm armEstimate numArms obnoises =
-    let realArms = V.fromList $ bestArm : replicate (numArms - 1) badArm
-        startEstimates = V.fromList $ replicate numArms armEstimate
+makeEnv :: Int -> [(Double, Double)] -> GaussianArm -> V.Vector Double -> Env
+makeEnv rounds arms armEstimate obnoises =
+    let startEstimates = V.fromList $ replicate (length arms) armEstimate
+        realArms = V.fromList $ map (uncurry GaussianArm) arms
     in Env (realArms, startEstimates, rounds, obnoises)
     
 
